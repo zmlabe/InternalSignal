@@ -153,7 +153,7 @@ def read_LENS(directory,vari,sliceperiod,slicebase,sliceshape,addclimo,slicenan,
         ValueError('WRONG OPTION!')
         
     print('>>>>>>>>>> ENDING read_LENS function!')
-    return lat1,lon1,ensshape,ENSmean
+    return lat1,lon1,ensshape
         
 
 # ### Test functions - do not use!

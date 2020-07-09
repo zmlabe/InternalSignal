@@ -1,10 +1,10 @@
 """
-Functions are useful untilities for SITperturb experiments
+Functions are useful untilities for anything
  
 Notes
 -----
     Author : Zachary Labe
-    Date   : 13 August 2017
+    Date   : 8 July 2020
     
 Usage
 -----
@@ -20,6 +20,7 @@ Usage
     [10] detrendData(datavar,years,level,yearmn,yearmx)
     [11] detrendDataR(datavar,years,level,yearmn,yearmx)
     [12] mk_test(x, alpha)
+    [13] regions(name)
 """
 
 def calcDecJan(varx,vary,lat,lon,level,levsq):
@@ -923,3 +924,101 @@ def mk_test(x, alpha):
         p = 1.
 
     return trend, h, p, z
+
+###############################################################################
+###############################################################################
+###############################################################################
+
+def regions(name):
+    """
+    Function to select region of interest
+
+    Parameters
+    ----------
+    name : string
+        name of region to mask
+    
+    Returns
+    -------
+    lat_bounds : max/min latitude
+    lon_bounds : max/min longitude (0 to 360!!!)
+        
+    Usage
+    -----
+    lat_bounds,lon_bounds = regions(name)
+    """
+    print('\n>>> Using regions function! \n')
+    if name == 'Globe':
+        lat_bounds = (-90.,90.)
+        lon_bounds = (0., 360.)
+    elif name == 'GlobeNoSP':
+        lat_bounds = (-66.,90.)
+        lon_bounds = (0., 360.)
+    elif name == 'NH':
+        lat_bounds = (0.,90.)
+        lon_bounds = (0., 360.)
+    elif name == 'SH':
+        lat_bounds = (-90.,0.)
+        lon_bounds = (0., 360.)
+    elif name == 'Tropics':
+        lat_bounds = (-30., 30.)
+        lon_bounds = (0., 360.)  
+    elif name == 'narrowTropics':
+        lat_bounds = (-20., 20.)
+        lon_bounds = (0., 360.)  
+    elif name == 'wideNH':
+        lat_bounds = (20., 90.)
+        lon_bounds = (0., 360.)  
+    elif name == 'wideSH':
+        lat_bounds = (-90., -20.)
+        lon_bounds = (0., 360.)  
+    elif name == 'Arctic':
+        lat_bounds = (65.,90.)
+        lon_bounds = (0., 360.)  
+    elif name == 'Antarctic':
+        lat_bounds = (-90.,-65.)
+        lon_bounds = (0., 360.)  
+    elif name == 'NHExtra':
+        lat_bounds = (30.,65.)
+        lon_bounds = (0., 360.)  
+    elif name == 'SHExtra':
+        lat_bounds = (-65.,-30.)
+        lon_bounds = (0., 360.)  
+    elif name == 'SriLanka':
+        lat_bounds = (6., 9.)
+        lon_bounds = (79., 82.5)
+    elif name == 'SriLanka_big':
+        lat_bounds = (6.-3., 9.+3.)
+        lon_bounds = (79.-3., 82.5+3.)
+    elif name == 'UK':
+        lat_bounds = (50.,60.)
+        lon_bounds = (360-11., 360.)
+    elif name == 'US':
+        lat_bounds = (24, 60)
+        lon_bounds = (235, 290)
+    elif name == 'NAext':
+        lat_bounds = (25, 90)
+        lon_bounds = (200,330)         
+    elif name == 'NAprop':
+        lat_bounds = (10, 80)
+        lon_bounds = (180, 360)      
+    elif name == 'CentralAfrica':
+        lat_bounds = (-10, 30)
+        lon_bounds = (0,40)         
+    elif name == 'Indonesia':
+        lat_bounds = (-9,5)
+        lon_bounds = (95,140)     
+    elif name == 'SEAsia':
+        lat_bounds = (15,35)
+        lon_bounds = (90,115)         
+    else:
+        print('no region by that name')
+    print('Region = ' + name + ': lat' + str(lat_bounds) \
+          + ', lon' + str(lon_bounds))
+        
+    print('*Completed: Finished regions function!')
+    return lat_bounds, lon_bounds
+
+###############################################################################
+###############################################################################
+###############################################################################
