@@ -64,7 +64,7 @@ experiment_result = pd.DataFrame(columns=['actual iters','hiddens','cascade',
                                           'zero merid mean','land only?'])
 
 ### Define variable for analysis
-variq = 'U250'
+variq = 'U700'
 
 ### Define primary dataset to use
 dataset = 'lens'
@@ -81,13 +81,16 @@ year_obs = np.arange(1979,2019+1,1)
 obsyearstart = year_obs.min()
 
 ### Remove the annual mean? True to subtract it from dataset
-rm_annual_mean = True
+rm_annual_mean = False
 
 ### Remove the meridional mean? True to subtract it from dataset
 rm_merid_mean = False
 
 ### Calculate only over land? True if land
 land_only = False
+
+### Rove the ensemble mean? True to subtract it from dataset
+rm_ensemble_mean = True
 
 ### Split the data into training and testing sets? value of 1 will use all 
 ### data as training, .8 will use 80% training, 20% testing; etc.
@@ -420,6 +423,124 @@ def plot_classifier_output(class_prob,test_class_prob,Xtest_shape,Xtrain_shape):
     plt.yticks((0, 1), ['Pre-Baseline', 'Post-Baseline'])
     plt.legend()
     plt.show()
+    
+def beginFinalPlot(YpredTrain,YpredTest,Ytrain,Ytest,testIndices,years,yearsObs,YpredObs):
+    """
+    Plot prediction of year
+    """
+    
+    plt.rc('text',usetex=True)
+    plt.rc('font',**{'family':'sans-serif','sans-serif':['Avant Garde']}) 
+    
+    def adjust_spines(ax, spines):
+        for loc, spine in ax.spines.items():
+            if loc in spines:
+                spine.set_position(('outward', 5))
+            else:
+                spine.set_color('none')  
+        if 'left' in spines:
+            ax.yaxis.set_ticks_position('left')
+        else:
+            ax.yaxis.set_ticks([])
+    
+        if 'bottom' in spines:
+            ax.xaxis.set_ticks_position('bottom')
+        else:
+            ax.xaxis.set_ticks([]) 
+            
+    fig = plt.figure()
+    ax = plt.subplot(111)
+    
+    adjust_spines(ax, ['left', 'bottom'])
+    ax.spines['top'].set_color('none')
+    ax.spines['right'].set_color('none')
+    ax.spines['left'].set_color('dimgrey')
+    ax.spines['bottom'].set_color('dimgrey')
+    ax.spines['left'].set_linewidth(2)
+    ax.spines['bottom'].set_linewidth(2)
+    ax.tick_params('both',length=4,width=2,which='major',color='dimgrey')
+
+    train_output_rs = YpredTrain.reshape(len(trainIndices),
+                                      len(years))
+    test_output_rs = YpredTest.reshape(len(testIndices),
+                                  len(years))
+
+    xs_test = (np.arange(np.shape(test_output_rs)[1]) + 1920)
+
+    # p1=plt.plot(xs_test,train_output_rs[:,:],'o',
+    #            markersize=2,color = 'gray',label='LENS - Training data',
+    #            clip_on=False)
+    # p2=plt.plot(xs_test,test_output_rs[:,:],'o',
+    #            markersize=4,color = 'black',label='LENS - Testing data',
+    #            clip_on=False)
+
+    for i in range(0,train_output_rs.shape[0]):
+        if i == train_output_rs.shape[0]-1:
+            p3=plt.plot(xs_test,train_output_rs[i,:],'o',
+                        markersize=4,color='lightgray',clip_on=False,
+                        alpha=0.4,markeredgecolor='k',markeredgewidth=0.4,
+                        label=r'\textbf{LENS - Training Data}')
+        else:
+            p3=plt.plot(xs_test,train_output_rs[i,:],'o',
+                        markersize=4,color='lightgray',clip_on=False,
+                        alpha=0.4,markeredgecolor='k',markeredgewidth=0.4)
+    for i in range(0,test_output_rs.shape[0]):
+        if i == test_output_rs.shape[0]-1:
+            p4=plt.plot(xs_test,test_output_rs[i,:],'o',
+                    markersize=4,color='crimson',clip_on=False,alpha=0.3,
+                    markeredgecolor='crimson',markeredgewidth=0.4,
+                    label=r'\textbf{LENS - Testing Data}')
+        else:
+            p4=plt.plot(xs_test,test_output_rs[i,:],'o',
+                    markersize=4,color='crimson',clip_on=False,alpha=0.3,
+                    markeredgecolor='crimson',markeredgewidth=0.4)
+    
+    if rm_ensemble_mean == False:
+        iy = np.where(yearsObs>=obsyearstart)[0]
+        plt.plot(yearsObs[iy],YpredObs[iy],'x',color='deepskyblue',
+                 label=r'\textbf{ERA5 Reanalysis}',clip_on=False)
+  
+    
+    plt.xlabel(r'\textbf{ACTUAL YEAR}',fontsize=10,color='dimgrey')
+    plt.ylabel(r'\textbf{PREDICTED YEAR}',fontsize=10,color='dimgrey')
+    plt.plot(np.arange(1920,2101,1),np.arange(1920,2101,1),'-',
+             color='black',linewidth=2,clip_on=False)
+    
+    plt.xticks(np.arange(1920,2101,20),map(str,np.arange(1920,2101,20)),size=6)
+    plt.yticks(np.arange(1920,2101,20),map(str,np.arange(1920,2101,20)),size=6)
+    plt.xlim([1920,2100])   
+    plt.ylim([1920,2100])
+    
+    plt.title(r'\textbf{[ %s ] $\bf{\longrightarrow}$ RMSE Train = %s; RMSE Test = %s}' % (variq,np.round(dSS.rmse(YpredTrain[:,],
+                                                                   Ytrain[:,0]),1),np.round(dSS.rmse(YpredTest[:,],
+                                                                                                         Ytest[:,0]),
+                                                                                                         decimals=1)),
+                                                                                                     color='k',
+                                                                                                     fontsize=15)
+    
+    iyears = np.where(Ytest<2000)[0]
+    plt.text(2100,1924, r'\textbf{Test RMSE before 2000 = %s}' % (np.round(dSS.rmse(YpredTest[iyears,],
+                                                                       Ytest[iyears,0]),
+                                                                  decimals=1)),
+             fontsize=5,ha='right')
+    
+    iyears = np.where(Ytest>=2000)[0]
+    plt.text(2100,1920, r'\textbf{Test RMSE after 2000 = %s}' % (np.round(dSS.rmse(YpredTest[iyears,],
+                                                                          Ytest[iyears,0]),
+                                                                     decimals=1)),
+             fontsize=5,ha='right')
+    
+    leg = plt.legend(shadow=False,fontsize=7,loc='upper left',
+                 bbox_to_anchor=(-0.01,1),fancybox=True,ncol=1,frameon=False,
+                 handlelength=1,handletextpad=0.5)
+    savefigName = modelType+'_'+variq+'_scatterPred_'+savename 
+    # plt.annotate(savename,(0,.98),xycoords='figure fraction',
+    #              fontsize=5,
+    #              color='gray')
+    plt.savefig(directoryfigure+variq+'/'+savefigName+'.png',
+                dpi=300)      
+    print(np.round(np.corrcoef(yearsObs,YpredObs)[0,1],2))
+    return 
 
 ###############################################################################
 ###############################################################################
@@ -439,18 +560,6 @@ def movingAverageInputMaps(data,avgHalfChunk):
         dataAvg[:,iy,:,:] = np.nanmean(data[:,yRange,:,:],axis=1)
     return dataAvg
 
-def standardize_data(Xtrain,Xtest):
-
-    Xmean = np.nanmean(Xtrain,axis=0)
-    Xstd = np.nanstd(Xtrain,axis=0)
-    Xtest = (Xtest - Xmean)/Xstd
-    Xtrain = (Xtrain - Xmean)/Xstd
-    
-    global stdVals
-    stdVals = (Xmean,Xstd)
-    stdVals = stdVals[:]
-    
-    return Xtrain, Xtest
 
 class TimeHistory(keras.callbacks.Callback):
     def on_train_begin(self, logs={}):
@@ -550,9 +659,8 @@ def test_train_loopClass(Xtrain,Ytrain,Xtest,Ytest,iterations,ridge_penalty,hidd
                 tf.set_random_seed(0)
 
                 ### Standardize the data
-#                 print('not standardizing the data here')
-                Xtrain,Xtest = standardize_data(Xtrain,Xtest)
-                Xmean, Xstd = stdVals
+                Xtrain,Xtest,stdVals = dSS.standardize_data(Xtrain,Xtest)
+                Xmean,Xstd = stdVals
                 
                 ### Define the model
                 model = defineNN(hidden,
@@ -636,45 +744,6 @@ def test_train_loopClass(Xtrain,Ytrain,Xtest,Ytest,iterations,ridge_penalty,hidd
   
     return experiment_result, model
 
-def makeScatter(ax,train_output_rs,test_output_rs, testColor=''):
-    MS0 = 3
-    MS1 = 3
-    FS = 10
-
-    #--------------------------------------------------------------------------
-    # Predicted plots
-    xs_test = (np.arange(np.shape(test_output_rs)[1]) + 1920)
-
-    ax.set_xlabel('actual year', fontsize = FS)
-    ax.set_ylabel('predicted year',fontsize = FS)
-    ax.plot([1800,2130],[1800,2130],'-',color='black',linewidth=2)
-    ax.set_xticks(np.arange(1820,2130,20))
-    ax.set_yticks(np.arange(1820,2130,20))
-
-    p=plt.plot(xs_test,train_output_rs[0,:],'o',
-               markersize=MS1,color = 'gray',label='GCM training data')
-    p=plt.plot(xs_test,test_output_rs[0,:],'o',
-               markersize=MS0,color = 'black',label='GCM testing data')
-
-    for i in np.arange(0,np.shape(train_output_rs)[0]):
-        p=plt.plot(xs_test,train_output_rs[i,:],'o',
-                   markersize=MS1,
-                   color='gray')
-        clr = p[0].get_color()
-
-    for i in np.arange(0,np.shape(test_output_rs)[0]):
-        if not testColor:
-            p=plt.plot(xs_test,test_output_rs[i,:],'o',markersize=MS0)
-        else:
-            p=plt.plot(xs_test,test_output_rs[i,:],'o',
-                       markersize=MS0,color=testColor)
-        clr = p[0].get_color()
-  
-    plt.xlim(1910,2110)   
-    plt.ylim(1910,2110)
-    plt.legend(fontsize=FS)
-    plt.grid(True)
-
 def convert_fuzzyDecade(data,startYear,classChunk):
     years = np.arange(startYear-classChunk*2,2100+classChunk*2)
     chunks = years[::int(classChunk)] + classChunk/2
@@ -701,6 +770,7 @@ def convert_fuzzyDecade_toYear(label,startYear,classChunk):
     chunks = years[::int(classChunk)] + classChunk/2
     
     return np.sum(label*chunks,axis=1)
+
 ###############################################################################
 ###############################################################################
 ###############################################################################
@@ -711,19 +781,17 @@ session_conf = tf.ConfigProto(intra_op_parallelism_threads=1,
 
 sess = tf.Session(graph=tf.get_default_graph(), config=session_conf)
 K.set_session(sess)
-# K.get_session()
 K.clear_session()
-#tf.Session.close
-#==============================================================================
+
+### Parameters
 debug = True
-reg_name = 'Globe'
+reg_name = 'NHExtra'
 actFun = 'relu'
 ridge_penalty = [0.01] # .01
 classChunk = 10
 
-hiddensList = [[20,20]]  # linear model
-hiddensList = [[1]]  # one hidden layer and node
-hiddensList = [[20,20]] 
+# hiddensList = [[1]]  # one hidden layer and node
+hiddensList = [[20,20]]
 
 expList = [(0)] # (0,1)
 expN = np.size(expList)
@@ -742,12 +810,11 @@ for avgHalfChunk in (0,): # ([1,5,10]):#([1,2,5,10]):
     K.clear_session()
     
     for loop in ([0]): # (0,1,2,3,4,5):
-
         # get info about the region
         lat_bounds,lon_bounds = UT.regions(reg_name)
         data_all,lats,lons,ensmean = read_primary_dataset(variq,dataset,
-                                                             lat_bounds,
-                                                             lon_bounds)
+                                                              lat_bounds,
+                                                              lon_bounds)
         data_obs_all,lats_obs,lons_obs = read_obs_dataset(variq,dataset_obs,
                                                             lat_bounds,
                                                             lon_bounds)
@@ -755,20 +822,22 @@ for avgHalfChunk in (0,): # ([1,5,10]):#([1,2,5,10]):
                                     foldsN,180*int(np.round(np.shape(data_all)[0]*(1.0-segment_data_factor)))))
 
         for exp in expList:  
-
             # get the data together
             data, data_obs, = data_all, data_obs_all,
             if rm_annual_mean == True:
                 data, data_obs = dSS.remove_annual_mean(data,data_obs,
                                                     lats,lons,
                                                     lats_obs,lons_obs)
-                print('removed annual mean')
+                print('*Removed annual mean*')
 
             if rm_merid_mean == True:
                 data, data_obs = dSS.remove_merid_mean(data,data_obs,
-                                                   lats,lons,
-                                                   lats_obs,lons_obs)
-                print('removed meridian mean')    
+                                                    lats,lons,
+                                                    lats_obs,lons_obs)
+                print('*Removed meridian mean*')  
+            if rm_ensemble_mean == True:
+                data = dSS.remove_ensemble_mean(data,ensmean)
+                print('*Removed ensemble mean*')
 
             for ih in np.arange(0,len(hiddensList)):
                 hiddens = [hiddensList[ih]]
@@ -782,7 +851,7 @@ for avgHalfChunk in (0,): # ([1,5,10]):#([1,2,5,10]):
             if(avgHalfChunk!=0):
                 data = movingAverageInputMaps(data,avgHalfChunk)
 
-            ### Loop over folds
+        #     ### Loop over folds
             for loop in np.arange(0,foldsN): 
 
                 K.clear_session()
@@ -791,24 +860,24 @@ for avgHalfChunk in (0,): # ([1,5,10]):#([1,2,5,10]):
                 #---------------------------
                 Xtrain,Ytrain,Xtest,Ytest,Xtest_shape,Xtrain_shape,data_train_shape,data_test_shape,testIndices = segment_data(data,segment_data_factor)
 
-                # convert year into decadal class
+                # Convert year into decadal class
                 startYear = Ytrain[0] # define startYear for GLOBAL USE
                 YtrainClassMulti, decadeChunks = convert_fuzzyDecade(Ytrain,
-                                                                     startYear,
-                                                                     classChunk)  
+                                                                      startYear,
+                                                                      classChunk)  
                 YtestClassMulti, __ = convert_fuzzyDecade(Ytest,
                                                           startYear,
                                                           classChunk)  
 
-                # for use later
-                XtrainS,XtestS = standardize_data(Xtrain,Xtest)
+                # For use later
+                XtrainS,XtestS,stdVals = dSS.standardize_data(Xtrain,Xtest)
                 Xmean, Xstd = stdVals      
 
                 #---------------------------
                 random_network_seed = 87750
                 #---------------------------
 
-                #create and train network
+                # Create and train network
                 exp_result,model = test_train_loopClass(Xtrain,
                                                         YtrainClassMulti,
                                                         Xtest,
@@ -831,8 +900,11 @@ for avgHalfChunk in (0,): # ([1,5,10]):#([1,2,5,10]):
                     regSave = '_' + reg_name
                 
                 if(rm_annual_mean==True):
-                    savename = savename + '_meanRemoved' 
-                    savenameModelTestTrain = savenameModelTestTrain + '_meanRemoved'
+                    savename = savename + '_AnnualMeanRemoved' 
+                    savenameModelTestTrain = savenameModelTestTrain + '_AnnualMeanRemoved'
+                if(rm_ensemble_mean==True):
+                    savename = savename + '_EnsembleMeanRemoved' 
+                    savenameModelTestTrain = savenameModelTestTrain + '_EnsembleMeanRemoved'
                 if(avgHalfChunk!=0):
                     savename = savename + '_avgHalfChunk' + str(avgHalfChunk)
                     savenameModelTestTrain = savenameModelTestTrain + '_avgHalfChunk' + str(avgHalfChunk)
@@ -857,14 +929,15 @@ for avgHalfChunk in (0,): # ([1,5,10]):#([1,2,5,10]):
                     dataOBSERVATIONS = movingAverageInputMaps(dataOBSERVATIONS,avgHalfChunk)
                 Xobs = dataOBSERVATIONS.reshape(dataOBSERVATIONS.shape[0],dataOBSERVATIONS.shape[1]*dataOBSERVATIONS.shape[2])
                 yearsObs = np.arange(dataOBSERVATIONS.shape[0]) + obsyearstart
-                # if(rm_annual_mean==True):
-                #     Xobs = Xobs - np.nanmean(Xobs,axis=1)[:,np.newaxis]
 
                 annType = 'class'
                 startYear = 1920
                 endYear = 2100
-                years = np.arange(startYear,endYear+1,1)                    
-                XobsS = (Xobs-Xmean)/Xstd
+                years = np.arange(startYear,endYear+1,1)    
+                Xmeanobs = np.nanmean(Xobs,axis=0)
+                Xstdobs = np.nanstd(Xobs,axis=0)  
+                
+                XobsS = (Xobs-Xmeanobs)/Xstdobs
                 XobsS[np.isnan(XobsS)] = 0
                 
                 if(annType=='class'):
@@ -881,54 +954,19 @@ for avgHalfChunk in (0,): # ([1,5,10]):#([1,2,5,10]):
                                                             startYear,
                                                             classChunk)
                     YpredTest = convert_fuzzyDecade_toYear(model.predict((Xtest-Xmean)/Xstd),
-                                                           startYear,
-                                                           classChunk)
+                                                            startYear,
+                                                            classChunk)
                 elif(annType=='reg'):
                     YpredTrain = model.predict((Xtrain-Xmean)/Xstd)*Ystd + Ymean
                     YpredTest = model.predict((Xtest-Xmean)/Xstd)*Ystd + Ymean
+                    
+                ### Create final plot
+                beginFinalPlot(YpredTrain,YpredTest,Ytrain,Ytest,
+                               testIndices,years,
+                               yearsObs,YpredObs)
 
-                ###############################################################
-                plt.figure(figsize=(7,5))
-                ax = plt.subplot(1,1,1)
-                makeScatter(ax,YpredTrain.reshape(len(trainIndices),
-                                                  len(years)),
-                            YpredTest.reshape(len(testIndices),
-                                              len(years)))
-                plt.title('LENS-'+variq+'\nRMSE Train = '+ str(np.round(dSS.rmse(YpredTrain[:,],
-                                                                               Ytrain[:,0]),
-                                                                    decimals=1))+ '; RMSE Test = '+str(np.round(dSS.rmse(YpredTest[:,],
-                                                                                                                     Ytest[:,0]),
-                                                                                                                     decimals=1)))
-
-                iyears = np.where(Ytest<1980)[0]
-                plt.text(2064,1922, 'Test RMSE before 1980 = ' + str(np.round(dSS.rmse(YpredTest[iyears,],
-                                                                                   Ytest[iyears,0]),
-                                                                              decimals=1)),
-                         fontsize=5)
-                iyears = np.where(Ytest>=1980)[0]
-                plt.text(2064,1922+5, 'Test RMSE after   1980 = ' + str(np.round(dSS.rmse(YpredTest[iyears,],
-                                                                                      Ytest[iyears,0]),
-                                                                                 decimals=1)),
-                         fontsize=5)
-
-                iy = np.where(yearsObs>=obsyearstart)[0]
-                plt.plot(yearsObs[iy],YpredObs[iy],'o',color='black',markerfacecolor='white',
-                         markeredgecolor = 'black',
-                         markeredgewidth=1.5,
-                         label='Observations')
-
-                plt.legend()
-                savefigName = modelType+'_'+variq+'_scatterPred_'+savename 
-                plt.annotate(savename,(0,.98),xycoords='figure fraction',
-                             fontsize=5,
-                             color='gray')
-                plt.savefig(directoryfigure+variq+'/'+savefigName+'.png',
-                            dpi=300,bbox_inches = 'tight')
-                plt.show()        
-                print(np.round(np.corrcoef(yearsObs[iy],YpredObs[iy])[0,1],2))
-
-model.summary()
-model.layers[0].get_config()
+# model.summary()
+# model.layers[0].get_config()
 
 # test_output = YpredTest
 # Ttrain = Ytrain
