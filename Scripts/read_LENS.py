@@ -76,7 +76,12 @@ def read_LENS(directory,vari,sliceperiod,slicebase,sliceshape,addclimo,slicenan,
     ### Read in data
     membersvar = []
     for i,ensmember in enumerate(ens):
-        filename = directory + '%s/%s_%s_1920-2100.nc' % (vari,vari,ensmember)
+        if vari == 'SLP':
+            filename = directory + '%s/%s_%s_1920_2100.nc' % (vari,vari,
+                                                              ensmember)
+        else:
+            filename = directory + '%s/%s_%s_1920-2100.nc' % (vari,vari,
+                                                              ensmember)
         data = Dataset(filename,'r')
         lat1 = data.variables['latitude'][:]
         lon1 = data.variables['longitude'][:]
@@ -87,21 +92,16 @@ def read_LENS(directory,vari,sliceperiod,slicebase,sliceshape,addclimo,slicenan,
         membersvar.append(var)
         del var
     membersvar = np.asarray(membersvar)
-    ensvarKelvin = np.reshape(membersvar,(len(ens),time.shape[0],mon,
+    ensvar = np.reshape(membersvar,(len(ens),time.shape[0],mon,
                                     lat1.shape[0],lon1.shape[0]))
     del membersvar
     print('Completed: read all members!\n')
     
     ###########################################################################
-    ### Convert to degrees C
-    ensvar = ensvarKelvin - 273.15
-    print('Completed: Kevin to degrees C!')
-    
-    ###########################################################################
     ### Calculate anomalies or not
     if addclimo == True:
         ensvalue = ensvar
-        print('Completed: calculated absolute temperature!')
+        print('Completed: calculated absolute variable!')
     elif addclimo == False:
         yearsq = np.where((time >= slicebase.min()) & (time <= slicebase.max()))[0]
         yearssel = time[yearsq]
@@ -152,8 +152,19 @@ def read_LENS(directory,vari,sliceperiod,slicebase,sliceshape,addclimo,slicenan,
     else:
         ValueError('WRONG OPTION!')
         
+    ###########################################################################
+    ### Change units
+    if vari == 'SLP':
+        ensshape = ensshape/100 # Pa to hPa
+        ENSmean = ENSmean/100 # Pa to hPa
+        print('Completed: Changed units (Pa to hPa)!')
+    elif vari == 'T2M':
+        ensshape = ensshape - 273.15 # K to C
+        ENSmean = ENSmean - 273.15 # K to C
+        print('Completed: Changed units (K to C)!')
+        
     print('>>>>>>>>>> ENDING read_LENS function!')
-    return lat1,lon1,ensshape
+    return lat1,lon1,ensshape,ENSmean
         
 
 # ### Test functions - do not use!

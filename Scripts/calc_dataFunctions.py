@@ -8,16 +8,18 @@ Notes
     
 Usage
 -----
-    [1] readFiles(dataset)
+    [1] readFiles(variq,dataset)
     [2] getRegion(data,lat1,lon1,lat_bounds,lon_bounds)
 """
 
-def readFiles(dataset):
+def readFiles(variq,dataset):
     """
     Function reads in data for selected dataset
 
     Parameters
     ----------
+    variq : string
+        variable for analysis
     dataset : string
         name of data set for primary data
         
@@ -32,43 +34,56 @@ def readFiles(dataset):
 
     Usage
     -----
-    data,lat1,lon1 = readFiles(dataset)
+    data,lat1,lon1 = readFiles(variq,dataset)
     """
     print('\n>>>>>>>>>> Using readFiles function!')
     
     ### Import modules
     import numpy as np
-    import read_LENS as LL
-    import read_BEST as BB
     
     if dataset == 'lens':
+        import read_LENS as LL
         directorydataLL = '/Users/zlabe/Data/LENS/monthly/'
-        variLL = 'T2M'
         sliceperiodLL = 'annual'
         slicebaseLL = np.arange(1951,1980+1,1)
         sliceshapeLL = 4
         slicenanLL = 'nan'
         addclimoLL = True
         takeEnsMeanLL = True
-        lat1,lon1,data = LL.read_LENS(directorydataLL,variLL,
+        lat1,lon1,data,ENSmean = LL.read_LENS(directorydataLL,variq,
                                                sliceperiodLL,slicebaseLL,
                                                sliceshapeLL,addclimoLL,
                                                slicenanLL,takeEnsMeanLL)
     elif dataset == 'best':
+        import read_BEST as BB
         directorydataBB = '/Users/zlabe/Data/BEST/'
         sliceperiodBB = 'annual'
         sliceyearBB = np.arange(1956,2019+1,1)
         sliceshapeBB = 3
         slicenanBB = 'nan'
         addclimoBB = True
+        ENSmean = np.nan
         lat1,lon1,data = BB.read_BEST(directorydataBB,sliceperiodBB,
                                       sliceyearBB,sliceshapeBB,addclimoBB,
                                       slicenanBB)
+    elif dataset == 'ERA5':
+        import read_ERA5_monthly as ER
+        directorydataER = '/Users/zlabe/Data/ERA5/'
+        sliceperiodER = 'annual'
+        sliceyearER = np.arange(1979,2019+1,1)
+        sliceshapeER = 3
+        slicenanER = 'nan'
+        addclimoER = True
+        ENSmean = np.nan
+        lat1,lon1,data = ER.read_ERA5_monthly(variq,directorydataER,
+                                              sliceperiodER,sliceyearER,
+                                              sliceshapeER,addclimoER,
+                                              slicenanER)
     else:
         ValueError('WRONG DATA SET SELECTED!')
         
     print('>>>>>>>>>> Completed: Finished readFiles function!')
-    return data,lat1,lon1   
+    return data,lat1,lon1,ENSmean   
 
 def getRegion(data,lat1,lon1,lat_bounds,lon_bounds):
     """
