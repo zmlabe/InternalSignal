@@ -53,6 +53,7 @@ def read_ERA5_monthly(variq,directory,sliceperiod,sliceyear,sliceshape,addclimo,
     import numpy as np
     from netCDF4 import Dataset
     import warnings
+    import calc_Utilities as UT
     warnings.simplefilter(action='ignore', category=FutureWarning)
     warnings.simplefilter(action='ignore', category=RuntimeWarning)
     
@@ -100,6 +101,10 @@ def read_ERA5_monthly(variq,directory,sliceperiod,sliceyear,sliceshape,addclimo,
             varshape = vartime
         print('Shape of output = ', varshape.shape,[[varshape.ndim]])
         print('Completed: ANNUAL MEAN!')
+    elif sliceperiod == 'DJF':
+        varshape = UT.calcDecJanFeb(varmon,lat1,lon1,'surface',1)
+        print('Shape of output = ', varshape.shape,[[varshape.ndim]])
+        print('Completed: DJF MEAN!')
     elif sliceperiod == 'none':
         vartime = varmon
         if sliceshape == 1:
@@ -132,12 +137,12 @@ def read_ERA5_monthly(variq,directory,sliceperiod,sliceyear,sliceshape,addclimo,
     print('>>>>>>>>>> ENDING read_ERA5_monthly function!')
     return lat1,lon1,varshape
 
-# ### Test functions - do not use!
+### Test functions - do not use!
 # import numpy as np
 # import matplotlib.pyplot as plt
 # variq = 'T2M'
 # directory = '/Users/zlabe/Data/ERA5/'
-# sliceperiod = 'annual'
+# sliceperiod = 'DJF'
 # sliceyear = np.arange(1979,2019+1,1)
 # sliceshape = 3
 # slicenan = 'nan'

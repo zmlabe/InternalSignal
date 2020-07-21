@@ -120,15 +120,13 @@ def calcDecJan(varx,vary,lat,lon,level,levsq):
 ###############################################################################
 ###############################################################################
 
-def calcDecJanFeb(varx,vary,lat,lon,level,levsq):
+def calcDecJanFeb(varx,lat,lon,level,levsq):
     """
     Function calculates average for December-January-February
 
     Parameters
     ----------
     varx : 4d array or 5d array
-        [year,month,lat,lon] or [year,month,lev,lat,lon]
-    vary : 4d array or 5d array
         [year,month,lat,lon] or [year,month,lev,lat,lon]
     lat : 1d numpy array
         latitudes
@@ -143,12 +141,10 @@ def calcDecJanFeb(varx,vary,lat,lon,level,levsq):
     -------
     varx_djf : 3d array or 4d array
         [year,lat,lon] or [year,lev,lat,lon]
-    vary_djf : 3d array
-        [year,lat,lon] or [year,lev,lat,lon]
 
     Usage
     -----
-    varx_djf = calcDecJanFeb(varx,vary,lat,lon,level,levsq)
+    varx_djf = calcDecJanFeb(varx,lat,lon,level,levsq)
     """
     print('\n>>> Using calcDecJanFeb function!')
     
@@ -160,57 +156,36 @@ def calcDecJanFeb(varx,vary,lat,lon,level,levsq):
         varxravel = np.reshape(varx.copy(),
                            (int(varx.shape[0]*12),
                             int(lat.shape[0]),int(lon.shape[0])))
-        varyravel = np.reshape(vary.copy(),
-                               (int(vary.shape[0]*12),
-                                int(lat.shape[0]),int(lon.shape[0]))) 
                                
-        varx_djf = np.empty((varx.shape[0]-1,lat.shape[0],lon.shape[0]))
-        vary_djf = np.empty((vary.shape[0]-1,lat.shape[0],lon.shape[0]) )                 
+        varx_djf = np.empty((varx.shape[0]-1,lat.shape[0],lon.shape[0]))                
         for i in range(0,varxravel.shape[0]-12,12):
             counter = 0
             if i >= 12:
                 counter = i//12
-            djfappendh1 = np.append(varxravel[11+i,:,:],varxravel[12+i,:,:])
-            djfappendf1 = np.append(varyravel[11+i,:,:],varyravel[12+i,:,:])  
+            djfappendh1 = np.append(varxravel[11+i,:,:],varxravel[12+i,:,:]) 
             djfappendh = np.append(djfappendh1,varxravel[13+i,:,:])
-            djfappendf = np.append(djfappendf1,varyravel[13+i,:,:]) 
             varx_djf[counter,:,:] = np.nanmean(np.reshape(djfappendh,
                                     (3,int(lat.shape[0]),int(lon.shape[0]))),
                                     axis=0)                   
-            vary_djf[counter,:,:] = np.nanmean(np.reshape(djfappendf,
-                                    (3,int(lat.shape[0]),int(lon.shape[0]))),
-                                    axis=0)
     ### Reshape for 4d variables
     elif level == 'profile':
         varxravel = np.reshape(varx.copy(),
                            (int(varx.shape[0]*12.),levsq,
                             int(lat.shape[0]),int(lon.shape[0])))
-        varyravel = np.reshape(vary.copy(),
-                               (int(vary.shape[0]*12.),levsq,
-                                int(lat.shape[0]),int(lon.shape[0]))) 
                                
         varx_djf = np.empty((int(varx.shape[0]-1),levsq,
-                            int(lat.shape[0]),int(lon.shape[0])))
-        vary_djf = np.empty((int(vary.shape[0]-1),levsq,
-                            int(lat.shape[0]),int(lon.shape[0])) )                 
+                            int(lat.shape[0]),int(lon.shape[0])))               
         for i in range(0,varxravel.shape[0]-12,12):
             counter = 0
             if i >= 12:
                 counter = i//12
             djfappendh1 = np.append(varxravel[11+i,:,:,:],
                                   varxravel[12+i,:,:,:])
-            djfappendf1 = np.append(varyravel[11+i,:,:,:],
-                                  varyravel[12+i,:,:,:]) 
             djfappendh = np.append(djfappendh1,
                                   varxravel[13+i,:,:,:])
-            djfappendf = np.append(djfappendf1,
-                                  varyravel[13+i,:,:,:])  
             varx_djf[counter,:,:] = np.nanmean(np.reshape(djfappendh,
                                     (3,levsq,int(lat.shape[0]),
-                                     int(lon.shape[0]))),axis=0)                   
-            vary_djf[counter,:,:] = np.nanmean(np.reshape(djfappendf,
-                                    (3,levsq,int(lat.shape[0]),
-                                     int(lon.shape[0]))),axis=0)                               
+                                     int(lon.shape[0]))),axis=0)                                              
     else:
         print(ValueError('Selected wrong height - (surface or profile!)!'))    
                                 
@@ -953,6 +928,9 @@ def regions(name):
         lon_bounds = (0., 360.)
     elif name == 'GlobeNoSP':
         lat_bounds = (-66.,90.)
+        lon_bounds = (0., 360.)
+    elif name == 'GlobeNoPoles':
+        lat_bounds = (-66.,66.)
         lon_bounds = (0., 360.)
     elif name == 'NH':
         lat_bounds = (0.,90.)

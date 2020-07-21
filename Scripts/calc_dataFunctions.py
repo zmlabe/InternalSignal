@@ -12,7 +12,7 @@ Usage
     [2] getRegion(data,lat1,lon1,lat_bounds,lon_bounds)
 """
 
-def readFiles(variq,dataset):
+def readFiles(variq,dataset,monthlychoice):
     """
     Function reads in data for selected dataset
 
@@ -44,39 +44,36 @@ def readFiles(variq,dataset):
     if dataset == 'lens':
         import read_LENS as LL
         directorydataLL = '/Users/zlabe/Data/LENS/monthly/'
-        sliceperiodLL = 'annual'
         slicebaseLL = np.arange(1951,1980+1,1)
         sliceshapeLL = 4
         slicenanLL = 'nan'
         addclimoLL = True
         takeEnsMeanLL = True
         lat1,lon1,data,ENSmean = LL.read_LENS(directorydataLL,variq,
-                                               sliceperiodLL,slicebaseLL,
+                                               monthlychoice,slicebaseLL,
                                                sliceshapeLL,addclimoLL,
                                                slicenanLL,takeEnsMeanLL)
     elif dataset == 'best':
         import read_BEST as BB
         directorydataBB = '/Users/zlabe/Data/BEST/'
-        sliceperiodBB = 'annual'
         sliceyearBB = np.arange(1956,2019+1,1)
         sliceshapeBB = 3
         slicenanBB = 'nan'
         addclimoBB = True
         ENSmean = np.nan
-        lat1,lon1,data = BB.read_BEST(directorydataBB,sliceperiodBB,
+        lat1,lon1,data = BB.read_BEST(directorydataBB,monthlychoice,
                                       sliceyearBB,sliceshapeBB,addclimoBB,
                                       slicenanBB)
     elif dataset == 'ERA5':
         import read_ERA5_monthly as ER
         directorydataER = '/Users/zlabe/Data/ERA5/'
-        sliceperiodER = 'annual'
         sliceyearER = np.arange(1979,2019+1,1)
         sliceshapeER = 3
         slicenanER = 'nan'
         addclimoER = True
         ENSmean = np.nan
         lat1,lon1,data = ER.read_ERA5_monthly(variq,directorydataER,
-                                              sliceperiodER,sliceyearER,
+                                              monthlychoice,sliceyearER,
                                               sliceshapeER,addclimoER,
                                               slicenanER)
     else:

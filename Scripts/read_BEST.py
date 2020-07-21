@@ -51,6 +51,7 @@ def read_BEST(directory,sliceperiod,sliceyear,sliceshape,addclimo,slicenan):
     import numpy as np
     from netCDF4 import Dataset
     import warnings
+    import calc_Utilities as UT
     warnings.simplefilter(action='ignore', category=FutureWarning)
     warnings.simplefilter(action='ignore', category=RuntimeWarning)
     
@@ -101,6 +102,11 @@ def read_BEST(directory,sliceperiod,sliceyear,sliceshape,addclimo,slicenan):
             tempshape = temptime
         print('Shape of output = ', tempshape.shape,[[tempshape.ndim]])
         print('Completed: ANNUAL MEAN!')
+        print('Completed: ANNUAL MEAN!')
+    elif sliceperiod == 'DJF':
+        tempshape = UT.calcDecJanFeb(tempmon,lat1,lon1,'surface',1)
+        print('Shape of output = ', tempshape.shape,[[tempshape.ndim]])
+        print('Completed: DJF MEAN!')
     elif sliceperiod == 'none':
         temptime = tempmon
         if sliceshape == 1:
@@ -124,13 +130,13 @@ def read_BEST(directory,sliceperiod,sliceyear,sliceshape,addclimo,slicenan):
     print('>>>>>>>>>> ENDING read_BEST function!')
     return lat1,lon1,tempshape
 
-# ### Test functions - do not use!
+### Test functions - do not use!
 # import numpy as np
 # import matplotlib.pyplot as plt
 # directory = '/Users/zlabe/Data/BEST/'
-# sliceperiod = 'annual'
+# sliceperiod = 'DJF'
 # sliceyear = np.arange(1956,2019+1,1)
-# sliceshape = 1
+# sliceshape = 3
 # slicenan = 'nan'
 # addclimo = True
 # lat,lon,var = read_BEST(directory,sliceperiod,sliceyear,sliceshape,addclimo,slicenan)

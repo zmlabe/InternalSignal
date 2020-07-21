@@ -60,6 +60,7 @@ def read_LENS(directory,vari,sliceperiod,slicebase,sliceshape,addclimo,slicenan,
     import numpy as np
     from netCDF4 import Dataset
     import warnings
+    import calc_Utilities as UT
     warnings.simplefilter(action='ignore', category=FutureWarning)
     warnings.simplefilter(action='ignore', category=RuntimeWarning)
     
@@ -122,6 +123,14 @@ def read_LENS(directory,vari,sliceperiod,slicebase,sliceshape,addclimo,slicenan,
             ensshape = ensvalue
         print('Shape of output = ', ensshape.shape,[[ensshape.ndim]])
         print('Completed: ANNUAL MEAN!')
+    elif sliceperiod == 'DJF':
+        ensshape = np.empty((ensvalue.shape[0],ensvalue.shape[1]-1,
+                             lat1.shape[0],lon1.shape[0]))
+        for i in range(ensvalue.shape[0]):                    
+            ensshape[i,:,:,:] = UT.calcDecJanFeb(ensvalue[i,:,:,:,:],
+                                                 lat1,lon1,'surface',1)
+        print('Shape of output = ', ensshape.shape,[[ensshape.ndim]])
+        print('Completed: DJF MEAN!')
     elif sliceperiod == 'none':
         if sliceshape == 1:
             ensshape = ensvalue.ravel()
@@ -167,17 +176,17 @@ def read_LENS(directory,vari,sliceperiod,slicebase,sliceshape,addclimo,slicenan,
     return lat1,lon1,ensshape,ENSmean
         
 
-# ### Test functions - do not use!
-# import numpy as np
-# import matplotlib.pyplot as plt
-# directory = '/Users/zlabe/Data/LENS/monthly/'
-# vari = 'T2M'
-# sliceperiod = 'annual'
-# slicebase = np.arange(1951,1980+1,1)
-# sliceshape = 4
-# slicenan = 'nan'
-# addclimo = True
-# takeEnsMean = True
-# lat,lon,var,ENSmean = read_LENS(directory,vari,sliceperiod,
-#                         slicebase,sliceshape,addclimo,
-#                         slicenan,takeEnsMean)
+### Test functions - do not use!
+import numpy as np
+import matplotlib.pyplot as plt
+directory = '/Users/zlabe/Data/LENS/monthly/'
+vari = 'U700'
+sliceperiod = 'DJF'
+slicebase = np.arange(1951,1980+1,1)
+sliceshape = 4
+slicenan = 'nan'
+addclimo = True
+takeEnsMean = True
+lat,lon,var,ENSmean = read_LENS(directory,vari,sliceperiod,
+                        slicebase,sliceshape,addclimo,
+                        slicenan,takeEnsMean)

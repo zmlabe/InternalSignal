@@ -64,21 +64,23 @@ experiment_result = pd.DataFrame(columns=['actual iters','hiddens','cascade',
                                           'zero merid mean','land only?'])
 
 ### Define variable for analysis
-variq = 'U700'
+variq = 'SLP'
+monthlychoice = 'DJF'
+reg_name = 'NHExtra'
+lat_bounds,lon_bounds = UT.regions(reg_name)
 
 ### Define primary dataset to use
 dataset = 'lens'
 modelType = dataset
 
-### Name of the region of interest
-reg_name = 'Globe'
-lat_bounds, lon_bounds = UT.regions(reg_name)
-
 ### whether to test and plot the results using obs data
 test_on_obs = True
 dataset_obs = 'ERA5'
 year_obs = np.arange(1979,2019+1,1)
-obsyearstart = year_obs.min()
+if monthlychoice == 'DJF':
+    obsyearstart = year_obs.min()+1
+else:
+    obsyearstart = year_obs.min()
 
 ### Remove the annual mean? True to subtract it from dataset
 rm_annual_mean = False
@@ -130,14 +132,14 @@ plot_in_train = False
 ### Read in model and observational/reanalysis data
 
 def read_primary_dataset(variq,dataset,lat_bounds=lat_bounds,lon_bounds=lon_bounds):
-    data,lats,lons,ensmean = df.readFiles(variq,dataset)
+    data,lats,lons,ensmean = df.readFiles(variq,dataset,monthlychoice)
     data,lats,lons = df.getRegion(data,lats,lons,lat_bounds,lon_bounds)
     ensmean,lats,lons = df.getRegion(ensmean,lats,lons,lat_bounds,lon_bounds)
     print('\nOur dataset: ',dataset,' is shaped',data.shape)
     return data,lats,lons,ensmean
   
 def read_obs_dataset(variq,dataset_obs,lat_bounds=lat_bounds,lon_bounds=lon_bounds):
-    data_obs,lats_obs,lons_obs,ensmean = df.readFiles(variq,dataset_obs)
+    data_obs,lats_obs,lons_obs,ensmean = df.readFiles(variq,dataset_obs,monthlychoice)
     data_obs,lats_obs,lons_obs = df.getRegion(data_obs,lats_obs,lons_obs,
                                             lat_bounds,lon_bounds)
     print('our OBS dataset: ',dataset_obs,' is shaped',data_obs.shape)
@@ -785,7 +787,6 @@ K.clear_session()
 
 ### Parameters
 debug = True
-reg_name = 'NHExtra'
 actFun = 'relu'
 ridge_penalty = [0.01] # .01
 classChunk = 10
@@ -799,7 +800,6 @@ expN = np.size(expList)
 iterations = [500] # [500]#[1500]
 random_segment = True
 foldsN = 1
-#==============================================================================
 
 for avgHalfChunk in (0,): # ([1,5,10]):#([1,2,5,10]):
     session_conf = tf.ConfigProto(intra_op_parallelism_threads=1,
@@ -931,8 +931,12 @@ for avgHalfChunk in (0,): # ([1,5,10]):#([1,2,5,10]):
                 yearsObs = np.arange(dataOBSERVATIONS.shape[0]) + obsyearstart
 
                 annType = 'class'
-                startYear = 1920
-                endYear = 2100
+                if monthlychoice == 'DJF':
+                    startYear = 1921
+                    endYear = 2100
+                else:
+                    startYear = 1920
+                    endYear = 2100
                 years = np.arange(startYear,endYear+1,1)    
                 Xmeanobs = np.nanmean(Xobs,axis=0)
                 Xstdobs = np.nanstd(Xobs,axis=0)  
