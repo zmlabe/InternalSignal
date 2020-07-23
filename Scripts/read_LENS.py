@@ -177,16 +177,16 @@ def read_LENS(directory,vari,sliceperiod,slicebase,sliceshape,addclimo,slicenan,
         
 
 ### Test functions - do not use!
-import numpy as np
-import matplotlib.pyplot as plt
-directory = '/Users/zlabe/Data/LENS/monthly/'
-vari = 'U700'
-sliceperiod = 'DJF'
-slicebase = np.arange(1951,1980+1,1)
-sliceshape = 4
-slicenan = 'nan'
-addclimo = True
-takeEnsMean = True
-lat,lon,var,ENSmean = read_LENS(directory,vari,sliceperiod,
-                        slicebase,sliceshape,addclimo,
-                        slicenan,takeEnsMean)
+# import numpy as np
+# import matplotlib.pyplot as plt
+# directory = '/Users/zlabe/Data/LENS/monthly/'
+# vari = 'U700'
+# sliceperiod = 'DJF'
+# slicebase = np.arange(1951,1980+1,1)
+# sliceshape = 4
+# slicenan = 'nan'
+# addclimo = True
+# takeEnsMean = True
+# lat,lon,var,ENSmean = read_LENS(directory,vari,sliceperiod,
+#                         slicebase,sliceshape,addclimo,
+#                         slicenan,takeEnsMean)

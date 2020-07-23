@@ -91,3 +91,111 @@ def standardize_data(Xtrain,Xtest):
     stdVals = stdVals[:]
     
     return Xtrain,Xtest,stdVals
+
+def convert_fuzzyDecade(data,startYear,classChunk):
+    ### Import modules
+    import numpy as np
+    import scipy.stats as stats
+    
+    years = np.arange(startYear-classChunk*2,2100+classChunk*2)
+    chunks = years[::int(classChunk)] + classChunk/2
+    
+    labels = np.zeros((np.shape(data)[0],len(chunks)))
+    
+    for iy,y in enumerate(data):
+        norm = stats.uniform.pdf(years,loc=y-classChunk/2.,scale=classChunk)
+        
+        vec = []
+        for sy in years[::classChunk]:
+            j=np.logical_and(years>sy,years<sy+classChunk)
+            vec.append(np.sum(norm[j]))
+        vec = np.asarray(vec)
+        vec[vec<.0001] = 0. # This should not matter
+        
+        vec = vec/np.sum(vec)
+        
+        labels[iy,:] = vec
+    return labels, chunks
+
+def convert_fuzzyDecade_toYear(label,startYear,classChunk):
+    ### Import modules
+    import numpy as np
+    
+    years = np.arange(startYear-classChunk*2,2100+classChunk*2)
+    chunks = years[::int(classChunk)] + classChunk/2
+    
+    return np.sum(label*chunks,axis=1)
+
+def invert_year_output(ypred,startYear):
+    ### Import modules
+    import numpy as np
+    import scipy.stats as stats
+    
+    if(option4):
+        inverted_years = convert_fuzzyDecade_toYear(ypred,startYear,classChunk)
+    else:
+        inverted_years = invert_year_outputChunk(ypred,startYear)
+    
+    return inverted_years
+
+def invert_year_outputChunk(ypred,startYear):
+    ### Import modules
+    import numpy as np
+    import scipy.stats as stats
+    
+    if(len(np.shape(ypred))==1):
+        maxIndices = np.where(ypred==np.max(ypred))[0]
+        if(len(maxIndices)>classChunkHalf):
+            maxIndex = maxIndices[classChunkHalf]
+        else:
+            maxIndex = maxIndices[0]
+
+        inverted = maxIndex + startYear - classChunkHalf
+
+    else:    
+        inverted = np.zeros((np.shape(ypred)[0],))
+        for ind in np.arange(0,np.shape(ypred)[0]):
+            maxIndices = np.where(ypred[ind]==np.max(ypred[ind]))[0]
+            if(len(maxIndices)>classChunkHalf):
+                maxIndex = maxIndices[classChunkHalf]
+            else:
+                maxIndex = maxIndices[0]
+            inverted[ind] = maxIndex + startYear - classChunkHalf
+    
+    return inverted
+
+def convert_to_class(data,startYear):
+    ### Import modules
+    import numpy as np
+    
+    data = np.array(data) - startYear + classChunkHalf
+    dataClass = to_categorical(data)
+    
+    return dataClass
+
+def create_multiClass(xInput,yOutput):
+    ### Import modules
+    import numpy as np
+    import copy as copy
+    
+    yMulti = copy.deepcopy(yOutput)
+    
+    for stepVal in np.arange(-classChunkHalf,classChunkHalf+1,1.):
+        if(stepVal==0):
+            continue
+        y = yOutput + stepVal
+        
+    return xInput, yMulti
+
+def create_multiLabel(yClass):
+    ### Import modules
+    import numpy as np
+    
+    youtClass = yClass
+    
+    for i in np.arange(0,np.shape(yClass)[0]):
+        v = yClass[i,:]
+        j = np.argmax(v)
+        youtClass[i,j-classChunkHalf:j+classChunkHalf+1] = 1
+    
+    return youtClass
