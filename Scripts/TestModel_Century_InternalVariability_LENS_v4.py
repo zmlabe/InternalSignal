@@ -4,13 +4,12 @@ variability from LENS and observations
 
 Reference  : Barnes et al. [2020, JAMES preprint on ArXiv]
 Author    : Zachary M. Labe
-Date      : 15 July 2020
+Date      : 4 August 2020
 """
 
 ### Import packages
 import math
 import time
-from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
 import numpy as np
 import keras.backend as K
@@ -32,22 +31,13 @@ from sklearn import preprocessing as pp
 import scipy.stats as stats
 from scipy import signal
 import copy as copy
-import matplotlib.patches as mpatches
-import cartopy as ct
-import cartopy.crs as ccrs
 from mpl_toolkits.basemap import Basemap
 import cmocean as cmocean
 import cmocean.plots
-from mpl_toolkits.axes_grid1 import make_axes_locatable
-from matplotlib import gridspec
-import matplotlib as mpl
 import calc_Utilities as UT
 import calc_dataFunctions as df
 import calc_Stats as dSS
 import calc_LRP as LRP
-import gc as gc
-import copy
-import os as os
 
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -84,7 +74,7 @@ experiment_result = pd.DataFrame(columns=['actual iters','hiddens','cascade',
 
 ### Define variable for analysis
 variq = 'U700'
-monthlychoice = 'annual'
+monthlychoice = 'DJF'
 reg_name = 'GlobeNoPoles'
 lat_bounds,lon_bounds = UT.regions(reg_name)
 
@@ -113,7 +103,7 @@ rm_merid_mean = False
 land_only = False
 
 ### Rove the ensemble mean? True to subtract it from dataset
-rm_ensemble_mean = False
+rm_ensemble_mean = True
 
 ### Split the data into training and testing sets? value of 1 will use all 
 ### data as training, .8 will use 80% training, 20% testing; etc.
@@ -819,32 +809,6 @@ def invert_year_outputChunk(ypred,startYear):
     
     return inverted
 
-def convert_to_class(data,startYear):
-    data = np.array(data) - startYear + classChunkHalf
-    dataClass = to_categorical(data)
-    
-    return dataClass
-
-def create_multiClass(xInput,yOutput):
-    yMulti = copy.deepcopy(yOutput)
-    
-    for stepVal in np.arange(-classChunkHalf,classChunkHalf+1,1.):
-        if(stepVal==0):
-            continue
-        y = yOutput + stepVal
-        
-    return xInput, yMulti
-
-def create_multiLabel(yClass):
-    youtClass = yClass
-    
-    for i in np.arange(0,np.shape(yClass)[0]):
-        v = yClass[i,:]
-        j = np.argmax(v)
-        youtClass[i,j-classChunkHalf:j+classChunkHalf+1] = 1
-    
-    return youtClass
-
 ###############################################################################
 ###############################################################################
 ###############################################################################
@@ -860,8 +824,8 @@ K.clear_session()
 ### Parameters
 debug = True
 actFun = 'relu'
-classChunkHalf = 5
-classChunk = 10
+classChunkHalf = 50
+classChunk = 100
 iSeed = 8#10#8
 ridge_penalty = [.01]
 avgHalfChunk = 0
@@ -1176,149 +1140,199 @@ else:
                                                                           dataset),dpi=300)
 
 ### Plot mean U700
-if variq == 'U700':
-    fig = plt.figure()
-    ax = plt.subplot(111)
-    
-    adjust_spines(ax, ['left', 'bottom'])
-    ax.spines['top'].set_color('none')
-    ax.spines['right'].set_color('none')
-    ax.spines['left'].set_color('dimgrey')
-    ax.spines['bottom'].set_color('dimgrey')
-    ax.spines['left'].set_linewidth(2)
-    ax.spines['bottom'].set_linewidth(2)
-    ax.tick_params('both',length=4,width=2,which='major',color='dimgrey')
-    
-    ensmeanplot = spatialmean_modmean
-    max2td = ensmeanplot + np.nanstd(spatialmean_mod,axis=0)
-    min2td = ensmeanplot - np.nanstd(spatialmean_mod,axis=0)
-    
-    plt.xlabel(r'\textbf{YEAR}',fontsize=10,color='dimgrey')
-    plt.ylabel(r'\textbf{U700 [m/s]}',fontsize=10,color='dimgrey')
-    ax.fill_between(years, min2td, max2td, facecolor='darkgrey',alpha=0.7,
-                label=r'$\pm$2 standard deviations',zorder=2)
-    plt.plot(years,ensmeanplot,'-',
-              color='k',linewidth=3,clip_on=False,label=r'LENS Mean')
-    plt.plot(year_obs,spatialmean_obs,color='crimson',linewidth=1.5,
-              dashes=(1,0.3),linestyle='--',label=r'ERA5',zorder=11)
-    
-    plt.yticks(np.arange(-10,100,0.1),map(str,np.round(np.arange(-10,100,0.1),2)),size=6)
-    plt.xticks(np.arange(1920,2101,20),map(str,np.arange(1920,2101,20)),size=6)
-    plt.xlim([1920,2100])   
-    plt.ylim([np.floor(np.nanmin(spatialmean_modmean)),np.ceil(np.nanmin(spatialmean_modmean))+0.5])
-    
-    leg = plt.legend(shadow=False,fontsize=7,loc='upper left',
-                  bbox_to_anchor=(-0.01,1),fancybox=True,ncol=1,frameon=False,
-                  handlelength=1,handletextpad=0.5)
-    
-    plt.text(2100,np.ceil(np.nanmin(spatialmean_modmean))+0.5,
-              r'\underline{\textbf{%s}}' % reg_name,ha='right',fontsize=10,color='k')
-
-    if rm_ensemble_mean == True:
-        plt.savefig(directoryfigure + 'MEAN_%s_%s_%s_%s_ENSMEAN-REMOVED.png' % (variq,
-                                                                                  monthlychoice,
-                                                                                  reg_name,
-                                                                                  dataset),dpi=300)
-    else:
-        plt.savefig(directoryfigure + 'MEAN_%s_%s_%s_%s.png' % (variq,
-                                                                              monthlychoice,
-                                                                              reg_name,
-                                                                              dataset),dpi=300)
+if rm_ensemble_mean == False:
+    if variq == 'U700':
+        fig = plt.figure()
+        ax = plt.subplot(111)
         
-elif variq == 'SLP':
-    fig = plt.figure()
-    ax = plt.subplot(111)
+        adjust_spines(ax, ['left', 'bottom'])
+        ax.spines['top'].set_color('none')
+        ax.spines['right'].set_color('none')
+        ax.spines['left'].set_color('dimgrey')
+        ax.spines['bottom'].set_color('dimgrey')
+        ax.spines['left'].set_linewidth(2)
+        ax.spines['bottom'].set_linewidth(2)
+        ax.tick_params('both',length=4,width=2,which='major',color='dimgrey')
+        
+        ensmeanplot = spatialmean_modmean
+        max2td = ensmeanplot + np.nanstd(spatialmean_mod,axis=0)
+        min2td = ensmeanplot - np.nanstd(spatialmean_mod,axis=0)
+        
+        plt.xlabel(r'\textbf{YEAR [%s]}' % monthlychoice,fontsize=10,color='dimgrey')
+        plt.ylabel(r'\textbf{U700 [m/s]}',fontsize=10,color='dimgrey')
+        ax.fill_between(years, min2td, max2td, facecolor='darkgrey',alpha=0.7,
+                    label=r'$\pm$2 standard deviations',zorder=2)
+        plt.plot(years,ensmeanplot,'-',
+                  color='k',linewidth=3,clip_on=False,label=r'LENS Mean')
+        plt.plot(year_obs,spatialmean_obs,color='crimson',linewidth=1.5,
+                  dashes=(1,0.3),linestyle='--',label=r'ERA5',zorder=11)
+        
+        plt.yticks(np.arange(-10,100,0.1),map(str,np.round(np.arange(-10,100,0.1),2)),size=6)
+        plt.xticks(np.arange(1920,2101,20),map(str,np.arange(1920,2101,20)),size=6)
+        plt.xlim([1920,2100])   
+        plt.ylim([np.floor(np.nanmin(spatialmean_obs)),np.ceil(np.nanmax(spatialmean_obs))])
+        
+        leg = plt.legend(shadow=False,fontsize=7,loc='upper left',
+                      bbox_to_anchor=(-0.01,1),fancybox=True,ncol=1,frameon=False,
+                      handlelength=1,handletextpad=0.5)
+        
+        plt.text(2100,np.ceil(np.nanmax(spatialmean_modmean)),
+                  r'\underline{\textbf{%s}}' % reg_name,ha='right',fontsize=10,color='k')
     
-    adjust_spines(ax, ['left', 'bottom'])
-    ax.spines['top'].set_color('none')
-    ax.spines['right'].set_color('none')
-    ax.spines['left'].set_color('dimgrey')
-    ax.spines['bottom'].set_color('dimgrey')
-    ax.spines['left'].set_linewidth(2)
-    ax.spines['bottom'].set_linewidth(2)
-    ax.tick_params('both',length=4,width=2,which='major',color='dimgrey')
-    
-    ensmeanplot = spatialmean_modmean
-    max2td = ensmeanplot + np.nanstd(spatialmean_mod,axis=0)
-    min2td = ensmeanplot - np.nanstd(spatialmean_mod,axis=0)
-    
-    plt.xlabel(r'\textbf{YEAR}',fontsize=10,color='dimgrey')
-    plt.ylabel(r'\textbf{SLP [hPa]}',fontsize=10,color='dimgrey')
-    ax.fill_between(years, min2td, max2td, facecolor='darkgrey',alpha=0.7,
-                label=r'$\pm$2 standard deviations',zorder=2)
-    plt.plot(years,ensmeanplot,'-',
-              color='k',linewidth=3,clip_on=False,label=r'LENS Mean')
-    plt.plot(year_obs,spatialmean_obs,color='crimson',linewidth=1.5,
-              dashes=(1,0.3),linestyle='--',label=r'ERA5',zorder=11)
-    
-    plt.yticks(np.arange(1000,1040,0.25),map(str,np.round(np.arange(1000,1040,0.25),2)),size=6)
-    plt.xticks(np.arange(1920,2101,20),map(str,np.arange(1920,2101,20)),size=6)
-    plt.xlim([1920,2100])   
-    plt.ylim([np.floor(np.nanmin(spatialmean_modmean))-0.5,np.ceil(np.nanmin(spatialmean_modmean))+0.5])
-    
-    leg = plt.legend(shadow=False,fontsize=7,loc='upper left',
-                  bbox_to_anchor=(-0.01,1),fancybox=True,ncol=1,frameon=False,
-                  handlelength=1,handletextpad=0.5)
-    
-    plt.text(2100,np.ceil(np.nanmin(spatialmean_modmean))+0.5,
-              r'\underline{\textbf{%s}}' % reg_name,ha='right',fontsize=10,color='k')
-
-    if rm_ensemble_mean == True:
-        plt.savefig(directoryfigure + 'MEAN_%s_%s_%s_%s_ENSMEAN-REMOVED.png' % (variq,
+        if rm_ensemble_mean == True:
+            plt.savefig(directoryfigure + 'MEAN_%s_%s_%s_%s_ENSMEAN-REMOVED.png' % (variq,
+                                                                                      monthlychoice,
+                                                                                      reg_name,
+                                                                                      dataset),dpi=300)
+        else:
+            plt.savefig(directoryfigure + 'MEAN_%s_%s_%s_%s.png' % (variq,
                                                                                   monthlychoice,
                                                                                   reg_name,
                                                                                   dataset),dpi=300)
-    else:
-        plt.savefig(directoryfigure + 'MEAN_%s_%s_%s_%s.png' % (variq,
-                                                                              monthlychoice,
-                                                                              reg_name,
-                                                                              dataset),dpi=300)
+            
+    elif variq == 'SLP':
+        fig = plt.figure()
+        ax = plt.subplot(111)
+        
+        adjust_spines(ax, ['left', 'bottom'])
+        ax.spines['top'].set_color('none')
+        ax.spines['right'].set_color('none')
+        ax.spines['left'].set_color('dimgrey')
+        ax.spines['bottom'].set_color('dimgrey')
+        ax.spines['left'].set_linewidth(2)
+        ax.spines['bottom'].set_linewidth(2)
+        ax.tick_params('both',length=4,width=2,which='major',color='dimgrey')
+        
+        ensmeanplot = spatialmean_modmean
+        max2td = ensmeanplot + np.nanstd(spatialmean_mod,axis=0)
+        min2td = ensmeanplot - np.nanstd(spatialmean_mod,axis=0)
+        
+        plt.xlabel(r'\textbf{YEAR [%s]}' % monthlychoice,fontsize=10,color='dimgrey')
+        plt.ylabel(r'\textbf{SLP [hPa]}',fontsize=10,color='dimgrey')
+        ax.fill_between(years, min2td, max2td, facecolor='darkgrey',alpha=0.7,
+                    label=r'$\pm$2 standard deviations',zorder=2)
+        plt.plot(years,ensmeanplot,'-',
+                  color='k',linewidth=3,clip_on=False,label=r'LENS Mean')
+        plt.plot(year_obs,spatialmean_obs,color='crimson',linewidth=1.5,
+                  dashes=(1,0.3),linestyle='--',label=r'ERA5',zorder=11)
+        
+        plt.yticks(np.arange(1000,1040,0.25),map(str,np.round(np.arange(1000,1040,0.25),2)),size=6)
+        plt.xticks(np.arange(1920,2101,20),map(str,np.arange(1920,2101,20)),size=6)
+        plt.xlim([1920,2100])   
+        plt.ylim([np.floor(np.nanmin(spatialmean_obs)),np.ceil(np.nanmax(spatialmean_obs))+0.25])
+        
+        leg = plt.legend(shadow=False,fontsize=7,loc='upper left',
+                      bbox_to_anchor=(-0.01,1),fancybox=True,ncol=1,frameon=False,
+                      handlelength=1,handletextpad=0.5)
+        
+        plt.text(2100,np.ceil(np.nanmax(spatialmean_modmean))+0.25,
+                  r'\underline{\textbf{%s}}' % reg_name,ha='right',fontsize=10,color='k')
     
-elif variq == 'U250':
-    fig = plt.figure()
-    ax = plt.subplot(111)
-    
-    adjust_spines(ax, ['left', 'bottom'])
-    ax.spines['top'].set_color('none')
-    ax.spines['right'].set_color('none')
-    ax.spines['left'].set_color('dimgrey')
-    ax.spines['bottom'].set_color('dimgrey')
-    ax.spines['left'].set_linewidth(2)
-    ax.spines['bottom'].set_linewidth(2)
-    ax.tick_params('both',length=4,width=2,which='major',color='dimgrey')
-    
-    ensmeanplot = spatialmean_modmean
-    max2td = ensmeanplot + np.nanstd(spatialmean_mod,axis=0)
-    min2td = ensmeanplot - np.nanstd(spatialmean_mod,axis=0)
-    
-    plt.xlabel(r'\textbf{YEAR}',fontsize=10,color='dimgrey')
-    plt.ylabel(r'\textbf{U250 [m/s]}',fontsize=10,color='dimgrey')
-    ax.fill_between(years, min2td, max2td, facecolor='darkgrey',alpha=0.7,
-                label=r'$\pm$2 standard deviations',zorder=2)
-    plt.plot(years,ensmeanplot,'-',
-              color='k',linewidth=3,clip_on=False,label=r'LENS Mean')
-    plt.plot(year_obs,spatialmean_obs,color='crimson',linewidth=1.5,
-              dashes=(1,0.3),linestyle='--',label=r'ERA5',zorder=11)
-    
-    plt.yticks(np.arange(-10,100,0.5),map(str,np.round(np.arange(-10,100,0.5),2)),size=6)
-    plt.xticks(np.arange(1920,2101,20),map(str,np.arange(1920,2101,20)),size=6)
-    plt.xlim([1920,2100])   
-    plt.ylim([np.floor(np.nanmin(spatialmean_modmean))-1,np.ceil(np.nanmin(spatialmean_modmean))+3])
-    
-    leg = plt.legend(shadow=False,fontsize=7,loc='upper left',
-                  bbox_to_anchor=(-0.01,1),fancybox=True,ncol=1,frameon=False,
-                  handlelength=1,handletextpad=0.5)
-    
-    plt.text(2100,np.ceil(np.nanmin(spatialmean_modmean))+3,
-              r'\underline{\textbf{%s}}' % reg_name,ha='right',fontsize=10,color='k')
-
-    if rm_ensemble_mean == True:
-        plt.savefig(directoryfigure + 'MEAN_%s_%s_%s_%s_ENSMEAN-REMOVED.png' % (variq,
+        if rm_ensemble_mean == True:
+            plt.savefig(directoryfigure + 'MEAN_%s_%s_%s_%s_ENSMEAN-REMOVED.png' % (variq,
+                                                                                      monthlychoice,
+                                                                                      reg_name,
+                                                                                      dataset),dpi=300)
+        else:
+            plt.savefig(directoryfigure + 'MEAN_%s_%s_%s_%s.png' % (variq,
                                                                                   monthlychoice,
                                                                                   reg_name,
                                                                                   dataset),dpi=300)
-    else:
-        plt.savefig(directoryfigure + 'MEAN_%s_%s_%s_%s.png' % (variq,
-                                                                              monthlychoice,
-                                                                              reg_name,
-                                                                              dataset),dpi=300)
+        
+    elif variq == 'U250':
+        fig = plt.figure()
+        ax = plt.subplot(111)
+        
+        adjust_spines(ax, ['left', 'bottom'])
+        ax.spines['top'].set_color('none')
+        ax.spines['right'].set_color('none')
+        ax.spines['left'].set_color('dimgrey')
+        ax.spines['bottom'].set_color('dimgrey')
+        ax.spines['left'].set_linewidth(2)
+        ax.spines['bottom'].set_linewidth(2)
+        ax.tick_params('both',length=4,width=2,which='major',color='dimgrey')
+        
+        ensmeanplot = spatialmean_modmean
+        max2td = ensmeanplot + np.nanstd(spatialmean_mod,axis=0)
+        min2td = ensmeanplot - np.nanstd(spatialmean_mod,axis=0)
+        
+        plt.xlabel(r'\textbf{YEAR [%s]}' % monthlychoice,fontsize=10,color='dimgrey')
+        plt.ylabel(r'\textbf{U250 [m/s]}',fontsize=10,color='dimgrey')
+        ax.fill_between(years, min2td, max2td, facecolor='darkgrey',alpha=0.7,
+                    label=r'$\pm$2 standard deviations',zorder=2)
+        plt.plot(years,ensmeanplot,'-',
+                  color='k',linewidth=3,clip_on=False,label=r'LENS Mean')
+        plt.plot(year_obs,spatialmean_obs,color='crimson',linewidth=1.5,
+                  dashes=(1,0.3),linestyle='--',label=r'ERA5',zorder=11)
+        
+        plt.yticks(np.arange(-10,100,0.5),map(str,np.round(np.arange(-10,100,0.5),2)),size=6)
+        plt.xticks(np.arange(1920,2101,20),map(str,np.arange(1920,2101,20)),size=6)
+        plt.xlim([1920,2100])   
+        plt.ylim([np.floor(np.nanmin(spatialmean_obs)),np.ceil(np.nanmax(spatialmean_obs))])
+        
+        leg = plt.legend(shadow=False,fontsize=7,loc='upper left',
+                      bbox_to_anchor=(-0.01,1),fancybox=True,ncol=1,frameon=False,
+                      handlelength=1,handletextpad=0.5)
+        
+        plt.text(2100,np.ceil(np.nanmax(spatialmean_modmean)),
+                  r'\underline{\textbf{%s}}' % reg_name,ha='right',fontsize=10,color='k')
+    
+        if rm_ensemble_mean == True:
+            plt.savefig(directoryfigure + 'MEAN_%s_%s_%s_%s_ENSMEAN-REMOVED.png' % (variq,
+                                                                                      monthlychoice,
+                                                                                      reg_name,
+                                                                                      dataset),dpi=300)
+        else:
+            plt.savefig(directoryfigure + 'MEAN_%s_%s_%s_%s.png' % (variq,
+                                                                                  monthlychoice,
+                                                                                  reg_name,
+                                                                                  dataset),dpi=300)
+
+    elif variq == 'U10':
+        fig = plt.figure()
+        ax = plt.subplot(111)
+        
+        adjust_spines(ax, ['left', 'bottom'])
+        ax.spines['top'].set_color('none')
+        ax.spines['right'].set_color('none')
+        ax.spines['left'].set_color('dimgrey')
+        ax.spines['bottom'].set_color('dimgrey')
+        ax.spines['left'].set_linewidth(2)
+        ax.spines['bottom'].set_linewidth(2)
+        ax.tick_params('both',length=4,width=2,which='major',color='dimgrey')
+        
+        ensmeanplot = spatialmean_modmean
+        max2td = ensmeanplot + np.nanstd(spatialmean_mod,axis=0)
+        min2td = ensmeanplot - np.nanstd(spatialmean_mod,axis=0)
+        
+        plt.xlabel(r'\textbf{YEAR [%s]}' % monthlychoice,fontsize=10,color='dimgrey')
+        plt.ylabel(r'\textbf{U10 [m/s]}',fontsize=10,color='dimgrey')
+        ax.fill_between(years, min2td, max2td, facecolor='darkgrey',alpha=0.7,
+                    label=r'$\pm$2 standard deviations',zorder=2)
+        plt.plot(years,ensmeanplot,'-',
+                  color='k',linewidth=3,clip_on=False,label=r'LENS Mean')
+        plt.plot(year_obs,spatialmean_obs,color='crimson',linewidth=1.5,
+                  dashes=(1,0.3),linestyle='--',label=r'ERA5',zorder=11)
+        
+        plt.yticks(np.arange(-100,100,5),map(str,np.round(np.arange(-100,100,5),2)),size=6)
+        plt.xticks(np.arange(1920,2101,20),map(str,np.arange(1920,2101,20)),size=6)
+        plt.xlim([1920,2100])   
+        plt.ylim([np.floor(np.nanmin(ensmeanplot))-15,np.ceil(np.nanmax(ensmeanplot))+10])
+        
+        leg = plt.legend(shadow=False,fontsize=7,loc='upper left',
+                      bbox_to_anchor=(-0.01,1),fancybox=True,ncol=1,frameon=False,
+                      handlelength=1,handletextpad=0.5)
+        
+        plt.text(2100,np.ceil(np.nanmax(spatialmean_modmean))+10,
+                  r'\underline{\textbf{%s}}' % reg_name,ha='right',fontsize=10,color='k')
+    
+        if rm_ensemble_mean == True:
+            plt.savefig(directoryfigure + 'MEAN_%s_%s_%s_%s_ENSMEAN-REMOVED.png' % (variq,
+                                                                                      monthlychoice,
+                                                                                      reg_name,
+                                                                                      dataset),dpi=300)
+        else:
+            plt.savefig(directoryfigure + 'MEAN_%s_%s_%s_%s.png' % (variq,
+                                                                                  monthlychoice,
+                                                                                  reg_name,
+                                                                                  dataset),dpi=300)

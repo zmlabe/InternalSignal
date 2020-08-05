@@ -80,7 +80,7 @@ def readFiles(variq,dataset,monthlychoice):
         ValueError('WRONG DATA SET SELECTED!')
         
     print('>>>>>>>>>> Completed: Finished readFiles function!')
-    return data,lat1,lon1,ENSmean   
+    return data,lat1,lon1  
 
 def getRegion(data,lat1,lon1,lat_bounds,lon_bounds):
     """
@@ -124,26 +124,25 @@ def getRegion(data,lat1,lon1,lat_bounds,lon_bounds):
     if data.ndim == 3:
         latq = np.where((lat1 >= lat_bounds[0]) & (lat1 <= lat_bounds[1]))[0]
         latn = lat1[latq]
-        datalatq = data[:,latq,:]
-        
+        datalatq = data[:,latq,:] 
         ### Mask longitudes
         lonq = np.where((lon1 >= lon_bounds[0]) & (lon1 <= lon_bounds[1]))[0]
         lonn = lon1[lonq]
         datalonq = datalatq[:,:,lonq]
+        
     elif data.ndim == 4:
         latq = np.where((lat1 >= lat_bounds[0]) & (lat1 <= lat_bounds[1]))[0]
         latn = lat1[latq]
-        datalatq = data[:,:,latq,:]
-        
+        datalatq = data[:,:,latq,:]        
         ### Mask longitudes
         lonq = np.where((lon1 >= lon_bounds[0]) & (lon1 <= lon_bounds[1]))[0]
         lonn = lon1[lonq]
         datalonq = datalatq[:,:,:,lonq]
+        
     elif data.ndim == 6:
         latq = np.where((lat1 >= lat_bounds[0]) & (lat1 <= lat_bounds[1]))[0]
         latn = lat1[latq]
         datalatq = data[:,:,:,latq,:]
-        
         ### Mask longitudes
         lonq = np.where((lon1 >= lon_bounds[0]) & (lon1 <= lon_bounds[1]))[0]
         lonn = lon1[lonq]
@@ -154,3 +153,9 @@ def getRegion(data,lat1,lon1,lat_bounds,lon_bounds):
     
     print('>>>>>>>>>> Completed: getRegion function!')
     return datanew,latn,lonn   
+
+### Test functions - do not use!
+# import numpy as np
+# import matplotlib.pyplot as plt
+# import calc_Utilities as UT
+# data,lat1,lon1,ENSmean = readFiles('U700','lens','DJF')

@@ -105,6 +105,14 @@ def read_ERA5_monthly(variq,directory,sliceperiod,sliceyear,sliceshape,addclimo,
         varshape = UT.calcDecJanFeb(varmon,lat1,lon1,'surface',1)
         print('Shape of output = ', varshape.shape,[[varshape.ndim]])
         print('Completed: DJF MEAN!')
+    elif sliceperiod == 'JJA':
+        vartime = np.nanmean(varmon[:,5:8,:,:],axis=1)
+        if sliceshape == 1:
+            varshape = vartime.ravel()
+        elif sliceshape == 3:
+            varshape = vartime
+        print('Shape of output = ', varshape.shape,[[varshape.ndim]])
+        print('Completed: JJA MEAN!')
     elif sliceperiod == 'none':
         vartime = varmon
         if sliceshape == 1:

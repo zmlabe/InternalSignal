@@ -131,6 +131,14 @@ def read_LENS(directory,vari,sliceperiod,slicebase,sliceshape,addclimo,slicenan,
                                                  lat1,lon1,'surface',1)
         print('Shape of output = ', ensshape.shape,[[ensshape.ndim]])
         print('Completed: DJF MEAN!')
+    elif sliceperiod == 'JJA':
+        enstime = np.nanmean(ensvalue[:,:,5:8,:,:],axis=2)
+        if sliceshape == 1:
+            ensshape = enstime.ravel()
+        elif sliceshape == 4:
+            ensshape = enstime
+        print('Shape of output = ', ensshape.shape,[[ensshape.ndim]])
+        print('Completed: JJA MEAN!')
     elif sliceperiod == 'none':
         if sliceshape == 1:
             ensshape = ensvalue.ravel()
@@ -179,6 +187,7 @@ def read_LENS(directory,vari,sliceperiod,slicebase,sliceshape,addclimo,slicenan,
 ### Test functions - do not use!
 # import numpy as np
 # import matplotlib.pyplot as plt
+# import calc_Utilities as UT
 # directory = '/Users/zlabe/Data/LENS/monthly/'
 # vari = 'U700'
 # sliceperiod = 'DJF'

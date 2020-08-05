@@ -107,6 +107,14 @@ def read_BEST(directory,sliceperiod,sliceyear,sliceshape,addclimo,slicenan):
         tempshape = UT.calcDecJanFeb(tempmon,lat1,lon1,'surface',1)
         print('Shape of output = ', tempshape.shape,[[tempshape.ndim]])
         print('Completed: DJF MEAN!')
+    elif sliceperiod == 'JJA':
+        temptime = np.nanmean(tempmon[:,5:8,:,:],axis=1)
+        if sliceshape == 1:
+            tempshape = temptime.ravel()
+        elif sliceshape == 3:
+            tempshape = temptime
+        print('Shape of output = ', tempshape.shape,[[tempshape.ndim]])
+        print('Completed: JJA MEAN!')
     elif sliceperiod == 'none':
         temptime = tempmon
         if sliceshape == 1:

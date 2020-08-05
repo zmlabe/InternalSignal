@@ -11,7 +11,7 @@ Usage
     [1] rmse(a,b)
     [2] remove_annual_mean(data,data_obs,lats,lons,lats_obs,lons_obs)
     [3] remove_merid_mean(data, data_obs)
-    [4] remove_ensemble_mean(data,ensmean)
+    [4] remove_ensemble_mean(data)
     [5] standardize_data(Xtrain,Xtest)
 """
 
@@ -61,7 +61,7 @@ def remove_merid_mean(data, data_obs):
 
     return data,data_obs
 
-def remove_ensemble_mean(data,ensmean):
+def remove_ensemble_mean(data):
     """
     Removes ensemble mean
     """
@@ -70,7 +70,7 @@ def remove_ensemble_mean(data,ensmean):
     import numpy as np
     
     ### Remove ensemble mean
-    datameangone = data - ensmean
+    datameangone = data - np.nanmean(data,axis=0)
     
     return datameangone
 

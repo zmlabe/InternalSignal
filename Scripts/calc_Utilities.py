@@ -953,6 +953,12 @@ def regions(name):
     elif name == 'Arctic':
         lat_bounds = (65.,90.)
         lon_bounds = (0., 360.)  
+    elif name == 'VortexNorth':
+        lat_bounds = (50.,90.)
+        lon_bounds = (0., 360.)  
+    elif name == 'VortexSouth':
+        lat_bounds = (-90.,-50.)
+        lon_bounds = (0., 360.)  
     elif name == 'Antarctic':
         lat_bounds = (-90.,-65.)
         lon_bounds = (0., 360.)  
