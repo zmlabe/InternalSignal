@@ -46,10 +46,7 @@ def deepTaylorAnalysis(model,XtrainS,Ytrain,biasBool,option4,annType,classChunk,
     
     if(option4):
         withinYearInc = 2.
-        errTolerance = 2.        
-    else:
-        withinYearInc = 2
-        errTolerance = 5
+        errTolerance = 2. # originally 2 (8/6/2020)      
     
     # define prediction error
     Ypred = model.predict(XtrainS)

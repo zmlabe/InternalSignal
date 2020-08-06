@@ -73,7 +73,7 @@ experiment_result = pd.DataFrame(columns=['actual iters','hiddens','cascade',
                                           'zero merid mean','land only?'])
 
 ### Define variable for analysis
-variq = 'SLP'
+variq = 'T2M'
 monthlychoice = 'DJF'
 reg_name = 'GlobeNoPoles'
 lat_bounds,lon_bounds = UT.regions(reg_name)
@@ -818,9 +818,9 @@ K.clear_session()
 
 ### Parameters
 debug = True
-NNType = 'linear'
-classChunkHalf = 50
-classChunk = 100
+NNType = 'ANN'
+classChunkHalf = 45
+classChunk = 90
 iSeed = 8#10#8
 avgHalfChunk = 0
 option4 = True
@@ -838,7 +838,7 @@ elif NNType == 'linear':
 expList = [(0)] # (0,1)
 expN = np.size(expList)
 
-iterations = [500] # [500]#[1500]
+iterations = [100] # [500]#[1500]
 random_segment = True
 foldsN = 1
 
@@ -986,24 +986,24 @@ for avgHalfChunk in (0,): # ([1,5,10]):#([1,2,5,10]):
                 XobsS[np.isnan(XobsS)] = 0
                 
                 if(annType=='class'):
+                    ### Chunk by individual year
                     YpredObs = convert_fuzzyDecade_toYear(model.predict(XobsS),
                                                           startYear,
                                                           classChunk)
-                    YpredObsPDF = model.predict(XobsS)
-                elif(annType=='reg'):    
-                    YpredObs = model.predict(XobsS)*Ystd + Ymean
-                    YpredObsPDF = np.nan
-
-                if(annType=='class'):
                     YpredTrain = convert_fuzzyDecade_toYear(model.predict((Xtrain-Xmean)/Xstd),
                                                             startYear,
                                                             classChunk)
                     YpredTest = convert_fuzzyDecade_toYear(model.predict((Xtest-Xmean)/Xstd),
                                                             startYear,
                                                             classChunk)
-                elif(annType=='reg'):
-                    YpredTrain = model.predict((Xtrain-Xmean)/Xstd)*Ystd + Ymean
-                    YpredTest = model.predict((Xtest-Xmean)/Xstd)*Ystd + Ymean
+                    
+                    ### Chunk by multidecadal
+                    Ytrainchunk = model.predict((Xtrain-Xmean)/Xstd)
+                    Ytestchunk = model.predict((Xtest-Xmean)/Xstd)
+                    YObschunk = model.predict(XobsS)
+
+                    YtrainClassMulti = YtrainClassMulti
+                    YtestClassMulti = YtestClassMulti
                     
                 ### Create final plot
                 beginFinalPlot(YpredTrain,YpredTest,Ytrain,Ytest,
@@ -1053,7 +1053,8 @@ for itime in np.arange(0,summaryDTScaled.shape[0]):
    
 numLats = lats.shape[0]
 numLons = lons.shape[0]   
-lrp = x_perc.reshape(np.shape(summaryDTScaled)[0],numLats,numLons)
+perclrp = x_perc.reshape(np.shape(summaryDTScaled)[0],numLats,numLons)
+lrp = summaryDTScaled.reshape(np.shape(summaryDTScaled)[0],numLats,numLons)*1000
 
 ## Define variable for analysis
 print('\n\n------------------------')
@@ -1078,6 +1079,43 @@ spatialmean_obs = UT.calc_weightedAve(observations,lats2)
 spatialmean_mod = UT.calc_weightedAve(modeldata,lats2)
 spatialmean_modmean = np.nanmean(spatialmean_mod,axis=0)
 
+regionlrp = 'nino34'
+timelrp = 0
+
+### Calculate mean LRP over region
+if regionlrp == 'indian_ocean':
+    lonqq=np.where((lons>=40) & (lons<=100))[0]
+    lonslrp = lons[lonqq]
+    latslrp = lats
+    lonlrp,latlrp = np.meshgrid(lonslrp,latslrp)
+    meanlrp = UT.calc_weightedAve(perclrp[:,:,lonqq],latlrp)
+elif regionlrp == 'mjo':
+    lonqq=np.where((lons>=40) & (lons<=100))[0]
+    lonslrp = lons[lonqq]
+    latslrp = lats
+    lonlrp,latlrp = np.meshgrid(lonslrp,latslrp)
+    meanlrp = UT.calc_weightedAve(perclrp[:,:,lonqq],latlrp)
+    labelr = 'MJO region'
+elif regionlrp == 'nino34':
+    lonqq=np.where((lons>=170) & (lons<=220))[0]
+    latqq=np.where((lats>=-5) & (lats<=5))[0]
+    lonslrp = lons[lonqq]
+    latslrp = lats[latqq]
+    lonlrp,latlrp = np.meshgrid(lonslrp,latslrp)
+    perclrp1 = perclrp[:,:,lonqq]
+    perclrp2 = perclrp1[:,latqq,:]
+    meanlrp = UT.calc_weightedAve(perclrp2,latlrp)
+    labelr = r'Ni\~{n}o 3.4'
+elif regionlrp == 'barents':
+    lonqq=np.where((lons>=35) & (lons<=60))[0]
+    latqq=np.where((lats>=74) & (lats<=80))[0]
+    lonslrp = lons[lonqq]
+    latslrp = lats[latqq]
+    lonlrp,latlrp = np.meshgrid(lonslrp,latslrp)
+    perclrp1 = perclrp[:,:,lonqq]
+    perclrp2 = perclrp1[:,latqq,:]
+    meanlrp = UT.calc_weightedAve(perclrp2,latlrp)
+
 ### Select map type
 from mpl_toolkits.basemap import Basemap, addcyclic, shiftgrid
 import palettable.cubehelix as cm
@@ -1097,7 +1135,63 @@ m.drawcoastlines(color='dimgrey',linewidth=0.5)
 barlim = np.round(np.arange(0,1.1,0.1),2)
 
 ### Take LRP mean
-lrpmean = np.nanmean(lrp,axis=0)
+perclrpmean = np.nanmean(perclrp[timelrp:],axis=0)
+
+var, lons_cyclic = addcyclic(perclrpmean, lons)
+var, lons_cyclic = shiftgrid(180., var, lons_cyclic, start=False)
+lon2d, lat2d = np.meshgrid(lons_cyclic, lats)
+x, y = m(lon2d, lat2d)
+
+### Make the plot continuous
+cs = m.contourf(x,y,var,np.arange(0,1.01,0.01),
+                extend='neither')                
+cmap = cm.cubehelix1_16.mpl_colormap          
+cs.set_cmap(cmap)
+            
+cbar = plt.colorbar(cs,drawedges=False,orientation='horizontal',
+                    pad = 0.07,fraction=0.035)
+
+cbar.set_ticks(barlim)
+cbar.set_ticklabels(list(map(str,barlim)))
+cbar.ax.tick_params(labelsize=5,pad=5) 
+ticklabs = cbar.ax.get_xticklabels()
+cbar.ax.set_xticklabels(ticklabs,ha='center',color='dimgrey')
+cbar.ax.tick_params(axis='x', size=.001)
+cbar.outline.set_edgecolor('dimgrey')
+cbar.outline.set_linewidth(0.5)
+cbar.set_label(r'\textbf{PERCENTILE [\%]}',labelpad=-30,color='dimgrey',
+                fontsize=11)
+
+plt.tight_layout()
+
+### Save figure    
+if rm_ensemble_mean == True:
+    plt.savefig(directoryfigure + '%s/PERC_%s_%s_%s_%s_ENSMEAN-REMOVED.png' % (variq,variq,
+                                                                              monthlychoice,
+                                                                              reg_name,
+                                                                              dataset),dpi=300)
+else:
+    plt.savefig(directoryfigure + '%s/PERC_%s_%s_%s_%s.png' % (variq,variq,
+                                                                          monthlychoice,
+                                                                          reg_name,
+                                                                          dataset),dpi=300)
+    
+##############################################################################
+##############################################################################
+##############################################################################
+fig = plt.figure()
+ax = plt.subplot(111)
+
+m = Basemap(projection='moll',lon_0=0,resolution='l',area_thresh=10000)
+circle = m.drawmapboundary(fill_color='k')
+circle.set_clip_on(False) 
+m.drawcoastlines(color='dimgrey',linewidth=0.5)
+
+### Colorbar limits
+barlim = np.round(np.arange(0,1.1,0.1),2)
+
+### Take LRP mean
+lrpmean = np.nanmean(lrp[timelrp:],axis=0)
 
 var, lons_cyclic = addcyclic(lrpmean, lons)
 var, lons_cyclic = shiftgrid(180., var, lons_cyclic, start=False)
@@ -1107,7 +1201,7 @@ x, y = m(lon2d, lat2d)
 ### Make the plot continuous
 cs = m.contourf(x,y,var,np.arange(0,1.01,0.01),
                 extend='neither')                
-cmap = cm.cubehelix1_16.mpl_colormap          
+cmap = cm.classic_16.mpl_colormap          
 cs.set_cmap(cmap)
             
 cbar = plt.colorbar(cs,drawedges=False,orientation='horizontal',
@@ -1134,6 +1228,46 @@ if rm_ensemble_mean == True:
                                                                               dataset),dpi=300)
 else:
     plt.savefig(directoryfigure + '%s/LRP_%s_%s_%s_%s.png' % (variq,variq,
+                                                                          monthlychoice,
+                                                                          reg_name,
+                                                                          dataset),dpi=300)
+    
+fig = plt.figure()
+ax = plt.subplot(111)
+
+adjust_spines(ax, ['left', 'bottom'])
+ax.spines['top'].set_color('none')
+ax.spines['right'].set_color('none')
+ax.spines['left'].set_color('dimgrey')
+ax.spines['bottom'].set_color('dimgrey')
+ax.spines['left'].set_linewidth(2)
+ax.spines['bottom'].set_linewidth(2)
+ax.tick_params('both',length=4,width=2,which='major',color='dimgrey')
+
+plt.xlabel(r'\textbf{YEAR [%s]}' % monthlychoice,fontsize=10,color='dimgrey')
+plt.ylabel(r'\textbf{Percentile [\%]}',fontsize=10,color='dimgrey')
+plt.plot(years,meanlrp*100,'-',color='crimson',linewidth=4,clip_on=False,
+          label=labelr)
+
+plt.yticks(np.arange(0,110,10),map(str,np.round(np.arange(0,110,10),2)),size=6)
+plt.xticks(np.arange(1920,2101,20),map(str,np.arange(1920,2101,20)),size=6)
+plt.xlim([1920,2100])   
+plt.ylim([20,100])
+
+leg = plt.legend(shadow=False,fontsize=10,loc='upper left',
+              bbox_to_anchor=(-0.01,1),fancybox=True,ncol=1,frameon=False,
+              handlelength=1,handletextpad=0.5)
+
+plt.text(2100,100,
+          r'\underline{\textbf{%s}}' % reg_name,ha='right',fontsize=10,color='k')
+
+if rm_ensemble_mean == True:
+    plt.savefig(directoryfigure + '%s/nino34_%s_%s_%s_%s_ENSMEAN-REMOVED.png' % (variq,variq,
+                                                                              monthlychoice,
+                                                                              reg_name,
+                                                                              dataset),dpi=300)
+else:
+    plt.savefig(directoryfigure + '%s/nino34_%s_%s_%s_%s.png' % (variq,variq,
                                                                           monthlychoice,
                                                                           reg_name,
                                                                           dataset),dpi=300)
@@ -1277,12 +1411,12 @@ if rm_ensemble_mean == False:
                   r'\underline{\textbf{%s}}' % reg_name,ha='right',fontsize=10,color='k')
     
         if rm_ensemble_mean == True:
-            plt.savefig(directoryfigure + 'MEAN_%s_%s_%s_%s_ENSMEAN-REMOVED.png' % (variq,
+            plt.savefig(directoryfigure + '%s/MEAN_%s_%s_%s_%s_ENSMEAN-REMOVED.png' % (variq,variq,
                                                                                       monthlychoice,
                                                                                       reg_name,
                                                                                       dataset),dpi=300)
         else:
-            plt.savefig(directoryfigure + 'MEAN_%s_%s_%s_%s.png' % (variq,
+            plt.savefig(directoryfigure + '%s/MEAN_%s_%s_%s_%s.png' % (variq,variq,
                                                                                   monthlychoice,
                                                                                   reg_name,
                                                                                   dataset),dpi=300)
