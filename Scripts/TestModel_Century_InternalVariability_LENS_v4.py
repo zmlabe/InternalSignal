@@ -61,7 +61,7 @@ plt.rc('font',**{'family':'sans-serif','sans-serif':['Avant Garde']})
 directorydataLL = '/Users/zlabe/Data/LENS/monthly/'
 directorydataBB = '/Users/zlabe/Data/BEST/'
 directorydataEE = '/Users/zlabe/Data/ERA5/'
-directoryfigure = '/Users/zlabe/Desktop/TestIntSignal/'
+directoryfigure = '/Users/zlabe/Desktop/IntSignal/'
 
 ###############################################################################
 ###############################################################################
@@ -73,7 +73,7 @@ experiment_result = pd.DataFrame(columns=['actual iters','hiddens','cascade',
                                           'zero merid mean','land only?'])
 
 ### Define variable for analysis
-variq = 'U700'
+variq = 'SLP'
 monthlychoice = 'DJF'
 reg_name = 'GlobeNoPoles'
 lat_bounds,lon_bounds = UT.regions(reg_name)
@@ -578,7 +578,7 @@ class TimeHistory(keras.callbacks.Callback):
     def on_epoch_end(self, epoch, logs={}):
         self.times.append(time.time() - self.epoch_time_start)
 
-def defineNN(hidden, input_shape, output_shape, ridgePenalty = 0.):        
+def defineNN(hidden, input_shape, output_shape, ridgePenalty):        
    
     model = Sequential()
     ### Initialize first layer
@@ -589,6 +589,7 @@ def defineNN(hidden, input_shape, output_shape, ridgePenalty = 0.):
                         kernel_regularizer=regularizers.l1_l2(l1=0.00,l2=ridgePenalty),
                         bias_initializer=keras.initializers.RandomNormal(seed=random_network_seed),
                 kernel_initializer=keras.initializers.RandomNormal(seed=random_network_seed)))
+        print('\nTHIS IS A LINEAR NN!\n')
     else:
         ### Model is a single node with activation function
         model.add(Dense(hidden[0],input_shape=(input_shape,),
@@ -604,7 +605,8 @@ def defineNN(hidden, input_shape, output_shape, ridgePenalty = 0.):
                             kernel_regularizer=regularizers.l1_l2(l1=0.00, l2=0.00),
                             bias_initializer=keras.initializers.RandomNormal(seed=random_network_seed),
                 kernel_initializer=keras.initializers.RandomNormal(seed=random_network_seed)))
-
+            
+        print('\nTHIS IS A ANN!\n')
 
     #### Initialize output layer
     model.add(Dense(output_shape,activation=None,use_bias=True,
@@ -625,13 +627,6 @@ def trainNN(model, Xtrain, Ytrain, niter=500, verbose=False):
                                             momentum=0.9,nesterov=True),  #Adadelta .Adam()
                   loss = 'binary_crossentropy',
                   metrics=[metrics.categorical_accuracy],)
-#     model.compile(optimizer=optimizers.SGD(lr=lr_here, momentum=0.9, nesterov=True),  #Adadelta .Adam()
-#                  loss = 'categorical_crossentropy',
-#                  metrics=[metrics.categorical_accuracy],)
-
-#     model.compile(optimizer=optimizers.Adam(0.001),
-#                  loss = 'categorical_crossentropy',
-#                  metrics=[metrics.categorical_accuracy],)
 
     ### Declare the relevant model parameters
     batch_size = 32 # np.shape(Xtrain)[0] ### This doesn't seem to affect much in this case
@@ -823,17 +818,22 @@ K.clear_session()
 
 ### Parameters
 debug = True
-actFun = 'relu'
+NNType = 'linear'
 classChunkHalf = 50
 classChunk = 100
 iSeed = 8#10#8
-ridge_penalty = [.01]
 avgHalfChunk = 0
 option4 = True
 biasBool = False
 
-hiddensList = [[20,20]]
-# hiddensList = [[0]]
+if NNType == 'ANN':
+    hiddensList = [[20,20]]
+    ridge_penalty = [0.01]
+    actFun = 'relu'
+elif NNType == 'linear':
+    hiddensList = [[0]]
+    ridge_penalty = [0.]
+    actFun = 'linear'
 
 expList = [(0)] # (0,1)
 expN = np.size(expList)
@@ -932,7 +932,7 @@ for avgHalfChunk in (0,): # ([1,5,10]):#([1,2,5,10]):
                 ################################################################################################################################################                
                 # save the model
                 dirname = '/Users/zlabe/Documents/Research/InternalSignal/savedModels/'+variq +'/'
-                savename = modelType+'_'+variq+'_kerasMultiClassBinaryOption4_Chunk'+ str(classChunk)+'_Linear_L2_'+ str(ridge_penalty[0])+ '_LR_' + str(lr_here)+ '_Batch'+ str(batch_size)+ '_Iters' + str(iterations[0]) + '_' + str(hiddensList[0][0]) + 'x' + str(hiddensList[0][-1]) + '_SegSeed' + str(random_segment_seed) + '_NetSeed'+ str(random_network_seed) 
+                savename = modelType+'_'+variq+'_kerasMultiClassBinaryOption4_Chunk'+ str(classChunk)+'_' + NNType + '_L2_'+ str(ridge_penalty[0])+ '_LR_' + str(lr_here)+ '_Batch'+ str(batch_size)+ '_Iters' + str(iterations[0]) + '_' + str(hiddensList[0][0]) + 'x' + str(hiddensList[0][-1]) + '_SegSeed' + str(random_segment_seed) + '_NetSeed'+ str(random_network_seed) 
                 savenameModelTestTrain = modelType+'_'+variq+'_modelTrainTest_SegSeed'+str(random_segment_seed)+'_NetSeed'+str(random_network_seed)
 
                 if(reg_name=='Globe'):
@@ -1013,14 +1013,6 @@ for avgHalfChunk in (0,): # ([1,5,10]):#([1,2,5,10]):
 # model.summary()
 # model.layers[0].get_config()
 
-# test_output = YpredTest
-# Ttrain = Ytrain
-# Ttest = Ytest
-# Ttest_obs = YpredObs
-# obs_output = yearsObs
-# nnet = model
-# plot_results(plots = 1)
-
 ##############################################################################
 ##############################################################################
 ##############################################################################
@@ -1086,8 +1078,8 @@ spatialmean_obs = UT.calc_weightedAve(observations,lats2)
 spatialmean_mod = UT.calc_weightedAve(modeldata,lats2)
 spatialmean_modmean = np.nanmean(spatialmean_mod,axis=0)
 
-## Select map type
-from mpl_toolkits.basemap import Basemap
+### Select map type
+from mpl_toolkits.basemap import Basemap, addcyclic, shiftgrid
 import palettable.cubehelix as cm
 
 ##############################################################################
@@ -1104,10 +1096,17 @@ m.drawcoastlines(color='dimgrey',linewidth=0.5)
 ### Colorbar limits
 barlim = np.round(np.arange(0,1.1,0.1),2)
 
-### Make the plot continuous
+### Take LRP mean
 lrpmean = np.nanmean(lrp,axis=0)
-cs = m.contourf(lons2,lats2,lrpmean,np.arange(0,1.01,0.01),
-                extend='neither',latlon=True)                
+
+var, lons_cyclic = addcyclic(lrpmean, lons)
+var, lons_cyclic = shiftgrid(180., var, lons_cyclic, start=False)
+lon2d, lat2d = np.meshgrid(lons_cyclic, lats)
+x, y = m(lon2d, lat2d)
+
+### Make the plot continuous
+cs = m.contourf(x,y,var,np.arange(0,1.01,0.01),
+                extend='neither')                
 cmap = cm.cubehelix1_16.mpl_colormap          
 cs.set_cmap(cmap)
             
@@ -1122,19 +1121,19 @@ cbar.ax.set_xticklabels(ticklabs,ha='center',color='dimgrey')
 cbar.ax.tick_params(axis='x', size=.001)
 cbar.outline.set_edgecolor('dimgrey')
 cbar.outline.set_linewidth(0.5)
-cbar.set_label(r'\textbf{RELEVANCE}',labelpad=-30,color='k',
+cbar.set_label(r'\textbf{RELEVANCE}',labelpad=-30,color='dimgrey',
                 fontsize=11)
 
 plt.tight_layout()
 
 ### Save figure    
 if rm_ensemble_mean == True:
-    plt.savefig(directoryfigure + 'LRP_%s_%s_%s_%s_ENSMEAN-REMOVED.png' % (variq,
+    plt.savefig(directoryfigure + '%s/LRP_%s_%s_%s_%s_ENSMEAN-REMOVED.png' % (variq,variq,
                                                                               monthlychoice,
                                                                               reg_name,
                                                                               dataset),dpi=300)
 else:
-    plt.savefig(directoryfigure + 'LRP_%s_%s_%s_%s.png' % (variq,
+    plt.savefig(directoryfigure + '%s/LRP_%s_%s_%s_%s.png' % (variq,variq,
                                                                           monthlychoice,
                                                                           reg_name,
                                                                           dataset),dpi=300)
@@ -1327,12 +1326,12 @@ if rm_ensemble_mean == False:
                   r'\underline{\textbf{%s}}' % reg_name,ha='right',fontsize=10,color='k')
     
         if rm_ensemble_mean == True:
-            plt.savefig(directoryfigure + 'MEAN_%s_%s_%s_%s_ENSMEAN-REMOVED.png' % (variq,
+            plt.savefig(directoryfigure + '%s/MEAN_%s_%s_%s_%s_ENSMEAN-REMOVED.png' % (variq,variq,
                                                                                       monthlychoice,
                                                                                       reg_name,
                                                                                       dataset),dpi=300)
         else:
-            plt.savefig(directoryfigure + 'MEAN_%s_%s_%s_%s.png' % (variq,
+            plt.savefig(directoryfigure + '%s/MEAN_%s_%s_%s_%s.png' % (variq,variq,
                                                                                   monthlychoice,
                                                                                   reg_name,
                                                                                   dataset),dpi=300)
