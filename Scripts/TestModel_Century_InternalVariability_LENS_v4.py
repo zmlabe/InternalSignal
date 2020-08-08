@@ -73,7 +73,7 @@ experiment_result = pd.DataFrame(columns=['actual iters','hiddens','cascade',
                                           'zero merid mean','land only?'])
 
 ### Define variable for analysis
-variq = 'T2M'
+variq = 'U700'
 monthlychoice = 'DJF'
 reg_name = 'GlobeNoPoles'
 lat_bounds,lon_bounds = UT.regions(reg_name)
