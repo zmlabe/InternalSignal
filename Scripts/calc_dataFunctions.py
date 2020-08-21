@@ -48,7 +48,7 @@ def readFiles(variq,dataset,monthlychoice):
         sliceshapeLL = 4
         slicenanLL = 'nan'
         addclimoLL = True
-        takeEnsMeanLL = True
+        takeEnsMeanLL = False
         lat1,lon1,data,ENSmean = LL.read_LENS(directorydataLL,variq,
                                                monthlychoice,slicebaseLL,
                                                sliceshapeLL,addclimoLL,
@@ -76,6 +76,20 @@ def readFiles(variq,dataset,monthlychoice):
                                               monthlychoice,sliceyearER,
                                               sliceshapeER,addclimoER,
                                               slicenanER)
+    elif any([dataset=='CCCma_canesm2',dataset=='CSIRO_MK3.6',
+              dataset=='GFDL_CM3',dataset=='GFDL_ESM2M',
+              dataset=='KNMI_ecearth',dataset=='MPI']):
+        import read_SMILE as SM
+        directorySS = '/Users/zlabe/Data/SMILE/'
+        simulationSS = dataset
+        slicebaseSS = np.arange(1951,1980+1,1)
+        sliceshapeSS = 4
+        slicenanSS = 'nan'
+        addclimoSS = True
+        takeEnsMeanSS = False
+        lat1,lon1,data,ENSmean = SM.read_SMILE(directorySS,simulationSS,variq,monthlychoice,
+                                                slicebaseSS,sliceshapeSS,addclimoSS,
+                                                slicenanSS,takeEnsMeanSS)
     else:
         ValueError('WRONG DATA SET SELECTED!')
         
@@ -158,4 +172,4 @@ def getRegion(data,lat1,lon1,lat_bounds,lon_bounds):
 # import numpy as np
 # import matplotlib.pyplot as plt
 # import calc_Utilities as UT
-# data,lat1,lon1,ENSmean = readFiles('U700','lens','DJF')
+# data,lat1,lon1,ENSmean = readFiles('T2M','MPI','DJF')

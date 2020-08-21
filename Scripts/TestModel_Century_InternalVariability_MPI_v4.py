@@ -1,10 +1,19 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Aug 13 14:17:31 2020
+
+@author: zlabe
+"""
+
+
 """
 Test model to understand if ANN can detect a forced signal using only internal
-variability from LENS and observations
+variability from MPI and observations
 
-Reference  : Barnes et al. [2020, JAMES preprint on ArXiv]
+Reference  : Barnes et al. [2020, JAMES]
 Author    : Zachary M. Labe
-Date      : 4 August 2020
+Date      : 13 August 2020
 """
 
 ### Import packages
@@ -58,7 +67,7 @@ plt.rc('font',**{'family':'sans-serif','sans-serif':['Avant Garde']})
 ###############################################################################
 ###############################################################################
 ### Data preliminaries 
-directorydataLL = '/Users/zlabe/Data/LENS/monthly/'
+directorydataLL = '/Users/zlabe/Data/MPI/monthly/'
 directorydataBB = '/Users/zlabe/Data/BEST/'
 directorydataEE = '/Users/zlabe/Data/ERA5/'
 directoryfigure = '/Users/zlabe/Desktop/IntSignal/'
@@ -74,12 +83,12 @@ experiment_result = pd.DataFrame(columns=['actual iters','hiddens','cascade',
 
 ### Define variable for analysis
 variq = 'T2M'
-monthlychoice = 'annual'
+monthlychoice = 'DJF'
 reg_name = 'GlobeNoPoles'
 lat_bounds,lon_bounds = UT.regions(reg_name)
 
 ### Define primary dataset to use
-dataset = 'lens'
+dataset = 'MPI'
 modelType = dataset
 
 ### whether to test and plot the results using obs data
@@ -103,7 +112,7 @@ rm_merid_mean = False
 land_only = False
 
 ### Rove the ensemble mean? True to subtract it from dataset
-rm_ensemble_mean = False
+rm_ensemble_mean = True
 
 ### Split the data into training and testing sets? value of 1 will use all 
 ### data as training, .8 will use 80% training, 20% testing; etc.
@@ -214,7 +223,7 @@ def segment_data(data,fac = segment_data_factor):
         ### Reshape into X and T
         Xtrain = data_train.reshape((data_train.shape[0] * data_train.shape[1]),
                                     (data_train.shape[2] * data_train.shape[3]))
-        Ttrain = np.tile((np.arange(data_train.shape[1]) + 1920).reshape(data_train.shape[1],1),
+        Ttrain = np.tile((np.arange(data_train.shape[1]) + 1850).reshape(data_train.shape[1],1),
                           (data_train.shape[0],1))
         Xtrain_shape = (data_train.shape[0],data_train.shape[1])
         
@@ -236,7 +245,7 @@ def segment_data(data,fac = segment_data_factor):
         ### Reshape into X and T
         Xtest = data_test.reshape((data_test.shape[0] * data_test.shape[1]),
                                   (data_test.shape[2] * data_test.shape[3]))
-        Ttest = np.tile((np.arange(data_test.shape[1]) + 1920).reshape(data_test.shape[1],1),
+        Ttest = np.tile((np.arange(data_test.shape[1]) + 1850).reshape(data_test.shape[1],1),
                         (data_test.shape[0], 1))   
 
     else:
@@ -250,13 +259,13 @@ def segment_data(data,fac = segment_data_factor):
     
         Xtrain = data_train.reshape((data_train.shape[0] * data_train.shape[1]),
                                     (data_train.shape[2] * data_train.shape[3]))
-        Ttrain = np.tile((np.arange(data_train.shape[1]) + 1920).reshape(data_train.shape[1],1),
+        Ttrain = np.tile((np.arange(data_train.shape[1]) + 1850).reshape(data_train.shape[1],1),
                           (data_train.shape[0],1))
         Xtrain_shape = (data_train.shape[0], data_train.shape[1])
 
     Xtest = data_test.reshape((data_test.shape[0] * data_test.shape[1]),
                               (data_test.shape[2] * data_test.shape[3]))
-    Ttest = np.tile((np.arange(data_test.shape[1]) + 1920).reshape(data_test.shape[1],1),
+    Ttest = np.tile((np.arange(data_test.shape[1]) + 1850).reshape(data_test.shape[1],1),
                     (data_test.shape[0],1))
 
     Xtest_shape = (data_test.shape[0], data_test.shape[1])
@@ -347,10 +356,10 @@ def plot_rmse(train_output,Ttrain,test_output,Ttest,data_train_shape,data_test_s
     plt.subplot(1, 2, 1)
     rmse_by_year_train = np.sqrt(np.mean(((train_output - Ttrain)**2).reshape(Xtrain_shape),
                                           axis=0))
-    xs_train = (np.arange(data_train_shape) + 1920)
+    xs_train = (np.arange(data_train_shape) + 1850)
     rmse_by_year_test = np.sqrt(np.mean(((test_output - Ttest)**2).reshape(Xtest_shape),
                                         axis=0))
-    xs_test = (np.arange(data_test_shape) + 1920)
+    xs_test = (np.arange(data_test_shape) + 1850)
     plt.title('RMSE by year')
     plt.xlabel('year')
     plt.ylabel('error')
@@ -422,9 +431,9 @@ def plot_classifier_output(class_prob,test_class_prob,Xtest_shape,Xtrain_shape):
     prob = class_prob[-1].reshape(Xtrain_shape)
     
     plt.figure(figsize=(14, 6))
-    plt.plot((np.arange(Xtest_shape[1]) + 1920),
+    plt.plot((np.arange(Xtest_shape[1]) + 1850),
               prob[:,:,1].T, '-',alpha = .7)
-    plt.plot((np.arange(Xtest_shape[1]) + 1920),
+    plt.plot((np.arange(Xtest_shape[1]) + 1850),
               (np.mean(prob[:, :, 1], axis = 0).reshape(180, -1)),
               'b-',linewidth=3.5, alpha = .5, label = 'ensemble avobsge')
     plt.title('Classifier Output by Ensemble using Training Data')
@@ -436,9 +445,9 @@ def plot_classifier_output(class_prob,test_class_prob,Xtest_shape,Xtrain_shape):
     tprob = test_class_prob[0].reshape(Xtest_shape)
     
     plt.figure(figsize=(14, 6))
-    plt.plot(((np.arange(Xtest_shape[1]) + 1920)),tprob[:,:,1].T,'-',
+    plt.plot(((np.arange(Xtest_shape[1]) + 1850)),tprob[:,:,1].T,'-',
               alpha = .7)
-    plt.plot((np.arange(Xtest_shape[1]) + 1920), 
+    plt.plot((np.arange(Xtest_shape[1]) + 1850), 
               (np.mean(tprob[:, :, 1], axis = 0).reshape(180, -1)),
               'r-',linewidth=4,alpha = .5,label = 'ensemble avobsge')
     plt.title('Classifier Output by Ensemble using Test Data')
@@ -472,13 +481,13 @@ def beginFinalPlot(YpredTrain,YpredTest,Ytrain,Ytest,testIndices,years,yearsObs,
     test_output_rs = YpredTest.reshape(len(testIndices),
                                   len(years))
 
-    xs_test = (np.arange(np.shape(test_output_rs)[1]) + 1920)
+    xs_test = (np.arange(np.shape(test_output_rs)[1]) + 1850)
 
     # p1=plt.plot(xs_test,train_output_rs[:,:],'o',
-    #            markersize=2,color = 'gray',label='LENS - Training data',
+    #            markersize=2,color = 'gray',label='MPI - Training data',
     #            clip_on=False)
     # p2=plt.plot(xs_test,test_output_rs[:,:],'o',
-    #            markersize=4,color = 'black',label='LENS - Testing data',
+    #            markersize=4,color = 'black',label='MPI - Testing data',
     #            clip_on=False)
 
     for i in range(0,train_output_rs.shape[0]):
@@ -486,7 +495,7 @@ def beginFinalPlot(YpredTrain,YpredTest,Ytrain,Ytest,testIndices,years,yearsObs,
             p3=plt.plot(xs_test,train_output_rs[i,:],'o',
                         markersize=4,color='lightgray',clip_on=False,
                         alpha=0.4,markeredgecolor='k',markeredgewidth=0.4,
-                        label=r'\textbf{LENS - Training Data}')
+                        label=r'\textbf{MPI - Training Data}')
         else:
             p3=plt.plot(xs_test,train_output_rs[i,:],'o',
                         markersize=4,color='lightgray',clip_on=False,
@@ -496,7 +505,7 @@ def beginFinalPlot(YpredTrain,YpredTest,Ytrain,Ytest,testIndices,years,yearsObs,
             p4=plt.plot(xs_test,test_output_rs[i,:],'o',
                     markersize=4,color='crimson',clip_on=False,alpha=0.3,
                     markeredgecolor='crimson',markeredgewidth=0.4,
-                    label=r'\textbf{LENS - Testing Data}')
+                    label=r'\textbf{MPI - Testing Data}')
         else:
             p4=plt.plot(xs_test,test_output_rs[i,:],'o',
                     markersize=4,color='crimson',clip_on=False,alpha=0.3,
@@ -510,13 +519,13 @@ def beginFinalPlot(YpredTrain,YpredTest,Ytrain,Ytest,testIndices,years,yearsObs,
     
     plt.xlabel(r'\textbf{ACTUAL YEAR}',fontsize=10,color='dimgrey')
     plt.ylabel(r'\textbf{PREDICTED YEAR}',fontsize=10,color='dimgrey')
-    plt.plot(np.arange(1920,2101,1),np.arange(1920,2101,1),'-',
+    plt.plot(np.arange(1850,2101,1),np.arange(1850,2101,1),'-',
               color='black',linewidth=2,clip_on=False)
     
-    plt.xticks(np.arange(1920,2101,20),map(str,np.arange(1920,2101,20)),size=6)
-    plt.yticks(np.arange(1920,2101,20),map(str,np.arange(1920,2101,20)),size=6)
-    plt.xlim([1920,2100])   
-    plt.ylim([1920,2100])
+    plt.xticks(np.arange(1850,2101,20),map(str,np.arange(1850,2101,20)),size=6)
+    plt.yticks(np.arange(1850,2101,20),map(str,np.arange(1850,2101,20)),size=6)
+    plt.xlim([1850,2099])   
+    plt.ylim([1850,2099])
     
     plt.title(r'\textbf{[ %s ] $\bf{\longrightarrow}$ RMSE Train = %s; RMSE Test = %s}' % (variq,np.round(dSS.rmse(YpredTrain[:,],
                                                                     Ytrain[:,0]),1),np.round(dSS.rmse(YpredTest[:,],
@@ -526,13 +535,13 @@ def beginFinalPlot(YpredTrain,YpredTest,Ytrain,Ytest,testIndices,years,yearsObs,
                                                                                                       fontsize=15)
     
     iyears = np.where(Ytest<2000)[0]
-    plt.text(2100,1924, r'\textbf{Test RMSE before 2000 = %s}' % (np.round(dSS.rmse(YpredTest[iyears,],
+    plt.text(2099,1855, r'\textbf{Test RMSE before 2000 = %s}' % (np.round(dSS.rmse(YpredTest[iyears,],
                                                                         Ytest[iyears,0]),
                                                                   decimals=1)),
               fontsize=5,ha='right')
     
     iyears = np.where(Ytest>=2000)[0]
-    plt.text(2100,1920, r'\textbf{Test RMSE after 2000 = %s}' % (np.round(dSS.rmse(YpredTest[iyears,],
+    plt.text(2099,1850, r'\textbf{Test RMSE after 2000 = %s}' % (np.round(dSS.rmse(YpredTest[iyears,],
                                                                           Ytest[iyears,0]),
                                                                       decimals=1)),
               fontsize=5,ha='right')
@@ -732,9 +741,9 @@ def test_train_loopClass(Xtrain,Ytrain,Xtest,Ytest,iterations,ridge_penalty,hidd
                                                         startYear,
                                                         classChunk),'x', 
                                                         color='red')
-                    plt.plot([startYear,2100],[startYear,2100],'--k')
-                    plt.yticks(np.arange(1920,2100,10))
-                    plt.xticks(np.arange(1920,2100,10))
+                    plt.plot([startYear,2099],[startYear,2099],'--k')
+                    plt.yticks(np.arange(1850,2099,10))
+                    plt.xticks(np.arange(1850,2099,10))
                     
                     plt.grid(True)
                     plt.show()
@@ -747,7 +756,7 @@ def test_train_loopClass(Xtrain,Ytrain,Xtest,Ytest,iterations,ridge_penalty,hidd
     return experiment_result, model
 
 def convert_fuzzyDecade(data,startYear,classChunk):
-    years = np.arange(startYear-classChunk*2,2100+classChunk*2)
+    years = np.arange(startYear-classChunk*2,2099+classChunk*2)
     chunks = years[::int(classChunk)] + classChunk/2
     
     labels = np.zeros((np.shape(data)[0],len(chunks)))
@@ -768,7 +777,7 @@ def convert_fuzzyDecade(data,startYear,classChunk):
     return labels, chunks
 
 def convert_fuzzyDecade_toYear(label,startYear,classChunk):
-    years = np.arange(startYear-classChunk*2,2100+classChunk*2)
+    years = np.arange(startYear-classChunk*2,2099+classChunk*2)
     chunks = years[::int(classChunk)] + classChunk/2
     
     return np.sum(label*chunks,axis=1)
@@ -819,8 +828,8 @@ K.clear_session()
 ### Parameters
 debug = True
 NNType = 'ANN'
-classChunkHalf = 5
-classChunk = 10
+classChunkHalf = 45
+classChunk = 90
 iSeed = 8#10#8
 avgHalfChunk = 0
 option4 = True
@@ -838,7 +847,7 @@ elif NNType == 'linear':
 expList = [(0)] # (0,1)
 expN = np.size(expList)
 
-iterations = [500] # [500]#[1500]
+iterations = [100] # [500]#[1500]
 random_segment = True
 foldsN = 1
 
@@ -973,11 +982,11 @@ for avgHalfChunk in (0,): # ([1,5,10]):#([1,2,5,10]):
 
                 annType = 'class'
                 if monthlychoice == 'DJF':
-                    startYear = 1921
-                    endYear = 2100
+                    startYear = 1851
+                    endYear = 2099
                 else:
-                    startYear = 1920
-                    endYear = 2100
+                    startYear = 1850
+                    endYear = 2099
                 years = np.arange(startYear,endYear+1,1)    
                 Xmeanobs = np.nanmean(Xobs,axis=0)
                 Xstdobs = np.nanstd(Xobs,axis=0)  
@@ -1020,12 +1029,12 @@ for avgHalfChunk in (0,): # ([1,5,10]):#([1,2,5,10]):
 summaryDT,summaryDTFreq,summaryNanCount=LRP.deepTaylorAnalysis(model,
                                         np.append(XtrainS,XtestS,axis=0),
                                         np.append(Ytrain,Ytest,axis=0),
-                                        biasBool,annType,classChunk,
+                                        biasBool,option4,annType,classChunk,
                                         startYear)
 
 # for training data only
 summaryDTTrain,summaryDTFreqTrain,summaryNanCountTrain=LRP.deepTaylorAnalysis(
-                                        model,XtrainS,Ytrain,biasBool,
+                                        model,XtrainS,Ytrain,biasBool,option4,
                                         annType,classChunk,startYear)
 
 biasBool = False
@@ -1038,7 +1047,7 @@ analyzer_output=analyzer10.analyze(XobsS)
 analyzer_output=analyzer_output/np.nansum(analyzer_output,axis=1)[:,np.newaxis]   
 
 ### Scale LRP
-for scale in (0,):#(0,1):
+for scale in (1,):#(0,1):
     if(scale==1):
         summaryDTScaled = summaryDT*Xstd
     else:    
@@ -1250,15 +1259,15 @@ plt.plot(years,meanlrp*100,'-',color='crimson',linewidth=4,clip_on=False,
           label=labelr)
 
 plt.yticks(np.arange(0,110,10),map(str,np.round(np.arange(0,110,10),2)),size=6)
-plt.xticks(np.arange(1920,2101,20),map(str,np.arange(1920,2101,20)),size=6)
-plt.xlim([1920,2100])   
+plt.xticks(np.arange(1850,2101,20),map(str,np.arange(1850,2101,20)),size=6)
+plt.xlim([1850,2099])   
 plt.ylim([20,100])
 
 leg = plt.legend(shadow=False,fontsize=10,loc='upper left',
               bbox_to_anchor=(-0.01,1),fancybox=True,ncol=1,frameon=False,
               handlelength=1,handletextpad=0.5)
 
-plt.text(2100,100,
+plt.text(2099,100,
           r'\underline{\textbf{%s}}' % reg_name,ha='right',fontsize=10,color='k')
 
 if rm_ensemble_mean == True:
@@ -1296,20 +1305,20 @@ if rm_ensemble_mean == False:
         ax.fill_between(years, min2td, max2td, facecolor='darkgrey',alpha=0.7,
                     label=r'$\pm$2 standard deviations',zorder=2)
         plt.plot(years,ensmeanplot,'-',
-                  color='k',linewidth=3,clip_on=False,label=r'LENS Mean')
+                  color='k',linewidth=3,clip_on=False,label=r'MPI Mean')
         plt.plot(year_obs,spatialmean_obs,color='crimson',linewidth=1.5,
                   dashes=(1,0.3),linestyle='--',label=r'ERA5',zorder=11)
         
         plt.yticks(np.arange(-10,100,0.1),map(str,np.round(np.arange(-10,100,0.1),2)),size=6)
-        plt.xticks(np.arange(1920,2101,20),map(str,np.arange(1920,2101,20)),size=6)
-        plt.xlim([1920,2100])   
+        plt.xticks(np.arange(1850,2101,20),map(str,np.arange(1850,2101,20)),size=6)
+        plt.xlim([1850,2099])   
         plt.ylim([np.floor(np.nanmin(spatialmean_obs)),np.ceil(np.nanmax(spatialmean_obs))])
         
         leg = plt.legend(shadow=False,fontsize=7,loc='upper left',
                       bbox_to_anchor=(-0.01,1),fancybox=True,ncol=1,frameon=False,
                       handlelength=1,handletextpad=0.5)
         
-        plt.text(2100,np.ceil(np.nanmax(spatialmean_modmean)),
+        plt.text(2099,np.ceil(np.nanmax(spatialmean_modmean)),
                   r'\underline{\textbf{%s}}' % reg_name,ha='right',fontsize=10,color='k')
     
         if rm_ensemble_mean == True:
@@ -1345,20 +1354,20 @@ if rm_ensemble_mean == False:
         ax.fill_between(years, min2td, max2td, facecolor='darkgrey',alpha=0.7,
                     label=r'$\pm$2 standard deviations',zorder=2)
         plt.plot(years,ensmeanplot,'-',
-                  color='k',linewidth=3,clip_on=False,label=r'LENS Mean')
+                  color='k',linewidth=3,clip_on=False,label=r'MPI Mean')
         plt.plot(year_obs,spatialmean_obs,color='crimson',linewidth=1.5,
                   dashes=(1,0.3),linestyle='--',label=r'ERA5',zorder=11)
         
         plt.yticks(np.arange(1000,1040,0.25),map(str,np.round(np.arange(1000,1040,0.25),2)),size=6)
-        plt.xticks(np.arange(1920,2101,20),map(str,np.arange(1920,2101,20)),size=6)
-        plt.xlim([1920,2100])   
+        plt.xticks(np.arange(1850,2101,20),map(str,np.arange(1850,2101,20)),size=6)
+        plt.xlim([1850,2099])   
         plt.ylim([np.floor(np.nanmin(spatialmean_obs)),np.ceil(np.nanmax(spatialmean_obs))+0.25])
         
         leg = plt.legend(shadow=False,fontsize=7,loc='upper left',
                       bbox_to_anchor=(-0.01,1),fancybox=True,ncol=1,frameon=False,
                       handlelength=1,handletextpad=0.5)
         
-        plt.text(2100,np.ceil(np.nanmax(spatialmean_modmean))+0.25,
+        plt.text(2099,np.ceil(np.nanmax(spatialmean_modmean))+0.25,
                   r'\underline{\textbf{%s}}' % reg_name,ha='right',fontsize=10,color='k')
     
         if rm_ensemble_mean == True:
@@ -1394,20 +1403,20 @@ if rm_ensemble_mean == False:
         ax.fill_between(years, min2td, max2td, facecolor='darkgrey',alpha=0.7,
                     label=r'$\pm$2 standard deviations',zorder=2)
         plt.plot(years,ensmeanplot,'-',
-                  color='k',linewidth=3,clip_on=False,label=r'LENS Mean')
+                  color='k',linewidth=3,clip_on=False,label=r'MPI Mean')
         plt.plot(year_obs,spatialmean_obs,color='crimson',linewidth=1.5,
                   dashes=(1,0.3),linestyle='--',label=r'ERA5',zorder=11)
         
         plt.yticks(np.arange(-10,100,0.5),map(str,np.round(np.arange(-10,100,0.5),2)),size=6)
-        plt.xticks(np.arange(1920,2101,20),map(str,np.arange(1920,2101,20)),size=6)
-        plt.xlim([1920,2100])   
+        plt.xticks(np.arange(1850,2101,20),map(str,np.arange(1850,2101,20)),size=6)
+        plt.xlim([1850,2099])   
         plt.ylim([np.floor(np.nanmin(spatialmean_obs)),np.ceil(np.nanmax(spatialmean_obs))])
         
         leg = plt.legend(shadow=False,fontsize=7,loc='upper left',
                       bbox_to_anchor=(-0.01,1),fancybox=True,ncol=1,frameon=False,
                       handlelength=1,handletextpad=0.5)
         
-        plt.text(2100,np.ceil(np.nanmax(spatialmean_modmean)),
+        plt.text(2099,np.ceil(np.nanmax(spatialmean_modmean)),
                   r'\underline{\textbf{%s}}' % reg_name,ha='right',fontsize=10,color='k')
     
         if rm_ensemble_mean == True:
@@ -1443,20 +1452,20 @@ if rm_ensemble_mean == False:
         ax.fill_between(years, min2td, max2td, facecolor='darkgrey',alpha=0.7,
                     label=r'$\pm$2 standard deviations',zorder=2)
         plt.plot(years,ensmeanplot,'-',
-                  color='k',linewidth=3,clip_on=False,label=r'LENS Mean')
+                  color='k',linewidth=3,clip_on=False,label=r'MPI Mean')
         plt.plot(year_obs,spatialmean_obs,color='crimson',linewidth=1.5,
                   dashes=(1,0.3),linestyle='--',label=r'ERA5',zorder=11)
         
         plt.yticks(np.arange(-100,100,5),map(str,np.round(np.arange(-100,100,5),2)),size=6)
-        plt.xticks(np.arange(1920,2101,20),map(str,np.arange(1920,2101,20)),size=6)
-        plt.xlim([1920,2100])   
+        plt.xticks(np.arange(1850,2101,20),map(str,np.arange(1850,2101,20)),size=6)
+        plt.xlim([1850,2099])   
         plt.ylim([np.floor(np.nanmin(ensmeanplot))-15,np.ceil(np.nanmax(ensmeanplot))+10])
         
         leg = plt.legend(shadow=False,fontsize=7,loc='upper left',
                       bbox_to_anchor=(-0.01,1),fancybox=True,ncol=1,frameon=False,
                       handlelength=1,handletextpad=0.5)
         
-        plt.text(2100,np.ceil(np.nanmax(spatialmean_modmean))+10,
+        plt.text(2099,np.ceil(np.nanmax(spatialmean_modmean))+10,
                   r'\underline{\textbf{%s}}' % reg_name,ha='right',fontsize=10,color='k')
     
         if rm_ensemble_mean == True:

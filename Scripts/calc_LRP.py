@@ -8,7 +8,7 @@ Notes
     
 Usage
 -----
-    [1] deepTaylorAnalysis(model,XtrainS,Ytrain,biasBool,option4,annType,classChunk,startYear)
+    [1] deepTaylorAnalysis(model,XXt,YYt,biasBool,annType,classChunk,startYear)
     [2] def _gradient_descent_for_bwo(cnn_model_object, loss_tensor,
                                       init_function_or_matrices,
                                       num_iterations,learning_rate):
@@ -23,63 +23,53 @@ Usage
 ###############################################################################
 ###############################################################################
 
-def deepTaylorAnalysis(model,XtrainS,Ytrain,biasBool,option4,annType,classChunk,startYear):
+def deepTaylorAnalysis(model,XXt,YYt,biasBool,annType,classChunk,startYear):
     """
     Calculate Deep Taylor for LRP
     """
+    print('<<<< Started deepTaylorAnalysis() >>>>')
+    
     ### Import modules
     import numpy as np 
     import innvestigate
     import calc_Stats as SSS
     
+    ### Define useful functions
     def invert_year_output(ypred,startYear):
-        if(option4):
-            inverted_years = SSS.convert_fuzzyDecade_toYear(ypred,startYear,
+        inverted_years = SSS.convert_fuzzyDecade_toYear(ypred,startYear,
                                                         classChunk)
-        else:
-            inverted_years = SSS.invert_year_outputChunk(ypred,startYear)
         
         return inverted_years
     
-    yearsUnique = np.unique(Ytrain)
+    ### Define prediction error
+    yearsUnique = np.unique(YYt)
     percCutoff = 90
-    
-    if(option4):
-        withinYearInc = 2.
-        errTolerance = 2. # originally 2 (8/6/2020)      
-    
-    # define prediction error
-    Ypred = model.predict(XtrainS)
+    withinYearInc = 2.
+    errTolerance = withinYearInc  
     if(annType=='class'):
-        err = Ytrain[:,0] - invert_year_output(model.predict(XtrainS),
+        err = YYt[:,0] - invert_year_output(model.predict(XXt),
                                                startYear)
-    elif(annType=='reg'):
-        err = (Ypred*Ystd + Ymean) - Ytrain
     
     ###########################################################################
     ###########################################################################
     ###########################################################################
-    ### Create the innvestigate analyzer instance that we will call for each sample
-    # analyzer = innvestigate.create_analyzer('deep_taylor',innvestigate.utils.model_wo_softmax(model))
-    # analyzer = innvestigate.create_analyzer('deep_taylor',model)
+    ### Create the innvestigate analyzer instance for each sample
     if(annType=='class'):
         model_nosoftmax = innvestigate.utils.model_wo_softmax(model)
-    else:
-        model_nosoftmax = model
     analyzer = innvestigate.analyzer.relevance_based.relevance_analyzer.LRPAlphaBeta(
-                                model_nosoftmax, alpha=1, beta=0, bias=biasBool)
+                                model_nosoftmax,alpha=1,beta=0,bias=biasBool)
 
-    deepTaylorMaps = np.empty(np.shape(XtrainS))
+    deepTaylorMaps = np.empty(np.shape(XXt))
     deepTaylorMaps[:] = np.nan
 
     # analyze each input via the analyzer
-    for ival in np.arange(0,np.shape(XtrainS)[0]):
+    for i in np.arange(0,np.shape(XXt)[0]):
 
         # ensure error is small, i.e. model was correct
-        if(np.abs(err[ival])<=errTolerance):
-            sample = XtrainS[ival]
+        if(np.abs(err[i])<=errTolerance):
+            sample = XXt[i]
             analyzer_output = analyzer.analyze(sample[np.newaxis,...])
-            deepTaylorMaps[ival] = analyzer_output/np.sum(analyzer_output.flatten())
+            deepTaylorMaps[i] = analyzer_output/np.sum(analyzer_output.flatten())
 
     print('done with Deep Taylor analyzer normalization')     
     
@@ -89,37 +79,38 @@ def deepTaylorAnalysis(model,XtrainS,Ytrain,biasBool,option4,annType,classChunk,
     ### Compute the frequency of data at each point and the average relevance 
     ### normalized by the sum over the area and the frequency above the 90th 
     ### percentile of the map
-    yearsUnique = np.unique(Ytrain)
+    yearsUnique = np.unique(YYt)
     summaryDT = np.zeros((len(yearsUnique),np.shape(deepTaylorMaps)[1]))
     summaryDTFreq = np.zeros((len(yearsUnique),np.shape(deepTaylorMaps)[1]))
     summaryNanCount = np.zeros((len(yearsUnique),1))
 
-    for iy, year in enumerate(yearsUnique):
-        ### FIND YEARS WITHIN N YEARS OF EACH YEAR
-        j = np.where(np.abs(Ytrain-year)<=withinYearInc)[0] 
+    for i, year in enumerate(yearsUnique):
+        ### Years within N years of each year
+        j = np.where(np.abs(YYt-year)<=withinYearInc)[0] 
 
-        ### average relevance
+        ### Average relevance
         a = np.nanmean(deepTaylorMaps[j,:],axis=0)
-        summaryDT[iy,:] = a[np.newaxis,...]
+        summaryDT[i,:] = a[np.newaxis,...]
 
-        ### frequency of non-nans
+        ### Frequency of non-nans
         nancount = np.count_nonzero(~np.isnan(deepTaylorMaps[j,1]))
-        summaryNanCount[iy] = nancount
+        summaryNanCount[i] = nancount
 
-        ### frequency above percentile cutoff
+        ### Frequency above percentile cutoff
         count = 0
         for k in j:
             b = deepTaylorMaps[k,:]
             if(~np.isnan(b[0])):
                 count = count + 1
                 pVal = np.percentile(b,percCutoff)
-                summaryDTFreq[iy,:] = summaryDTFreq[iy,:]+np.where(b>=pVal,1,0)
+                summaryDTFreq[i,:] = summaryDTFreq[i,:]+np.where(b>=pVal,1,0)
         if(count==0):
-            summaryDTFreq[iy,:] = 0
+            summaryDTFreq[i,:] = 0
         else:
-            summaryDTFreq[iy,:] = summaryDTFreq[iy,:]/count    
-          
-    return(summaryDT, summaryDTFreq, summaryNanCount)
+            summaryDTFreq[i,:] = summaryDTFreq[i,:]/count    
+     
+    print('<<<< Completed deepTaylorAnalysis() >>>>')    
+    return(summaryDT,summaryDTFreq,summaryNanCount)
 
 ###############################################################################
 ###############################################################################
