@@ -93,7 +93,7 @@ def read_SINGLE_LENS(directory,simulation,vari,sliceperiod,slicebase,sliceshape,
     ### Read in data
     membersvar = []
     for i,ensmember in enumerate(ens):
-        filename = directory + '/%s/monthly/%s_%s_%s.nc' % (simulation,vari,ensmember,timeslice)                                                          
+        filename = directory + '%s/monthly/%s_%s_%s.nc' % (simulation,vari,ensmember,timeslice)                                                          
         data = Dataset(filename,'r')
         lat1 = data.variables['latitude'][:]
         lon1 = data.variables['longitude'][:]
@@ -166,6 +166,8 @@ def read_SINGLE_LENS(directory,simulation,vari,sliceperiod,slicebase,sliceshape,
     if slicenan == 'nan':
         ensshape[np.where(np.isnan(ensshape))] = np.nan
         print('Completed: missing values are =',slicenan)
+    elif slicenan == False:
+        ensshape = ensshape
     else:
         ensshape[np.where(np.isnan(ensshape))] = slicenan
 
@@ -196,18 +198,18 @@ def read_SINGLE_LENS(directory,simulation,vari,sliceperiod,slicebase,sliceshape,
         
 
 ### Test functions - do not use!
-import numpy as np
-import matplotlib.pyplot as plt
-import calc_Utilities as UT
-directory = '/Users/zlabe/Data/LENS/SINGLEFORCING/'
-simulation = 'XAER'
-vari = 'P'
-sliceperiod = 'DJF'
-slicebase = np.arange(1951,1980+1,1)
-sliceshape = 4
-slicenan = 'nan'
-addclimo = True
-takeEnsMean = True
-lat,lon,var,ENSmean = read_SINGLE_LENS(directory,simulation,vari,sliceperiod,
-                                       slicebase,sliceshape,addclimo,
-                                       slicenan,takeEnsMean)
+# import numpy as np
+# import matplotlib.pyplot as plt
+# import calc_Utilities as UT
+# directory = '/Users/zlabe/Data/LENS/SINGLEFORCING/'
+# simulation = 'XAER'
+# vari = 'P'
+# sliceperiod = 'DJF'
+# slicebase = np.arange(1951,1980+1,1)
+# sliceshape = 4
+# slicenan = 'nan'
+# addclimo = True
+# takeEnsMean = True
+# lat,lon,var,ENSmean = read_SINGLE_LENS(directory,simulation,vari,sliceperiod,
+#                                        slicebase,sliceshape,addclimo,
+#                                        slicenan,takeEnsMean)

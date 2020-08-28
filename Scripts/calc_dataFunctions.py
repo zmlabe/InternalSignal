@@ -76,6 +76,18 @@ def readFiles(variq,dataset,monthlychoice):
                                               monthlychoice,sliceyearER,
                                               sliceshapeER,addclimoER,
                                               slicenanER)
+    elif dataset == '20CRv3':
+        import read_20CRv3_monthly as TW
+        directorydataTW = '/Users/zlabe/Data/20CRv3/'
+        sliceyearTW = np.arange(1836,2015+1,1)
+        sliceshapeTW = 3
+        slicenanTW = 'nan'
+        addclimoTW = True
+        ENSmean = np.nan
+        lat1,lon1,data = TW.read_20CRv3_monthly(variq,directorydataTW,
+                                              monthlychoice,sliceyearTW,
+                                              sliceshapeTW,addclimoTW,
+                                              slicenanTW)
     elif any([dataset=='CCCma_canesm2',dataset=='CSIRO_MK3.6',
               dataset=='GFDL_CM3',dataset=='GFDL_ESM2M',
               dataset=='KNMI_ecearth',dataset=='MPI']):
@@ -90,6 +102,20 @@ def readFiles(variq,dataset,monthlychoice):
         lat1,lon1,data,ENSmean = SM.read_SMILE(directorySS,simulationSS,variq,monthlychoice,
                                                 slicebaseSS,sliceshapeSS,addclimoSS,
                                                 slicenanSS,takeEnsMeanSS)
+        
+    elif any([dataset=='XGHG',dataset=='XAER',
+              dataset=='XBMB',dataset=='XLULC']):
+        import read_SINGLE_LENS as SI
+        directorySI = '/Users/zlabe/Data/LENS/SINGLEFORCING/'
+        simulationSI = dataset
+        slicebaseSI = np.arange(1951,1980+1,1)
+        sliceshapeSI = 4
+        slicenanSI = 'nan'
+        addclimoSI = True
+        takeEnsMeanSI = False
+        lat1,lon1,data,ENSmean = SI.read_SINGLE_LENS(directorySI,simulationSI,variq,monthlychoice,
+                                                slicebaseSI,sliceshapeSI,addclimoSI,
+                                                slicenanSI,takeEnsMeanSI)
     else:
         ValueError('WRONG DATA SET SELECTED!')
         
@@ -172,4 +198,4 @@ def getRegion(data,lat1,lon1,lat_bounds,lon_bounds):
 # import numpy as np
 # import matplotlib.pyplot as plt
 # import calc_Utilities as UT
-# data,lat1,lon1,ENSmean = readFiles('T2M','MPI','DJF')
+# data,lat1,lon1 = readFiles('T2M','XLULC','DJF')

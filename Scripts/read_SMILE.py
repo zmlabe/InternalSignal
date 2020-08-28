@@ -188,6 +188,8 @@ def read_SMILE(directory,simulation,vari,sliceperiod,slicebase,sliceshape,addcli
     if slicenan == 'nan':
         ensshape[np.where(np.isnan(ensshape))] = np.nan
         print('Completed: missing values are =',slicenan)
+    elif slicenan == False:
+        ensshape = ensshape
     else:
         ensshape[np.where(np.isnan(ensshape))] = slicenan
 

@@ -83,8 +83,8 @@ experiment_result = pd.DataFrame(columns=['actual iters','hiddens','cascade',
 
 ### Define variable for analysis
 variq = 'T2M'
-monthlychoice = 'DJF'
-reg_name = 'GlobeNoPoles'
+monthlychoice = 'annual'
+reg_name = 'Globe'
 lat_bounds,lon_bounds = UT.regions(reg_name)
 
 ### Define primary dataset to use
@@ -112,7 +112,7 @@ rm_merid_mean = False
 land_only = False
 
 ### Rove the ensemble mean? True to subtract it from dataset
-rm_ensemble_mean = True
+rm_ensemble_mean = False
 
 ### Split the data into training and testing sets? value of 1 will use all 
 ### data as training, .8 will use 80% training, 20% testing; etc.
@@ -847,7 +847,7 @@ elif NNType == 'linear':
 expList = [(0)] # (0,1)
 expN = np.size(expList)
 
-iterations = [100] # [500]#[1500]
+iterations = [500] # [500]#[1500]
 random_segment = True
 foldsN = 1
 
@@ -1029,12 +1029,12 @@ for avgHalfChunk in (0,): # ([1,5,10]):#([1,2,5,10]):
 summaryDT,summaryDTFreq,summaryNanCount=LRP.deepTaylorAnalysis(model,
                                         np.append(XtrainS,XtestS,axis=0),
                                         np.append(Ytrain,Ytest,axis=0),
-                                        biasBool,option4,annType,classChunk,
+                                        biasBool,annType,classChunk,
                                         startYear)
 
 # for training data only
 summaryDTTrain,summaryDTFreqTrain,summaryNanCountTrain=LRP.deepTaylorAnalysis(
-                                        model,XtrainS,Ytrain,biasBool,option4,
+                                        model,XtrainS,Ytrain,biasBool,
                                         annType,classChunk,startYear)
 
 biasBool = False
