@@ -142,6 +142,14 @@ def read_SINGLE_LENS(directory,simulation,vari,sliceperiod,slicebase,sliceshape,
                                                  lat1,lon1,'surface',1)
         print('Shape of output = ', ensshape.shape,[[ensshape.ndim]])
         print('Completed: DJF MEAN!')
+    elif sliceperiod == 'MAM':
+        enstime = np.nanmean(ensvalue[:,:,2:5,:,:],axis=2)
+        if sliceshape == 1:
+            ensshape = enstime.ravel()
+        elif sliceshape == 4:
+            ensshape = enstime
+        print('Shape of output = ', ensshape.shape,[[ensshape.ndim]])
+        print('Completed: MAM MEAN!')
     elif sliceperiod == 'JJA':
         enstime = np.nanmean(ensvalue[:,:,5:8,:,:],axis=2)
         if sliceshape == 1:
@@ -150,6 +158,46 @@ def read_SINGLE_LENS(directory,simulation,vari,sliceperiod,slicebase,sliceshape,
             ensshape = enstime
         print('Shape of output = ', ensshape.shape,[[ensshape.ndim]])
         print('Completed: JJA MEAN!')
+    elif sliceperiod == 'SON':
+        enstime = np.nanmean(ensvalue[:,:,8:11,:,:],axis=2)
+        if sliceshape == 1:
+            ensshape = enstime.ravel()
+        elif sliceshape == 4:
+            ensshape = enstime
+        print('Shape of output = ', ensshape.shape,[[ensshape.ndim]])
+        print('Completed: SON MEAN!')
+    elif sliceperiod == 'JFM':
+        enstime = np.nanmean(ensvalue[:,:,0:3,:,:],axis=2)
+        if sliceshape == 1:
+            ensshape = enstime.ravel()
+        elif sliceshape == 4:
+            ensshape = enstime
+        print('Shape of output = ', ensshape.shape,[[ensshape.ndim]])
+        print('Completed: JFM MEAN!')
+    elif sliceperiod == 'AMJ':
+        enstime = np.nanmean(ensvalue[:,:,3:6,:,:],axis=2)
+        if sliceshape == 1:
+            ensshape = enstime.ravel()
+        elif sliceshape == 4:
+            ensshape = enstime
+        print('Shape of output = ', ensshape.shape,[[ensshape.ndim]])
+        print('Completed: AMJ MEAN!')
+    elif sliceperiod == 'JAS':
+        enstime = np.nanmean(ensvalue[:,:,6:9,:,:],axis=2)
+        if sliceshape == 1:
+            ensshape = enstime.ravel()
+        elif sliceshape == 4:
+            ensshape = enstime
+        print('Shape of output = ', ensshape.shape,[[ensshape.ndim]])
+        print('Completed: JAS MEAN!')
+    elif sliceperiod == 'OND':
+        enstime = np.nanmean(ensvalue[:,:,9:,:,:],axis=2)
+        if sliceshape == 1:
+            ensshape = enstime.ravel()
+        elif sliceshape == 4:
+            ensshape = enstime
+        print('Shape of output = ', ensshape.shape,[[ensshape.ndim]])
+        print('Completed: OND MEAN!')
     elif sliceperiod == 'none':
         if sliceshape == 1:
             ensshape = ensvalue.ravel()
@@ -203,13 +251,13 @@ def read_SINGLE_LENS(directory,simulation,vari,sliceperiod,slicebase,sliceshape,
 # import calc_Utilities as UT
 # directory = '/Users/zlabe/Data/LENS/SINGLEFORCING/'
 # simulation = 'XAER'
-# vari = 'P'
-# sliceperiod = 'DJF'
+# vari = 'T2M'
+# sliceperiod = 'MAM'
 # slicebase = np.arange(1951,1980+1,1)
 # sliceshape = 4
 # slicenan = 'nan'
 # addclimo = True
 # takeEnsMean = True
 # lat,lon,var,ENSmean = read_SINGLE_LENS(directory,simulation,vari,sliceperiod,
-#                                        slicebase,sliceshape,addclimo,
-#                                        slicenan,takeEnsMean)
+#                                         slicebase,sliceshape,addclimo,
+#                                         slicenan,takeEnsMean)

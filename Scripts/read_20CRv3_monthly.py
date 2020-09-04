@@ -105,6 +105,14 @@ def read_20CRv3_monthly(variq,directory,sliceperiod,sliceyear,sliceshape,addclim
         varshape = UT.calcDecJanFeb(varmon,lat1,lon1,'surface',1)
         print('Shape of output = ', varshape.shape,[[varshape.ndim]])
         print('Completed: DJF MEAN!')
+    elif sliceperiod == 'MAM':
+        vartime = np.nanmean(varmon[:,2:5,:,:],axis=1)
+        if sliceshape == 1:
+            varshape = vartime.ravel()
+        elif sliceshape == 3:
+            varshape = vartime
+        print('Shape of output = ', varshape.shape,[[varshape.ndim]])
+        print('Completed: MAM MEAN!')
     elif sliceperiod == 'JJA':
         vartime = np.nanmean(varmon[:,5:8,:,:],axis=1)
         if sliceshape == 1:
@@ -113,6 +121,46 @@ def read_20CRv3_monthly(variq,directory,sliceperiod,sliceyear,sliceshape,addclim
             varshape = vartime
         print('Shape of output = ', varshape.shape,[[varshape.ndim]])
         print('Completed: JJA MEAN!')
+    elif sliceperiod == 'SON':
+        vartime = np.nanmean(varmon[:,8:11,:,:],axis=1)
+        if sliceshape == 1:
+            varshape = vartime.ravel()
+        elif sliceshape == 3:
+            varshape = vartime
+        print('Shape of output = ', varshape.shape,[[varshape.ndim]])
+        print('Completed: SON MEAN!')     
+    elif sliceperiod == 'JFM':
+        vartime = np.nanmean(varmon[:,0:3,:,:],axis=1)
+        if sliceshape == 1:
+            varshape = vartime.ravel()
+        elif sliceshape == 3:
+            varshape = vartime
+        print('Shape of output = ', varshape.shape,[[varshape.ndim]])
+        print('Completed: JFM MEAN!')
+    elif sliceperiod == 'AMJ':
+        vartime = np.nanmean(varmon[:,3:6,:,:],axis=1)
+        if sliceshape == 1:
+            varshape = vartime.ravel()
+        elif sliceshape == 3:
+            varshape = vartime
+        print('Shape of output = ', varshape.shape,[[varshape.ndim]])
+        print('Completed: AMJ MEAN!')
+    elif sliceperiod == 'JAS':
+        vartime = np.nanmean(varmon[:,6:9,:,:],axis=1)
+        if sliceshape == 1:
+            varshape = vartime.ravel()
+        elif sliceshape == 3:
+            varshape = vartime
+        print('Shape of output = ', varshape.shape,[[varshape.ndim]])
+        print('Completed: JAS MEAN!')
+    elif sliceperiod == 'OND':
+        vartime = np.nanmean(varmon[:,9:,:,:],axis=1)
+        if sliceshape == 1:
+            varshape = vartime.ravel()
+        elif sliceshape == 3:
+            varshape = vartime
+        print('Shape of output = ', varshape.shape,[[varshape.ndim]])
+        print('Completed: OND MEAN!')
     elif sliceperiod == 'none':
         vartime = varmon
         if sliceshape == 1:
