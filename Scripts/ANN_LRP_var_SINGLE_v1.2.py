@@ -76,7 +76,7 @@ for sis,singlesimulation in enumerate(datasetsingle):
         ###############################################################################
         ###############################################################################
         ### ANN preliminaries
-        variq = 'P'
+        variq = 'T2M'
         monthlychoice = seasons[seas]
         reg_name = 'Globe'
         lat_bounds,lon_bounds = UT.regions(reg_name)
@@ -85,7 +85,7 @@ for sis,singlesimulation in enumerate(datasetsingle):
         experiment_result = pd.DataFrame(columns=['actual iters','hiddens','cascade',
                                                   'RMSE Train','RMSE Test',
                                                   'ridge penalty','zero mean',
-                                                  'zero merid mean','land only?'])
+                                                  'zero merid mean','land only?','ocean only?'])
         
         
         ### Define primary dataset to use
@@ -106,17 +106,30 @@ for sis,singlesimulation in enumerate(datasetsingle):
             obsyearstart = year_obsall.min()
             year_obs = year_obsall
         
-        ### Remove the annual mean? True to subtract it from dataset
-        rm_annual_mean = False
+        ### Remove the annual mean? True to subtract it from dataset ##########
+        rm_annual_mean = False #################################################
+        if rm_annual_mean == True:
+            directoryfigure = '/Users/zlabe/Desktop/SINGLE_v1.2/rm_annual_mean/'
         
-        ### Remove the meridional mean? True to subtract it from dataset
-        rm_merid_mean = False
+        ### Remove the meridional mean? True to subtract it from dataset ######
+        rm_merid_mean = False #################################################
+        if rm_merid_mean == True:
+            directoryfigure = '/Users/zlabe/Desktop/SINGLE_v1.2/rm_merid_mean/'
         
-        ### Calculate only over land? True if land
-        land_only = False
+        ### Calculate only over land? True if land ############################
+        land_only = False ######################################################
+        if land_only == True:
+            directoryfigure = '/Users/zlabe/Desktop/SINGLE_v1.2/land_only/'
         
-        ### Rove the ensemble mean? True to subtract it from dataset
-        rm_ensemble_mean = False
+        ### Calculate only over ocean? True if ocean ##########################
+        ocean_only = True #####################################################
+        if ocean_only == True:
+            directoryfigure = '/Users/zlabe/Desktop/SINGLE_v1.2/ocean_only/'
+        
+        ### Rove the ensemble mean? True to subtract it from dataset ##########
+        rm_ensemble_mean = False ##############################################
+        if rm_ensemble_mean == True:
+            directoryfigure = '/Users/zlabe/Desktop/SINGLE_v1.2/rm_ensemble_mean/'
         
         ### Split the data into training and testing sets? value of 1 will use all 
         ### data as training, .8 will use 80% training, 20% testing; etc.
@@ -566,7 +579,7 @@ for sis,singlesimulation in enumerate(datasetsingle):
             # plt.annotate(savename,(0,.98),xycoords='figure fraction',
             #              fontsize=5,
             #              color='gray')
-            plt.savefig(directoryfigure+savefigName+'_%s.png' % monthlychoice,
+            plt.savefig(directoryfigure+savefigName+'_%s_land%s_ocean%s.png' % (monthlychoice,land_only,ocean_only),
                         dpi=300)      
             print(np.round(np.corrcoef(yearsObs,YpredObs)[0,1],2))
             return 
@@ -721,6 +734,7 @@ for sis,singlesimulation in enumerate(datasetsingle):
                                         'zero mean' : rm_annual_mean,
                                         'zero merid mean' : rm_merid_mean,
                                         'land only?' : land_only,
+                                        'ocean only?' : ocean_only,
                                         'Segment Seed' : random_segment_seed,
                                         'Network Seed' : random_network_seed }
                         results.update(this_result)
@@ -901,6 +915,12 @@ for sis,singlesimulation in enumerate(datasetsingle):
                     if rm_ensemble_mean == True:
                         data = dSS.remove_ensemble_mean(data)
                         print('*Removed ensemble mean*')
+                        
+                    if land_only == True:
+                        data, data_obs = dSS.remove_ocean(data,data_obs) 
+
+                    if ocean_only == True:
+                        data, data_obs = dSS.remove_land(data,data_obs) 
         
                     for ih in np.arange(0,len(hiddensList)):
                         hiddens = [hiddensList[ih]]
@@ -1090,6 +1110,7 @@ for sis,singlesimulation in enumerate(datasetsingle):
         print(rm_merid_mean,'= rm_merid_mean') 
         print(rm_ensemble_mean,'= rm_ensemble_mean') 
         print(land_only,'= land_only')
+        print(ocean_only,'= ocean_only')
         
         ## Variables for plotting
         lons2,lats2 = np.meshgrid(lons,lats) 
@@ -1152,7 +1173,7 @@ for sis,singlesimulation in enumerate(datasetsingle):
             
             plt.tight_layout()
             
-            plt.savefig(directoryfigure + '%s/LRPsubplots_%s_%s_%s_%s_.png' % (variq,variq,monthlychoice,reg_name,dataset),dpi=300)
+            plt.savefig(directoryfigure + '%s/LRPsubplots_%s_%s_%s_%s_land%s_ocean%s.png' % (variq,variq,monthlychoice,reg_name,dataset,land_only,ocean_only),dpi=300)
         elif years.max() == 2080:
             lrpsub = np.empty((7,lats.shape[0],lons.shape[0]))
             for i,yr in enumerate(range(0,lrp.shape[0],len(years)//7)):
@@ -1200,7 +1221,7 @@ for sis,singlesimulation in enumerate(datasetsingle):
             
             plt.tight_layout()
             
-            plt.savefig(directoryfigure + '%s/LRPsubplots_%s_%s_%s_%s_.png' % (variq,variq,monthlychoice,reg_name,dataset),dpi=300)
+            plt.savefig(directoryfigure + '%s/LRPsubplots_%s_%s_%s_%s_land%s_ocean%s.png' % (variq,variq,monthlychoice,reg_name,dataset,land_only,ocean_only),dpi=300)
         elif years.max() == 2100:
             lrp = lrp[:-1,:,:]
             lrpsub = np.empty((9,lats.shape[0],lons.shape[0]))
@@ -1250,7 +1271,7 @@ for sis,singlesimulation in enumerate(datasetsingle):
             plt.tight_layout()
             plt.subplots_adjust(bottom=0.13)
             
-            plt.savefig(directoryfigure + '%s/LRPsubplots_%s_%s_%s_%s_.png' % (variq,variq,monthlychoice,reg_name,dataset),dpi=300)
+            plt.savefig(directoryfigure + '%s/LRPsubplots_%s_%s_%s_%s_land%s_ocean%s.png' % (variq,variq,monthlychoice,reg_name,dataset,land_only,ocean_only),dpi=300)
                 
         ##############################################################################
         ##############################################################################
@@ -1296,15 +1317,15 @@ for sis,singlesimulation in enumerate(datasetsingle):
                           r'\underline{\textbf{%s}}' % reg_name,ha='right',fontsize=10,color='k')
             
                 if rm_ensemble_mean == True:
-                    plt.savefig(directoryfigure + '%s/MEAN_%s_%s_%s_%s_ENSMEAN-REMOVED.png' % (variq,variq,
+                    plt.savefig(directoryfigure + '%s/MEAN_%s_%s_%s_%s_ENSMEAN-REMOVED_land%s_ocean%s.png' % (variq,variq,
                                                                                               monthlychoice,
                                                                                               reg_name,
-                                                                                              dataset),dpi=300)
+                                                                                              dataset,land_only,ocean_only),dpi=300)
                 else:
-                    plt.savefig(directoryfigure + '%s/MEAN_%s_%s_%s_%s.png' % (variq,variq,
+                    plt.savefig(directoryfigure + '%s/MEAN_%s_%s_%s_%s_land%s_ocean%s.png' % (variq,variq,
                                                                                           monthlychoice,
                                                                                           reg_name,
-                                                                                          dataset),dpi=300)
+                                                                                          dataset,land_only,ocean_only),dpi=300)
                     
             elif variq == 'SLP':
                 fig = plt.figure()
@@ -1345,15 +1366,15 @@ for sis,singlesimulation in enumerate(datasetsingle):
                           r'\underline{\textbf{%s}}' % reg_name,ha='right',fontsize=10,color='k')
             
                 if rm_ensemble_mean == True:
-                    plt.savefig(directoryfigure + '%s/MEAN_%s_%s_%s_%s_ENSMEAN-REMOVED.png' % (variq,variq,
+                    plt.savefig(directoryfigure + '%s/MEAN_%s_%s_%s_%s_ENSMEAN-REMOVED_land%s_ocean%s.png' % (variq,variq,
                                                                                               monthlychoice,
                                                                                               reg_name,
-                                                                                              dataset),dpi=300)
+                                                                                              dataset,land_only,ocean_only),dpi=300)
                 else:
-                    plt.savefig(directoryfigure + '%s/MEAN_%s_%s_%s_%s.png' % (variq,variq,
+                    plt.savefig(directoryfigure + '%s/MEAN_%s_%s_%s_%s_land%s_ocean%s.png' % (variq,variq,
                                                                                           monthlychoice,
                                                                                           reg_name,
-                                                                                          dataset),dpi=300)
+                                                                                          dataset,land_only,ocean_only),dpi=300)
                 
             elif variq == 'U250':
                 fig = plt.figure()
@@ -1394,15 +1415,15 @@ for sis,singlesimulation in enumerate(datasetsingle):
                           r'\underline{\textbf{%s}}' % reg_name,ha='right',fontsize=10,color='k')
             
                 if rm_ensemble_mean == True:
-                    plt.savefig(directoryfigure + '%s/MEAN_%s_%s_%s_%s_ENSMEAN-REMOVED.png' % (variq,variq,
+                    plt.savefig(directoryfigure + '%s/MEAN_%s_%s_%s_%s_ENSMEAN-REMOVED_land%s_ocean%s.png' % (variq,variq,
                                                                                               monthlychoice,
                                                                                               reg_name,
-                                                                                              dataset),dpi=300)
+                                                                                              dataset,land_only,ocean_only),dpi=300)
                 else:
-                    plt.savefig(directoryfigure + '%s/MEAN_%s_%s_%s_%s.png' % (variq,variq,
+                    plt.savefig(directoryfigure + '%s/MEAN_%s_%s_%s_%s_land%s_ocean%s.png' % (variq,variq,
                                                                                           monthlychoice,
                                                                                           reg_name,
-                                                                                          dataset),dpi=300)
+                                                                                          dataset,land_only,ocean_only),dpi=300)
         
             elif variq == 'U10':
                 fig = plt.figure()
@@ -1443,15 +1464,15 @@ for sis,singlesimulation in enumerate(datasetsingle):
                           r'\underline{\textbf{%s}}' % reg_name,ha='right',fontsize=10,color='k')
             
                 if rm_ensemble_mean == True:
-                    plt.savefig(directoryfigure + '%s/MEAN_%s_%s_%s_%s_ENSMEAN-REMOVED.png' % (variq,variq,
+                    plt.savefig(directoryfigure + '%s/MEAN_%s_%s_%s_%s_ENSMEAN-REMOVED_land%s_ocean%s.png' % (variq,variq,
                                                                                               monthlychoice,
                                                                                               reg_name,
-                                                                                              dataset),dpi=300)
+                                                                                              dataset,land_only,ocean_only),dpi=300)
                 else:
-                    plt.savefig(directoryfigure + '%s/MEAN_%s_%s_%s_%s.png' % (variq,variq,
+                    plt.savefig(directoryfigure + '%s/MEAN_%s_%s_%s_%s_land%s_ocean%s_land%s_ocean%s.png' % (variq,variq,
                                                                                           monthlychoice,
                                                                                           reg_name,
-                                                                                          dataset),dpi=300)
+                                                                                          dataset,land_only,ocean_only),dpi=300)
             elif variq == 'T2M':
                 fig = plt.figure()
                 ax = plt.subplot(111)
@@ -1491,15 +1512,15 @@ for sis,singlesimulation in enumerate(datasetsingle):
                           r'\underline{\textbf{%s}}' % reg_name,ha='right',fontsize=10,color='k')
             
                 if rm_ensemble_mean == True:
-                    plt.savefig(directoryfigure + '%s/MEAN_%s_%s_%s_%s_ENSMEAN-REMOVED.png' % (variq,variq,
+                    plt.savefig(directoryfigure + '%s/MEAN_%s_%s_%s_%s_ENSMEAN-REMOVED_land%s_ocean%s.png' % (variq,variq,
                                                                                               monthlychoice,
                                                                                               reg_name,
-                                                                                              dataset),dpi=300)
+                                                                                              dataset,land_only,ocean_only),dpi=300)
                 else:
-                    plt.savefig(directoryfigure + '%s/MEAN_%s_%s_%s_%s.png' % (variq,variq,
+                    plt.savefig(directoryfigure + '%s/MEAN_%s_%s_%s_%s_land%s_ocean%s.png' % (variq,variq,
                                                                                           monthlychoice,
                                                                                           reg_name,
-                                                                                          dataset),dpi=300)
+                                                                                          dataset,land_only,ocean_only),dpi=300)
         ### Append maps of lrp
         lrpsns.append(lrp)
     lrpsns = np.asarray(lrpsns)
@@ -1548,7 +1569,7 @@ for sis,singlesimulation in enumerate(datasetsingle):
     cbar.outline.set_edgecolor('dimgrey')
     
     plt.tight_layout()
-    plt.savefig(directoryfigure + 'Seasons/%s/LRPseasons_%s_%s_%s_.png' % (variq,variq,reg_name,dataset),dpi=300)
+    plt.savefig(directoryfigure + 'Seasons/%s/LRPseasons_%s_%s_%s_land%s_ocean%s.png' % (variq,variq,reg_name,dataset,land_only,ocean_only),dpi=300)
       
     ### Delete memory!!!
     if sis < len(datasetsingle):

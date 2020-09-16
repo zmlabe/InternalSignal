@@ -10,9 +10,11 @@ Usage
 -----
     [1] rmse(a,b)
     [2] remove_annual_mean(data,data_obs,lats,lons,lats_obs,lons_obs)
-    [3] remove_merid_mean(data, data_obs)
+    [3] remove_merid_mean(data,data_obs)
     [4] remove_ensemble_mean(data)
-    [5] standardize_data(Xtrain,Xtest)
+    [5] remove_ocean(data,data_obs)
+    [6] remove_land(data,data_obs)
+    [7] standardize_data(Xtrain,Xtest)
 """
 
 def rmse(a,b):
@@ -73,6 +75,50 @@ def remove_ensemble_mean(data):
     datameangone = data - np.nanmean(data,axis=0)
     
     return datameangone
+
+def remove_ocean(data, data_obs):
+    """
+    Masks out the ocean for land_only == True
+    """
+    
+    ### Import modules
+    import numpy as np
+    from netCDF4 import Dataset
+    
+    ### Read in land mask
+    directorydata = '/Users/zlabe/Data/masks/'
+    filename = 'lsmask_19x25.nc'
+    datafile = Dataset(directorydata + filename)
+    mask = datafile.variables['nmask'][:]
+    datafile.close()
+    
+    ### Mask out model and observations
+    datamask = data * mask
+    data_obsmask = data_obs * mask
+    
+    return datamask, data_obsmask
+
+def remove_land(data, data_obs):
+    """
+    Masks out the ocean for ocean_only == True
+    """
+    
+    ### Import modules
+    import numpy as np
+    from netCDF4 import Dataset
+    
+    ### Read in ocean mask
+    directorydata = '/Users/zlabe/Data/masks/'
+    filename = 'ocmask_19x25.nc'
+    datafile = Dataset(directorydata + filename)
+    mask = datafile.variables['nmask'][:]
+    datafile.close()
+    
+    ### Mask out model and observations
+    datamask = data * mask
+    data_obsmask = data_obs * mask
+    
+    return datamask, data_obsmask
 
 def standardize_data(Xtrain,Xtest):
     """
