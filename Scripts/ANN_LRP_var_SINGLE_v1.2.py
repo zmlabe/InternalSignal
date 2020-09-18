@@ -107,7 +107,7 @@ for sis,singlesimulation in enumerate(datasetsingle):
             year_obs = year_obsall
         
         ### Remove the annual mean? True to subtract it from dataset ##########
-        rm_annual_mean = False #################################################
+        rm_annual_mean = True #################################################
         if rm_annual_mean == True:
             directoryfigure = '/Users/zlabe/Desktop/SINGLE_v1.2/rm_annual_mean/'
         
@@ -122,7 +122,7 @@ for sis,singlesimulation in enumerate(datasetsingle):
             directoryfigure = '/Users/zlabe/Desktop/SINGLE_v1.2/land_only/'
         
         ### Calculate only over ocean? True if ocean ##########################
-        ocean_only = True #####################################################
+        ocean_only = False #####################################################
         if ocean_only == True:
             directoryfigure = '/Users/zlabe/Desktop/SINGLE_v1.2/ocean_only/'
         
