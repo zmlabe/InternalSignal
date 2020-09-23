@@ -113,6 +113,38 @@ def read_ERA5_monthly(variq,directory,sliceperiod,sliceyear,sliceshape,addclimo,
             varshape = vartime
         print('Shape of output = ', varshape.shape,[[varshape.ndim]])
         print('Completed: JJA MEAN!')
+    elif sliceperiod == 'JFM':
+        vartime = np.nanmean(varmon[:,0:3,:,:],axis=1)
+        if sliceshape == 1:
+            varshape = vartime.ravel()
+        elif sliceshape == 3:
+            varshape = vartime
+        print('Shape of output = ', varshape.shape,[[varshape.ndim]])
+        print('Completed: JFM MEAN!')
+    elif sliceperiod == 'AMJ':
+        vartime = np.nanmean(varmon[:,3:6,:,:],axis=1)
+        if sliceshape == 1:
+            varshape = vartime.ravel()
+        elif sliceshape == 3:
+            varshape = vartime
+        print('Shape of output = ', varshape.shape,[[varshape.ndim]])
+        print('Completed: AMJ MEAN!')
+    elif sliceperiod == 'JAS':
+        vartime = np.nanmean(varmon[:,6:9,:,:],axis=1)
+        if sliceshape == 1:
+            varshape = vartime.ravel()
+        elif sliceshape == 3:
+            varshape = vartime
+        print('Shape of output = ', varshape.shape,[[varshape.ndim]])
+        print('Completed: JAS MEAN!')
+    elif sliceperiod == 'OND':
+        vartime = np.nanmean(varmon[:,9:,:,:],axis=1)
+        if sliceshape == 1:
+            varshape = vartime.ravel()
+        elif sliceshape == 3:
+            varshape = vartime
+        print('Shape of output = ', varshape.shape,[[varshape.ndim]])
+        print('Completed: OND MEAN!')
     elif sliceperiod == 'none':
         vartime = varmon
         if sliceshape == 1:
@@ -145,12 +177,12 @@ def read_ERA5_monthly(variq,directory,sliceperiod,sliceyear,sliceshape,addclimo,
     print('>>>>>>>>>> ENDING read_ERA5_monthly function!')
     return lat1,lon1,varshape
 
-### Test functions - do not use!
+# ### Test functions - do not use!
 # import numpy as np
 # import matplotlib.pyplot as plt
 # variq = 'T2M'
 # directory = '/Users/zlabe/Data/ERA5/'
-# sliceperiod = 'DJF'
+# sliceperiod = 'OND'
 # sliceyear = np.arange(1979,2019+1,1)
 # sliceshape = 3
 # slicenan = 'nan'
