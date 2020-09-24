@@ -75,9 +75,10 @@ yearsall = [timexghg,timexaer,timexbmb,timexlulc,timelens]
 directoriesall = [directorydataLLS,directorydataLLS,directorydataLLS,
                   directorydataLLS,directorydataLLL]
 
-datasetsingle = ['XLULC']
-directoriesall = [directorydataLLS]
-yearsall = [timexlulc]
+# datasetsingle = ['XLULC']
+# directoriesall = [directorydataLLS]
+# yearsall = [timexlulc]
+# seasons = ['annual']
     
 for sis,singlesimulation in enumerate(datasetsingle):
     lrpsns = []
@@ -91,7 +92,7 @@ for sis,singlesimulation in enumerate(datasetsingle):
         monthlychoice = seasons[seas]
         reg_name = 'Globe'
         lat_bounds,lon_bounds = UT.regions(reg_name)
-        directoryfigure = '/Users/zlabe/Desktop/SINGLE_v1.3/ERA5/'
+        directoryfigure = '/Users/zlabe/Desktop/SINGLE_v1.3/'
         
         experiment_result = pd.DataFrame(columns=['actual iters','hiddens','cascade',
                                                   'RMSE Train','RMSE Test',
@@ -1125,7 +1126,112 @@ for sis,singlesimulation in enumerate(datasetsingle):
         spatialmean_obs = UT.calc_weightedAve(observations,lats2)
         spatialmean_mod = UT.calc_weightedAve(modeldata,lats2)
         spatialmean_modmean = np.nanmean(spatialmean_mod,axis=0)
+        
+        ##############################################################################
+        ##############################################################################
+        ##############################################################################
+        if dataset == 'lens':
+            ### Plot subplot of changes in LRP for OBSERVATIONS
+            if year_obsall.max() == 2015:
+                lrpsubobs = np.empty((4,lats.shape[0],lons.shape[0]))
+                for i,yr in enumerate(range(0,lrpobs.shape[0],len(year_obsall)//4)):
+                    lrpsubobs[i,:,:] = np.nanmean(lrpobs[yr:yr+(len(year_obsall)//4),:,:],axis=0)
+                
+                fig = plt.figure(figsize=(10,3))
+                for i,yr in enumerate(range(0,lrpobs.shape[0],len(year_obsall)//4)):
+                    plt.subplot(1,4,i+1)
+                    
+                    m = Basemap(projection='moll',lon_0=0,resolution='l',area_thresh=10000)
+                    circle = m.drawmapboundary(fill_color='k')
+                    circle.set_clip_on(False) 
+                    m.drawcoastlines(color='darkgrey',linewidth=0.5)
+                    
+                    ### Colorbar limits
+                    barlim = np.round(np.arange(0,0.8,0.1),2)
+                    
+                    ### Take LRP mean
+                    varlrpsubobs = lrpsubobs[i,:,:]
+                    
+                    var, lons_cyclic = addcyclic(varlrpsubobs, lons)
+                    var, lons_cyclic = shiftgrid(180., var, lons_cyclic, start=False)
+                    lon2d, lat2d = np.meshgrid(lons_cyclic, lats)
+                    x, y = m(lon2d, lat2d)
+                    
+                    ### Make the plot continuous
+                    cs = m.contourf(x,y,var,np.arange(0,0.71,0.01),
+                                    extend='max')                
+                    cmap = cm.classic_16.mpl_colormap          
+                    cs.set_cmap(cmap)
+                    
+                    plt.title(r'\textbf{%s--%s}' % (year_obsall[yr],year_obsall[yr+(len(year_obsall)//4)-1]),
+                              color='dimgrey',fontsize=8)
+                    
+                cbar_ax = fig.add_axes([0.293,0.2,0.4,0.03])             
+                cbar = fig.colorbar(cs,cax=cbar_ax,orientation='horizontal',
+                                    extend='max',extendfrac=0.07,drawedges=False)
+                
+                cbar.set_label(r'\textbf{RELEVANCE}',fontsize=11,color='dimgrey',labelpad=1.4)  
+                
+                cbar.set_ticks(barlim)
+                cbar.set_ticklabels(list(map(str,barlim)))
+                cbar.ax.tick_params(axis='x', size=.01,labelsize=8)
+                cbar.outline.set_edgecolor('dimgrey')
+                
+                plt.tight_layout()
+                
+                plt.savefig(directoryfigure + 'OBS/%s/LRPsubplots_%s_%s_%s_%s_land%s_ocean%s.png' % (variq,variq,monthlychoice,reg_name,dataset_obs,land_only,ocean_only),dpi=300)
     
+            elif year_obsall.max() == 2019:
+                lrpobsq = lrpobs[:-1,:,:]
+                year_obsallq = year_obsall[:-1]
+                lrpsubobsq = np.empty((2,lats.shape[0],lons.shape[0]))
+                for i,yr in enumerate(range(0,lrpobsq.shape[0],len(year_obsallq)//2)):
+                    lrpsubobsq[i,:,:] = np.nanmean(lrpobsq[yr:yr+(len(year_obsallq)//2),:,:],axis=0)
+                
+                fig = plt.figure(figsize=(6,3))
+                for i,yr in enumerate(range(0,lrpobsq.shape[0],len(year_obsallq)//2)):
+                    plt.subplot(1,2,i+1)
+                    
+                    m = Basemap(projection='moll',lon_0=0,resolution='l',area_thresh=10000)
+                    circle = m.drawmapboundary(fill_color='k')
+                    circle.set_clip_on(False) 
+                    m.drawcoastlines(color='darkgrey',linewidth=0.5)
+                    
+                    ### Colorbar limits
+                    barlim = np.round(np.arange(0,0.8,0.1),2)
+                    
+                    ### Take LRP mean
+                    varlrpsubobsq = lrpsubobsq[i,:,:]
+                    
+                    var, lons_cyclic = addcyclic(varlrpsubobsq, lons)
+                    var, lons_cyclic = shiftgrid(180., var, lons_cyclic, start=False)
+                    lon2d, lat2d = np.meshgrid(lons_cyclic, lats)
+                    x, y = m(lon2d, lat2d)
+                    
+                    ### Make the plot continuous
+                    cs = m.contourf(x,y,var,np.arange(0,0.71,0.01),
+                                    extend='max')                
+                    cmap = cm.classic_16.mpl_colormap          
+                    cs.set_cmap(cmap)
+                    
+                    plt.title(r'\textbf{%s--%s}' % (year_obsallq[yr],year_obsallq[yr+(len(year_obsallq)//2)-1]),
+                              color='dimgrey',fontsize=8)
+                    
+                cbar_ax = fig.add_axes([0.293,0.2,0.4,0.03])             
+                cbar = fig.colorbar(cs,cax=cbar_ax,orientation='horizontal',
+                                    extend='max',extendfrac=0.07,drawedges=False)
+                
+                cbar.set_label(r'\textbf{RELEVANCE}',fontsize=11,color='dimgrey',labelpad=1.4)  
+                
+                cbar.set_ticks(barlim)
+                cbar.set_ticklabels(list(map(str,barlim)))
+                cbar.ax.tick_params(axis='x', size=.01,labelsize=8)
+                cbar.outline.set_edgecolor('dimgrey')
+                
+                plt.tight_layout()
+                
+                plt.savefig(directoryfigure + 'OBS/%s/LRPsubplots_%s_%s_%s_%s_land%s_ocean%s.png' % (variq,variq,monthlychoice,reg_name,dataset_obs,land_only,ocean_only),dpi=300)    
+        
         ##############################################################################
         ##############################################################################
         ##############################################################################
@@ -1544,7 +1650,7 @@ for sis,singlesimulation in enumerate(datasetsingle):
         m.drawcoastlines(color='darkgrey',linewidth=0.35)
         
         ### Colorbar limits
-        barlim = np.round(np.arange(0,0.6,0.1),2)
+        barlim = np.round(np.arange(0,0.8,0.1),2)
         
         ### Take lrp mean over all years
         lrpseason = np.nanmean(lrpsns[iii,:,:,:],axis=0)
@@ -1555,7 +1661,7 @@ for sis,singlesimulation in enumerate(datasetsingle):
         x, y = m(lon2d, lat2d)
         
         ### Make the plot continuous
-        cs = m.contourf(x,y,var,np.arange(0,0.51,0.01),
+        cs = m.contourf(x,y,var,np.arange(0,0.71,0.01),
                         extend='max')                
         cmap = cm.classic_16.mpl_colormap          
         cs.set_cmap(cmap)
@@ -1581,48 +1687,49 @@ for sis,singlesimulation in enumerate(datasetsingle):
     ######################################################################
     ######################################################################
     ## Plot subplot of LRP seasons OBSERVATIONS
-    fig = plt.figure(figsize=(10,2.5))
-    for iii in range(len(seasons)):
-        plt.subplot(1,5,iii+1)
-                
-        m = Basemap(projection='moll',lon_0=0,resolution='l',area_thresh=10000)
-        circle = m.drawmapboundary(fill_color='k')
-        circle.set_clip_on(False) 
-        m.drawcoastlines(color='darkgrey',linewidth=0.35)
+    if dataset == 'lens':
+        fig = plt.figure(figsize=(10,2.5))
+        for iii in range(len(seasons)):
+            plt.subplot(1,5,iii+1)
+                    
+            m = Basemap(projection='moll',lon_0=0,resolution='l',area_thresh=10000)
+            circle = m.drawmapboundary(fill_color='k')
+            circle.set_clip_on(False) 
+            m.drawcoastlines(color='darkgrey',linewidth=0.35)
+            
+            ### Colorbar limits
+            barlim = np.round(np.arange(0,0.8,0.1),2)
+            
+            ### Take lrp mean over all years
+            lrpseasonobs = np.nanmean(lrpobssns[iii,:,:,:],axis=0)
+            
+            var, lons_cyclic = addcyclic(lrpseasonobs, lons)
+            var, lons_cyclic = shiftgrid(180., var, lons_cyclic, start=False)
+            lon2d, lat2d = np.meshgrid(lons_cyclic, lats)
+            x, y = m(lon2d, lat2d)
+            
+            ### Make the plot continuous
+            cs = m.contourf(x,y,var,np.arange(0,0.71,0.01),
+                            extend='max')                
+            cmap = cm.classic_16.mpl_colormap          
+            cs.set_cmap(cmap)
+            
+            plt.title(r'\textbf{%s}' % (seasons[iii]),
+                      color='dimgrey',fontsize=14)
+            
+        cbar_ax = fig.add_axes([0.293,0.2,0.4,0.03])             
+        cbar = fig.colorbar(cs,cax=cbar_ax,orientation='horizontal',
+                            extend='max',extendfrac=0.07,drawedges=False)
         
-        ### Colorbar limits
-        barlim = np.round(np.arange(0,0.6,0.1),2)
+        cbar.set_label(r'\textbf{RELEVANCE}',fontsize=11,color='dimgrey',labelpad=1.4)  
         
-        ### Take lrp mean over all years
-        lrpseasonobs = np.nanmean(lrpobssns[iii,:,:,:],axis=0)
+        cbar.set_ticks(barlim)
+        cbar.set_ticklabels(list(map(str,barlim)))
+        cbar.ax.tick_params(axis='x', size=.01,labelsize=8)
+        cbar.outline.set_edgecolor('dimgrey')
         
-        var, lons_cyclic = addcyclic(lrpseasonobs, lons)
-        var, lons_cyclic = shiftgrid(180., var, lons_cyclic, start=False)
-        lon2d, lat2d = np.meshgrid(lons_cyclic, lats)
-        x, y = m(lon2d, lat2d)
-        
-        ### Make the plot continuous
-        cs = m.contourf(x,y,var,np.arange(0,0.51,0.01),
-                        extend='max')                
-        cmap = cm.classic_16.mpl_colormap          
-        cs.set_cmap(cmap)
-        
-        plt.title(r'\textbf{%s}' % (seasons[iii]),
-                  color='dimgrey',fontsize=14)
-        
-    cbar_ax = fig.add_axes([0.293,0.2,0.4,0.03])             
-    cbar = fig.colorbar(cs,cax=cbar_ax,orientation='horizontal',
-                        extend='max',extendfrac=0.07,drawedges=False)
-    
-    cbar.set_label(r'\textbf{RELEVANCE}',fontsize=11,color='dimgrey',labelpad=1.4)  
-    
-    cbar.set_ticks(barlim)
-    cbar.set_ticklabels(list(map(str,barlim)))
-    cbar.ax.tick_params(axis='x', size=.01,labelsize=8)
-    cbar.outline.set_edgecolor('dimgrey')
-    
-    plt.tight_layout()
-    plt.savefig(directoryfigure + 'OBS/Seasons/%s/LRPseasons_%s_%s_%s_land%s_ocean%s.png' % (variq,variq,reg_name,dataset_obs,land_only,ocean_only),dpi=300)
+        plt.tight_layout()
+        plt.savefig(directoryfigure + 'OBS/Seasons/%s/LRPseasons_%s_%s_%s_land%s_ocean%s.png' % (variq,variq,reg_name,dataset_obs,land_only,ocean_only),dpi=300)
       
     ### Delete memory!!!
     if sis < len(datasetsingle):
