@@ -68,6 +68,7 @@ directoriesall = [directorydataLLS,directorydataLLS,directorydataLLS,
 # datasetsingle = ['XLULC']
 # directoriesall = [directorydataLLS]
 # yearsall = [timexlulc]
+# seasons = ['annual']
     
 for sis,singlesimulation in enumerate(datasetsingle):
     lrpsns = []
@@ -107,7 +108,7 @@ for sis,singlesimulation in enumerate(datasetsingle):
             year_obs = year_obsall
         
         ### Remove the annual mean? True to subtract it from dataset ##########
-        rm_annual_mean = True #################################################
+        rm_annual_mean = False #################################################
         if rm_annual_mean == True:
             directoryfigure = '/Users/zlabe/Desktop/SINGLE_v1.2/rm_annual_mean/'
         
@@ -1097,6 +1098,7 @@ for sis,singlesimulation in enumerate(datasetsingle):
         numLons = lons.shape[0]   
         perclrp = x_perc.reshape(np.shape(summaryDTScaled)[0],numLats,numLons)
         lrp = summaryDTScaled.reshape(np.shape(summaryDTScaled)[0],numLats,numLons)*1000
+        lrpall = lrp.copy()
         
         ## Define variable for analysis
         print('\n\n------------------------')
@@ -1521,6 +1523,112 @@ for sis,singlesimulation in enumerate(datasetsingle):
                                                                                           monthlychoice,
                                                                                           reg_name,
                                                                                           dataset,land_only,ocean_only),dpi=300)
+        
+        ####################################################################### 
+        #######################################################################   
+        #######################################################################   
+        ### Save time series of LRP
+        time_perclrp = perclrp.copy()
+        time_lrp = lrpall.copy()
+        lats1 = lats.copy()
+        lons1 = lons.copy()
+        directorystoredata = '/Users/zlabe/Documents/Research/InternalSignal/Data/'
+        
+        ### Southeast Asia
+        lataq = np.where((lats1 >= 10) & (lats1 <= 35))[0]
+        lata1 = lats1[lataq]
+        lonaq = np.where((lons1 >= 90) & (lons1 <= 115))[0]
+        lona1 = lons1[lonaq]
+        time_perclrpA1 = time_perclrp[:,lataq,:]
+        time_perclrpA = time_perclrpA1[:,:,lonaq]
+        time_lrpA1 = time_lrp[:,lataq,:]
+        time_lrpA = time_lrpA1[:,:,lonaq]
+        lona2,lata2 = np.meshgrid(lona1,lata1)
+        
+        mean_perclrpA = UT.calc_weightedAve(time_perclrpA,lata2)
+        mean_lrpA = UT.calc_weightedAve(time_lrpA,lata2)
+        
+        filenameA1 = 'LRP_TimeSeries_SEA_%s_%s_%s_%s_land%s_ocean%s.txt' % (variq,monthlychoice,reg_name,dataset,land_only,ocean_only)
+        np.savetxt(directorystoredata + filenameA1,np.column_stack([years,mean_lrpA]))
+        filenameA2 = 'PercLRP_TimeSeries_SEA_%s_%s_%s_%s_land%s_ocean%s.txt' % (variq,monthlychoice,reg_name,dataset,land_only,ocean_only)
+        np.savetxt(directorystoredata + filenameA2,np.column_stack([years,mean_perclrpA]))
+        
+        ### India
+        latiq = np.where((lats1 >= 10) & (lats1 <= 35))[0]
+        lati1 = lats1[latiq]
+        loniq = np.where((lons1 >= 60) & (lons1 <= 90))[0]
+        loni1 = lons1[loniq]
+        time_perclrpI1 = time_perclrp[:,latiq,:]
+        time_perclrpI = time_perclrpI1[:,:,loniq]
+        time_lrpI1 = time_lrp[:,latiq,:]
+        time_lrpI = time_lrpI1[:,:,loniq]
+        loni2,lati2 = np.meshgrid(loni1,lati1)
+        
+        mean_perclrpI = UT.calc_weightedAve(time_perclrpI,lati2)
+        mean_lrpI = UT.calc_weightedAve(time_lrpI,lati2)
+        
+        filenameI1 = 'LRP_TimeSeries_India_%s_%s_%s_%s_land%s_ocean%s.txt' % (variq,monthlychoice,reg_name,dataset,land_only,ocean_only)
+        np.savetxt(directorystoredata + filenameI1,np.column_stack([years,mean_lrpI]))
+        filenameI2 = 'PercLRP_TimeSeries_India_%s_%s_%s_%s_land%s_ocean%s.txt' % (variq,monthlychoice,reg_name,dataset,land_only,ocean_only)
+        np.savetxt(directorystoredata + filenameI2,np.column_stack([years,mean_perclrpI]))
+        
+        ### North Atlantic Warming Hole
+        latwq = np.where((lats1 >= 40) & (lats1 <= 60))[0]
+        latw1 = lats1[latwq]
+        lonwq = np.where((lons1 >= 300) & (lons1 <= 345))[0]
+        lonw1 = lons1[lonwq]
+        time_perclrpW1 = time_perclrp[:,latwq,:]
+        time_perclrpW = time_perclrpW1[:,:,lonwq]
+        time_lrpW1 = time_lrp[:,latwq,:]
+        time_lrpW = time_lrpW1[:,:,lonwq]
+        lonw2,latw2 = np.meshgrid(lonw1,latw1)
+        
+        mean_perclrpW = UT.calc_weightedAve(time_perclrpW,latw2)
+        mean_lrpW = UT.calc_weightedAve(time_lrpW,latw2)
+        
+        filenameW1 = 'LRP_TimeSeries_NorthAtlanticWarmingHole_%s_%s_%s_%s_land%s_ocean%s.txt' % (variq,monthlychoice,reg_name,dataset,land_only,ocean_only)
+        np.savetxt(directorystoredata + filenameW1,np.column_stack([years,mean_lrpW]))
+        filenameW2 = 'PercLRP_TimeSeries_NorthAtlanticWarmingHole_%s_%s_%s_%s_land%s_ocean%s.txt' % (variq,monthlychoice,reg_name,dataset,land_only,ocean_only)
+        np.savetxt(directorystoredata + filenameW2,np.column_stack([years,mean_perclrpW]))
+        
+        ### Sahara
+        latdq = np.where((lats1 >= -5) & (lats1 <= 15))[0]
+        latd1 = lats1[latdq]
+        londq = np.where((lons1 >= 0) & (lons1 <= 50))[0]
+        lond1 = lons1[londq]
+        time_perclrpD1 = time_perclrp[:,latdq,:]
+        time_perclrpD = time_perclrpD1[:,:,londq]
+        time_lrpD1 = time_lrp[:,latdq,:]
+        time_lrpD = time_lrpD1[:,:,londq]
+        lond2,latd2 = np.meshgrid(lond1,latd1)
+        
+        mean_perclrpD = UT.calc_weightedAve(time_perclrpD,latd2)
+        mean_lrpD = UT.calc_weightedAve(time_lrpD,latd2)
+        
+        filenameD1 = 'LRP_TimeSeries_Sahara_%s_%s_%s_%s_land%s_ocean%s.txt' % (variq,monthlychoice,reg_name,dataset,land_only,ocean_only)
+        np.savetxt(directorystoredata + filenameD1,np.column_stack([years,mean_lrpD]))
+        filenameD2 = 'PercLRP_TimeSeries_Sahara_%s_%s_%s_%s_land%s_ocean%s.txt' % (variq,monthlychoice,reg_name,dataset,land_only,ocean_only)
+        np.savetxt(directorystoredata + filenameD2,np.column_stack([years,mean_perclrpD]))
+        
+        ### Southern Ocean
+        latsoq = np.where((lats1 >= -65) & (lats1 <= -45))[0]
+        latso1 = lats1[latsoq]
+        lonsoq = np.where((lons1 >= 0) & (lons1 <= 360))[0]
+        lonso1 = lons1[lonsoq]
+        time_perclrpSO1 = time_perclrp[:,latsoq,:]
+        time_perclrpSO = time_perclrpSO1[:,:,lonsoq]
+        time_lrpSO1 = time_lrp[:,latsoq,:]
+        time_lrpSO = time_lrpSO1[:,:,lonsoq]
+        lonso2,latso2 = np.meshgrid(lonso1,latso1)
+        
+        mean_perclrpSO = UT.calc_weightedAve(time_perclrpSO,latso2)
+        mean_lrpSO = UT.calc_weightedAve(time_lrpSO,latso2)
+        
+        filenameSO1 = 'LRP_TimeSeries_SouthernOcean_%s_%s_%s_%s_land%s_ocean%s.txt' % (variq,monthlychoice,reg_name,dataset,land_only,ocean_only)
+        np.savetxt(directorystoredata + filenameSO1,np.column_stack([years,mean_lrpSO]))
+        filenameSO2 = 'PercLRP_TimeSeries_SouthernOcean_%s_%s_%s_%s_land%s_ocean%s.txt' % (variq,monthlychoice,reg_name,dataset,land_only,ocean_only)
+        np.savetxt(directorystoredata + filenameSO2,np.column_stack([years,mean_perclrpSO]))
+        
         ### Append maps of lrp
         lrpsns.append(lrp)
     lrpsns = np.asarray(lrpsns)
@@ -1571,10 +1679,10 @@ for sis,singlesimulation in enumerate(datasetsingle):
     plt.tight_layout()
     plt.savefig(directoryfigure + 'Seasons/%s/LRPseasons_%s_%s_%s_land%s_ocean%s.png' % (variq,variq,reg_name,dataset,land_only,ocean_only),dpi=300)
       
-    ### Delete memory!!!
-    if sis < len(datasetsingle):
-        del model 
-        del data
-        del data_obs
-        del lrpsns
-        del lrp
+    # ### Delete memory!!!
+    # if sis < len(datasetsingle):
+    #     del model 
+    #     del data
+    #     del data_obs
+    #     del lrpsns
+    #     del lrp
