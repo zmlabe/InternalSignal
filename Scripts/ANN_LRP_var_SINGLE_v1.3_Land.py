@@ -92,7 +92,7 @@ for sis,singlesimulation in enumerate(datasetsingle):
         monthlychoice = seasons[seas]
         reg_name = 'Globe'
         lat_bounds,lon_bounds = UT.regions(reg_name)
-        directoryfigure = '/Users/zlabe/Desktop/SINGLE_v1.3/'
+        directoryfigure = '/Users/zlabe/Desktop/SINGLE_v1.3-RemoveMean/'
         
         experiment_result = pd.DataFrame(columns=['actual iters','hiddens','cascade',
                                                   'RMSE Train','RMSE Test',
@@ -119,7 +119,7 @@ for sis,singlesimulation in enumerate(datasetsingle):
             year_obs = year_obsall
         
         ### Remove the annual mean? True to subtract it from dataset ##########
-        rm_annual_mean = False #################################################
+        rm_annual_mean = True #################################################
         
         ### Remove the meridional mean? True to subtract it from dataset ######
         rm_merid_mean = False #################################################

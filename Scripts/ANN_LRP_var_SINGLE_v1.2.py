@@ -65,10 +65,10 @@ yearsall = [timexghg,timexaer,timexbmb,timexlulc,timelens]
 directoriesall = [directorydataLLS,directorydataLLS,directorydataLLS,
                   directorydataLLS,directorydataLLL]
 
-# datasetsingle = ['XLULC']
-# directoriesall = [directorydataLLS]
-# yearsall = [timexlulc]
-# seasons = ['annual']
+datasetsingle = ['XLULC']
+directoriesall = [directorydataLLS]
+yearsall = [timexlulc]
+seasons = ['annual']
     
 for sis,singlesimulation in enumerate(datasetsingle):
     lrpsns = []
