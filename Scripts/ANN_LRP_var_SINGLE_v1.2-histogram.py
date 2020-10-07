@@ -22,11 +22,12 @@ import tensorflow as tf
 import pandas as pd
 import innvestigate
 import random
-import scipy.stats as stats
+import scipy.stats as stats 
 import cmocean as cmocean
 import calc_Utilities as UT
 import calc_dataFunctions as df
 import calc_Stats as dSS
+import calc_LRP as LRP
 
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -60,9 +61,9 @@ yearsall = [timexghg,timexaer,timelens]
 directoriesall = [directorydataLLS,directorydataLLS,directorydataLLL]
 
 ### Set counter
-SAMPLEQ = 100
+SAMPLEQ = 500
 
-### Test script
+# ### Test script
 # datasetsingle = ['XAER']
 # directoriesall = [directorydataLLS]
 # yearsall = [timexaer]
@@ -70,8 +71,10 @@ SAMPLEQ = 100
 ### Begin model
 valslopesexperi = []
 valrrexperi = []
+lrpmapsall = []
 for sis,singlesimulation in enumerate(datasetsingle):
     for seas in range(len(seasons)):
+        lrpmapstime = []
         valslopes = [] 
         valrr = []
         for isample in range(SAMPLEQ): 
@@ -180,7 +183,7 @@ for sis,singlesimulation in enumerate(datasetsingle):
                     if monthlychoice == 'DJF':
                         year20cr = np.arange(1837,2015+1)
                     else:
-                         year20cr = np.arange(1836,2015+1)
+                          year20cr = np.arange(1836,2015+1)
                     year_obsall = np.arange(yearsall[sis].min(),yearsall[sis].max()+1,1)
                     yearqq = np.where((year20cr >= year_obsall.min()) & (year20cr <= year_obsall.max()))[0]
                     data_obs = data_obs[yearqq,:,:]
@@ -1042,6 +1045,49 @@ for sis,singlesimulation in enumerate(datasetsingle):
             
                                 YtrainClassMulti = YtrainClassMulti
                                 YtestClassMulti = YtestClassMulti
+                                
+            ##############################################################################
+            ##############################################################################
+            ##############################################################################
+            ## Visualizing through LRP
+            summaryDT,summaryDTFreq,summaryNanCount=LRP.deepTaylorAnalysis(model,
+                                                    np.append(XtrainS,XtestS,axis=0),
+                                                    np.append(Ytrain,Ytest,axis=0),
+                                                    biasBool,annType,classChunk,
+                                                    startYear)
+            
+            # for training data only
+            summaryDTTrain,summaryDTFreqTrain,summaryNanCountTrain=LRP.deepTaylorAnalysis(
+                                                    model,XtrainS,Ytrain,biasBool,
+                                                    annType,classChunk,startYear)
+            
+            biasBool = False
+            
+            model_nosoftmax = innvestigate.utils.model_wo_softmax(model)
+            analyzer10=innvestigate.analyzer.relevance_based.relevance_analyzer.LRPAlphaBeta(model_nosoftmax, 
+                                                                                                alpha=1,beta=0,bias=biasBool)
+                                                                                               
+            analyzer_output=analyzer10.analyze(XobsS)
+            analyzer_output=analyzer_output/np.nansum(analyzer_output,axis=1)[:,np.newaxis]   
+            
+            ### Scale LRP
+            for scale in (0,):#(0,1):
+                if(scale==1):
+                    summaryDTScaled = summaryDT*Xstd
+                else:    
+                    summaryDTScaled = summaryDT
+            
+            x_perc = np.zeros(summaryDTScaled.shape)*np.nan
+            for itime in np.arange(0,summaryDTScaled.shape[0]):  
+                x = summaryDTScaled[itime,:]
+                if(np.isnan(x[0])):
+                    continue
+                x_perc[itime,:] = (stats.rankdata(x)-1)/len(x)
+               
+            numLats = lats.shape[0]
+            numLons = lons.shape[0]   
+            perclrp = x_perc.reshape(np.shape(summaryDTScaled)[0],numLats,numLons)
+            lrp = summaryDTScaled.reshape(np.shape(summaryDTScaled)[0],numLats,numLons)*1000
             
             ## Define variable for analysis
             print('\n\n------------------------')
@@ -1067,16 +1113,67 @@ for sis,singlesimulation in enumerate(datasetsingle):
             ### Append slopes
             valslopes.append(slopeobs)
             valrr.append(r_valueobs)
+            
+            ### Append lrp averaged over all years
+            lrpyearmean = np.nanmean(lrp,axis=0)
+            lrpmapstime.append(lrpyearmean)
             print('\n\n<<<<<<<<<< COMPLETED ITERATION = %s >>>>>>>>>>>\n\n' % (isample+1))
     valslopesexperi.append(valslopes)
     valrrexperi.append(valrr)
+    lrpmapsall.append(lrpmapstime)
     
 ### See statistics for observations
 modelslopes = np.asarray(valslopesexperi)
 modelr = np.asarray(valrrexperi)
 modelr2 = modelr**2
+lrpmapsallarray = np.asarray(lrpmapsall)
 
 ### Save the arrays
 directorydataoutput = '/Users/zlabe/Documents/Research/InternalSignal/Data/'
 np.savetxt(directorydataoutput + 'Slopes_20CRv3-Obs_XGHG-XAER-LENS_%s_RANDOMSEED.txt' % SAMPLEQ,modelslopes)
 np.savetxt(directorydataoutput + 'R2_20CRv3-Obs_XGHG-XAER-LENS_%s_RANDOMSEED.txt' % SAMPLEQ,modelr2)
+
+##############################################################################
+##############################################################################
+##############################################################################
+def netcdfLENS(lats,lons,var,directory,SAMPLEQ):
+    print('\n>>> Using netcdf4LENS function!')
+    
+    from netCDF4 import Dataset
+    import numpy as np
+    
+    name = 'LRP_Maps_%s.nc' % SAMPLEQ
+    filename = directory + name
+    ncfile = Dataset(filename,'w',format='NETCDF4')
+    ncfile.description = 'LRP maps for random sampling' 
+    
+    ### Dimensions
+    ncfile.createDimension('model',var.shape[0])
+    ncfile.createDimension('samples',var.shape[1])
+    ncfile.createDimension('lat',var.shape[2])
+    ncfile.createDimension('lon',var.shape[3])
+    
+    ### Variables
+    model = ncfile.createVariable('model','f4',('model'))
+    samples = ncfile.createVariable('samples','f4',('samples'))
+    latitude = ncfile.createVariable('lat','f4',('lat'))
+    longitude = ncfile.createVariable('lon','f4',('lon'))
+    varns = ncfile.createVariable('LRP','f4',('model','samples','lat','lon'))
+    
+    ### Units
+    varns.units = 'unitless relevance'
+    ncfile.title = 'LRP relevance'
+    ncfile.instituion = 'Colorado State University'
+    ncfile.references = 'Barnes et al. [2020]'
+    
+    ### Data
+    model[:] = np.arange(var.shape[0])
+    samples[:] = np.arange(var.shape[1])
+    latitude[:] = lats
+    longitude[:] = lons
+    varns[:] = var
+    
+    ncfile.close()
+    print('*Completed: Created netCDF4 File!')
+    
+netcdfLENS(lats,lons,lrpmapsallarray,directorydataoutput,SAMPLEQ)

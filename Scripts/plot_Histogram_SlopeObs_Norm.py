@@ -1,9 +1,9 @@
 """
-Plots histograms of slope of observations
+Plots normalized histograms of slope of observations
 
 Reference  : Barnes et al. [2020, JAMES]
 Author    : Zachary M. Labe
-Date      : 1 October 2020
+Date      : 7 October 2020
 """
 
 ### Import packages
@@ -69,29 +69,37 @@ ax.spines['left'].set_color('dimgrey')
 ax.spines['bottom'].set_linewidth(2)
 ax.spines['left'].set_linewidth(2) 
 ax.tick_params('both',length=5.5,width=2,which='major',color='dimgrey')  
+ax.yaxis.grid(zorder=1,color='dimgrey',alpha=0.35)
 
 ### Plot histograms
-plt.axvline(x=1,color='dimgrey',linewidth=2,linestyle='--',dashes=(1,0.3))
+plt.axvline(x=1,color='k',linewidth=2,linestyle='--',dashes=(1,0.3),
+            zorder=10)
 
+weights_ghg = np.ones_like(ghg_slopes)/len(ghg_slopes)
 n_ghg, bins_ghg, patches_ghg = plt.hist(ghg_slopes,bins=np.arange(-1,2.1,0.1)-0.05,
                                         density=False,alpha=0.5,
-                                        label=r'\textbf{XGHG}')
+                                        label=r'\textbf{XGHG}',
+                                        weights=weights_ghg,zorder=3)
 for i in range(len(patches_ghg)):
     patches_ghg[i].set_facecolor('steelblue')
     patches_ghg[i].set_edgecolor('white')
     patches_ghg[i].set_linewidth(0.5)
-    
+ 
+weights_aer = np.ones_like(aer_slopes)/len(aer_slopes)
 n_aer, bins_aer, patches_aer = plt.hist(aer_slopes,bins=np.arange(-1,2.1,0.1)-0.05,
                                         density=False,alpha=0.5,
-                                        label=r'\textbf{XAER}')
+                                        label=r'\textbf{XAER}',
+                                        weights=weights_aer,zorder=4)
 for i in range(len(patches_aer)):
     patches_aer[i].set_facecolor('goldenrod')
     patches_aer[i].set_edgecolor('white')
     patches_aer[i].set_linewidth(0.5)
     
+weights_lens = np.ones_like(lens_slopes)/len(lens_slopes)
 n_lens, bins_lens, patches_lens = plt.hist(lens_slopes,bins=np.arange(-1,2.1,0.1)-0.05,
                                         density=False,alpha=0.5,
-                                        label=r'\textbf{LENS}')
+                                        label=r'\textbf{LENS}',
+                                        weights=weights_lens,zorder=5)
 for i in range(len(patches_lens)):
     patches_lens[i].set_facecolor('forestgreen')
     patches_lens[i].set_edgecolor('white')
@@ -101,12 +109,12 @@ leg = plt.legend(shadow=False,fontsize=7,loc='upper center',
         bbox_to_anchor=(0.08,1),fancybox=True,ncol=1,frameon=False,
         handlelength=3,handletextpad=1)
 
-plt.ylabel(r'\textbf{ITERATIONS [%s]}' % SAMPLEQ,fontsize=10,color='k')
+plt.ylabel(r'\textbf{PROPORTION[%s]}' % SAMPLEQ,fontsize=10,color='k')
 plt.xlabel(r'\textbf{SLOPES} [ANNUAL -- T2M -- 20CRv3 -- (1920-2015)]',fontsize=10,color='k')
-plt.yticks(np.arange(0,501,20),map(str,np.round(np.arange(0,501,20),2)),size=6)
+plt.yticks(np.arange(0,1.1,0.1),map(str,np.round(np.arange(0,1.1,0.1),2)),size=6)
 plt.xticks(np.arange(-1,10.1,0.2),map(str,np.round(np.arange(-1,10.1,0.2),2)),size=6)
 plt.xlim([-1,2])   
-plt.ylim([0,260])
+plt.ylim([0,0.6])
     
-plt.savefig(directoryfigure + 'Histogram_Slopes_XGHG-XAER-LENS_T2M_%s.png' % SAMPLEQ,
+plt.savefig(directoryfigure + 'Histogram_Slopes_XGHG-XAER-LENS_T2M_%s_Norm.png' % SAMPLEQ,
             dpi=300)
