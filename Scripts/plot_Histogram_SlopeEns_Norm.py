@@ -23,14 +23,14 @@ directorydata = '/Users/zlabe/Documents/Research/InternalSignal/Data/'
 directoryfigure = '/Users/zlabe/Desktop/SINGLE_v1.2-HISTOGRAM/%s/' % variables[0]
 
 ### Read in slope data
-filename_slope = 'Slopes_HistoricalF-TestENS_XGHG-XAER-LENS_%s_RANDOMSEED.txt' % SAMPLEQ
+filename_slope = 'Slopes_1920-1979-TestENS_XGHG-XAER-LENS_%s_RANDOMSEED.txt' % SAMPLEQ
 slopes = np.genfromtxt(directorydata + filename_slope,unpack=True)
 ghg_slopes = slopes[:,0]
 aer_slopes = slopes[:,1]
 lens_slopes = slopes[:,2]
 
 ### Read in R2 data
-filename_R2= 'R2_HistoricalF-TestENS_XGHG-XAER-LENS_%s_RANDOMSEED.txt' % SAMPLEQ
+filename_R2= 'R2_1920-1979-TestENS_XGHG-XAER-LENS_%s_RANDOMSEED.txt' % SAMPLEQ
 slopes = np.genfromtxt(directorydata + filename_R2,unpack=True)
 ghg_r2 = slopes[:,0]
 aer_r2 = slopes[:,1]
@@ -86,7 +86,7 @@ for i in range(len(patches_ghg)):
     patches_ghg[i].set_linewidth(0.5)
  
 weights_aer = np.ones_like(aer_slopes)/len(aer_slopes)
-n_aer, bins_aer, patches_aer = plt.hist(aer_slopes,bins=np.arange(0,1.25,0.05)-0.025,
+n_aer, bins_aer, patches_aer = plt.hist(aer_slopes,bins=np.arange(-0.2,1.25,0.05)-0.025,
                                         density=False,alpha=0.5,
                                         label=r'\textbf{XAER}',
                                         weights=weights_aer,zorder=4)
@@ -96,7 +96,7 @@ for i in range(len(patches_aer)):
     patches_aer[i].set_linewidth(0.5)
     
 weights_lens = np.ones_like(lens_slopes)/len(lens_slopes)
-n_lens, bins_lens, patches_lens = plt.hist(lens_slopes,bins=np.arange(0,1.25,0.05)-0.025,
+n_lens, bins_lens, patches_lens = plt.hist(lens_slopes,bins=np.arange(-0.2,1.25,0.05)-0.025,
                                         density=False,alpha=0.5,
                                         label=r'\textbf{LENS}',
                                         weights=weights_lens,zorder=5)
@@ -110,11 +110,11 @@ leg = plt.legend(shadow=False,fontsize=7,loc='upper center',
         handlelength=3,handletextpad=1)
 
 plt.ylabel(r'\textbf{PROPORTION[%s]}' % SAMPLEQ,fontsize=10,color='k')
-plt.xlabel(r'\textbf{SLOPES} [ANNUAL -- T2M -- ENSEMBLES -- 1920-2005]',fontsize=10,color='k')
+plt.xlabel(r'\textbf{SLOPES} [ANNUAL -- T2M -- ENSEMBLES -- 1920-1979]',fontsize=10,color='k')
 plt.yticks(np.arange(0,1.1,0.1),map(str,np.round(np.arange(0,1.1,0.1),2)),size=6)
 plt.xticks(np.arange(-1,10.1,0.2),map(str,np.round(np.arange(-1,10.1,0.2),2)),size=6)
-plt.xlim([0,1.2])   
-plt.ylim([0,0.5])
+plt.xlim([-0.2,1.2])   
+plt.ylim([0,0.4])
     
-plt.savefig(directoryfigure + 'Histogram_Slopes_HistoricalF-TestENS_XGHG-XAER-LENS_T2M_%s_Norm.png' % SAMPLEQ,
+plt.savefig(directoryfigure + 'Histogram_Slopes_1920-1979-TestENS_XGHG-XAER-LENS_T2M_%s_Norm.png' % SAMPLEQ,
             dpi=300)

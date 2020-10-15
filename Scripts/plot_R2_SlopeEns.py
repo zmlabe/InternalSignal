@@ -23,14 +23,14 @@ directorydata = '/Users/zlabe/Documents/Research/InternalSignal/Data/'
 directoryfigure = '/Users/zlabe/Desktop/SINGLE_v1.2-HISTOGRAM/%s/' % variables[0]
 
 ### Read in slope data
-filename_slope = 'Slopes_HistoricalF-TestEns_XGHG-XAER-LENS_%s_RANDOMSEED.txt' % SAMPLEQ
+filename_slope = 'Slopes_1920-1979-TestEns_XGHG-XAER-LENS_%s_RANDOMSEED.txt' % SAMPLEQ
 slopes = np.genfromtxt(directorydata + filename_slope,unpack=True)
 ghg_slopes = slopes[:,0]
 aer_slopes = slopes[:,1]
 lens_slopes = slopes[:,2]
 
 ### Read in R2 data
-filename_R2= 'R2_HistoricalF-TestEns_XGHG-XAER-LENS_%s_RANDOMSEED.txt' % SAMPLEQ
+filename_R2= 'R2_1920-1979-TestEns_XGHG-XAER-LENS_%s_RANDOMSEED.txt' % SAMPLEQ
 slopes = np.genfromtxt(directorydata + filename_R2,unpack=True)
 ghg_r2 = slopes[:,0]
 aer_r2 = slopes[:,1]
@@ -107,11 +107,11 @@ leg = plt.legend(shadow=False,fontsize=7,loc='upper center',
         handlelength=3,handletextpad=1)
 
 plt.ylabel(r'\textbf{PROPORTION[%s]}' % SAMPLEQ,fontsize=10,color='k')
-plt.xlabel(r'\textbf{R$^{2}$} [ANNUAL -- T2M -- ENSEMBLES -- 1920-2005]',fontsize=10,color='k')
+plt.xlabel(r'\textbf{R$^{2}$} [ANNUAL -- T2M -- ENSEMBLES -- 1920-1979]',fontsize=10,color='k')
 plt.yticks(np.arange(0,1.1,0.1),map(str,np.round(np.arange(0,1.1,0.1),2)),size=6)
 plt.xticks(np.arange(0,1.1,0.1),map(str,np.round(np.arange(0,1.1,0.1),2)),size=6)
 plt.xlim([0,1])   
-plt.ylim([0,0.9])
+plt.ylim([0,0.5])
     
-plt.savefig(directoryfigure + 'Histogram_r2_HistoricalF-TestENS_XGHG-XAER-LENS_T2M_%s.png' % SAMPLEQ,
+plt.savefig(directoryfigure + 'Histogram_r2_1920-1979-TestENS_XGHG-XAER-LENS_T2M_%s.png' % SAMPLEQ,
             dpi=300)
