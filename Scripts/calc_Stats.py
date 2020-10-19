@@ -167,7 +167,8 @@ def convert_fuzzyDecade_toYear(label,startYear,classChunk):
     ### Import modules
     import numpy as np
     
-    years = np.arange(startYear-classChunk*2,2100+classChunk*2)
+    print('SELECT END YEAR - HARD CODED IN FUNCTION')
+    years = np.arange(startYear-classChunk*2,2080+classChunk*2)
     chunks = years[::int(classChunk)] + classChunk/2
     
     return np.sum(label*chunks,axis=1)

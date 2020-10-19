@@ -198,4 +198,4 @@ def getRegion(data,lat1,lon1,lat_bounds,lon_bounds):
 # import numpy as np
 # import matplotlib.pyplot as plt
 # import calc_Utilities as UT
-# data,lat1,lon1 = readFiles('T2M','XLULC','DJF')
+# data,lat1,lon1 = readFiles('T2M','lens','annual')

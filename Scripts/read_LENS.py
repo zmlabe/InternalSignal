@@ -68,9 +68,10 @@ def read_LENS(directory,vari,sliceperiod,slicebase,sliceshape,addclimo,slicenan,
     ### Parameters
     time = np.arange(1920,2100+1,1)
     mon = 12
-    ens1 = np.arange(1,35+1,1)
-    ens2 = np.arange(101,105+1,1)
-    allens = np.append(ens1,ens2)
+    # ens1 = np.arange(1,35+1,1)
+    # ens2 = np.arange(101,105+1,1)
+    # allens = np.append(ens1,ens2)
+    allens = np.arange(1,20+1,1) # EDIT TO COMPARE WITH X(LENS)
     ens = list(map('{:03d}'.format, allens))
     
     ###########################################################################
@@ -229,7 +230,18 @@ def read_LENS(directory,vari,sliceperiod,slicebase,sliceshape,addclimo,slicenan,
         print('Completed: Changed units (K to C)!')
         
     print('>>>>>>>>>> ENDING read_LENS function!')
-    return lat1,lon1,ensshape,ENSmean
+    print('\n\n\n <<<<<<< 20 ENSEMBLES THROUGH 2080 ANN!!! >>>>>>>\n')
+    
+    ###########################################################################
+    ### Edit the number of years (1920-2080) for my ANN study
+    if sliceshape == 4:
+        ensshapeyr = ensshape[:,:-20,:,:]
+        print('NEW Shape of output =', ensshapeyr.shape, [[ensshape.ndim]])
+    else:
+        print(ValueError('PROBLEM WITH NUMBER OF YEARS OR ARRAY SIZE!!!'))
+        
+    
+    return lat1,lon1,ensshapeyr,ENSmean
         
 
 ### Test functions - do not use!
@@ -237,8 +249,8 @@ def read_LENS(directory,vari,sliceperiod,slicebase,sliceshape,addclimo,slicenan,
 # import matplotlib.pyplot as plt
 # import calc_Utilities as UT
 # directory = '/Users/zlabe/Data/LENS/monthly/'
-# vari = 'U700'
-# sliceperiod = 'DJF'
+# vari = 'T2M'
+# sliceperiod = 'annual'
 # slicebase = np.arange(1951,1980+1,1)
 # sliceshape = 4
 # slicenan = 'nan'
