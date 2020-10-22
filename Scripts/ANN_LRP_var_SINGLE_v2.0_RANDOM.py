@@ -1,5 +1,5 @@
 """
-Train the model on the different LENS-SINGLE runs for annual data
+Train the model on RANDOM DATA
 
 Reference  : Barnes et al. [2020, JAMES]
 Author    : Zachary M. Labe
@@ -50,22 +50,14 @@ plt.rc('font',**{'family':'sans-serif','sans-serif':['Avant Garde']})
 ###############################################################################
 ###############################################################################
 ### Data preliminaries 
-directorydataLLS = '/Users/zlabe/Data/LENS/SINGLE/'
 directorydataLLL = '/Users/zlabe/Data/LENS/monthly'
 directorydataBB = '/Users/zlabe/Data/BEST/'
 directorydataEE = '/Users/zlabe/Data/ERA5/'
-datasetsingle = ['XGHG','XAER','lens']
+datasetsingle = ['RANDOM']
 seasons = ['annual','JFM','AMJ','JAS','OND']
-timexghg = np.arange(1920,2080+1,1)
-timexaer = np.arange(1920,2080+1,1)
-timelens = np.arange(1920,2080+1,1)
-yearsall = [timexghg,timexaer,timelens]
-directoriesall = [directorydataLLS,directorydataLLS,directorydataLLL]
-
-# datasetsingle = ['XAER']
-# directoriesall = [directorydataLLS]
-# yearsall = [timexaer]
-# seasons = ['annual']
+timerandom = np.arange(1920,2080+1,1)
+yearsall = [timerandom]
+directoriesall = [directorydataLLL]
     
 for sis,singlesimulation in enumerate(datasetsingle):
     lrpsns = []
@@ -84,8 +76,7 @@ for sis,singlesimulation in enumerate(datasetsingle):
                                                   'RMSE Train','RMSE Test',
                                                   'ridge penalty','zero mean',
                                                   'zero merid mean','land only?','ocean only?'])
-        
-        
+             
         ### Define primary dataset to use
         dataset = singlesimulation
         modelType = dataset

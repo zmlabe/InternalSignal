@@ -88,6 +88,18 @@ def readFiles(variq,dataset,monthlychoice):
                                               monthlychoice,sliceyearTW,
                                               sliceshapeTW,addclimoTW,
                                               slicenanTW)
+    elif dataset == 'RANDOM':
+        import read_randomData_monthly as RA
+        directorydataRA = '/Users/zlabe/Data/'
+        slicebaseRA = np.arange(1951,1980+1,1)
+        sliceshapeRA = 4
+        slicenanRA = 'nan'
+        addclimoRA = True
+        takeEnsMeanRA = False
+        lat1,lon1,data,ENSmean = RA.read_randomData_monthly(directorydataRA,variq,
+                                               monthlychoice,slicebaseRA,
+                                               sliceshapeRA,addclimoRA,
+                                               slicenanRA,takeEnsMeanRA)
     elif any([dataset=='CCCma_canesm2',dataset=='CSIRO_MK3.6',
               dataset=='GFDL_CM3',dataset=='GFDL_ESM2M',
               dataset=='KNMI_ecearth',dataset=='MPI']):
@@ -101,8 +113,7 @@ def readFiles(variq,dataset,monthlychoice):
         takeEnsMeanSS = False
         lat1,lon1,data,ENSmean = SM.read_SMILE(directorySS,simulationSS,variq,monthlychoice,
                                                 slicebaseSS,sliceshapeSS,addclimoSS,
-                                                slicenanSS,takeEnsMeanSS)
-        
+                                                slicenanSS,takeEnsMeanSS)       
     elif any([dataset=='XGHG',dataset=='XAER',
               dataset=='XBMB',dataset=='XLULC']):
         import read_SINGLE_LENS as SI
@@ -198,4 +209,4 @@ def getRegion(data,lat1,lon1,lat_bounds,lon_bounds):
 # import numpy as np
 # import matplotlib.pyplot as plt
 # import calc_Utilities as UT
-# data,lat1,lon1 = readFiles('T2M','lens','annual')
+# data,lat1,lon1 = readFiles('T2M','RANDOM','annual')
