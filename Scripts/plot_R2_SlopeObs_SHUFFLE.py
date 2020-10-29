@@ -1,16 +1,14 @@
 """
-Plots normalized histograms of R^2 of observations using randomized data ANN
+Plots normalized histograms of R^2 of observations using shuffled data ANN
 
 Reference  : Barnes et al. [2020, JAMES]
 Author    : Zachary M. Labe
-Date      : 21 October 2020
+Date      : 28 October 2020
 """
 
 ### Import packages
 import numpy as np
 import matplotlib.pyplot as plt
-import cmocean
-import scipy.stats as stats
 
 ### Set parameters
 variables = [r'T2M']
@@ -22,11 +20,11 @@ directorydata = '/Users/zlabe/Documents/Research/InternalSignal/Data/'
 directoryfigure = '/Users/zlabe/Desktop/SINGLE_v2.0/Histograms/%s/' % variables[0]
 
 ### Read in slope data
-filename_slope = 'Slopes_20CRv3-RANDOM_%s_RANDOMSEED_20ens.txt' % SAMPLEQ
+filename_slope = 'Slopes_20CRv3-SHUFFLE_%s_RANDOMSEED_20ens.txt' % SAMPLEQ
 slopes = np.genfromtxt(directorydata + filename_slope,unpack=True)
 
 ### Read in R2 data
-filename_R2 = 'R2_20CRv3-RANDOM_%s_RANDOMSEED_20ens.txt' % SAMPLEQ
+filename_R2 = 'R2_20CRv3-SHUFFLE_%s_RANDOMSEED_20ens.txt' % SAMPLEQ
 r2 = np.genfromtxt(directorydata + filename_R2,unpack=True)
 
 ### Read in other R2 data
@@ -86,7 +84,7 @@ leg = plt.legend(shadow=False,fontsize=7,loc='upper center',
 weights = np.ones_like(r2)/len(r2)
 n, bins, patches = plt.hist(r2,bins=np.arange(0,1.01,0.025),
                                         density=False,alpha=0.5,
-                                        label=r'\textbf{XGHG}',
+                                        label=r'\textbf{SHUFFLE}',
                                         weights=weights,zorder=3)
 for i in range(len(patches)):
     patches[i].set_facecolor('crimson')
@@ -100,5 +98,5 @@ plt.xticks(np.arange(0,1.1,0.1),map(str,np.round(np.arange(0,1.1,0.1),2)),size=6
 plt.xlim([0,1])   
 plt.ylim([0,0.3])
     
-plt.savefig(directoryfigure + 'Histogram_r2_RANDOM_T2M_%s.png' % SAMPLEQ,
+plt.savefig(directoryfigure + 'Histogram_r2_SHUFFLE_T2M_%s.png' % SAMPLEQ,
             dpi=300)

@@ -1,9 +1,10 @@
 """
-Plots normalized histograms of slope of testing data (ensembles)
+Plots normalized histograms of slope of observations using ensembles with 
+the forced climate trend removed
 
 Reference  : Barnes et al. [2020, JAMES]
 Author    : Zachary M. Labe
-Date      : 13 October 2020
+Date      : 27 October 2020
 """
 
 ### Import packages
@@ -20,17 +21,17 @@ SAMPLEQ = 100
 
 ### Set directories
 directorydata = '/Users/zlabe/Documents/Research/InternalSignal/Data/'
-directoryfigure = '/Users/zlabe/Desktop/SINGLE_v1.2-HISTOGRAM/%s/' % variables[0]
+directoryfigure = '/Users/zlabe/Desktop/SINGLE_v2.0/Histograms/rm_ensemble_mean/%s/' % variables[0]
 
 ### Read in slope data
-filename_slope = 'Slopes_1920-1979-TestENS_XGHG-XAER-LENS_%s_RANDOMSEED.txt' % SAMPLEQ
+filename_slope = 'Slopes_1920-2080-FORCEDens_XGHG-XAER-LENS_%s_RANDOMSEED_20ens.txt' % SAMPLEQ
 slopes = np.genfromtxt(directorydata + filename_slope,unpack=True)
 ghg_slopes = slopes[:,0]
 aer_slopes = slopes[:,1]
 lens_slopes = slopes[:,2]
 
 ### Read in R2 data
-filename_R2= 'R2_1920-1979-TestENS_XGHG-XAER-LENS_%s_RANDOMSEED.txt' % SAMPLEQ
+filename_R2= 'R2_1920-2080-FORCEDens_XGHG-XAER-LENS_%s_RANDOMSEED_20ens.txt' % SAMPLEQ
 slopes = np.genfromtxt(directorydata + filename_R2,unpack=True)
 ghg_r2 = slopes[:,0]
 aer_r2 = slopes[:,1]
@@ -73,12 +74,12 @@ ax.yaxis.grid(zorder=1,color='dimgrey',alpha=0.35)
 
 ### Plot histograms
 plt.axvline(x=1,color='k',linewidth=2,linestyle='--',dashes=(1,0.3),
-            zorder=10)
+            zorder=10,clip_on=False)
 
 weights_ghg = np.ones_like(ghg_slopes)/len(ghg_slopes)
-n_ghg, bins_ghg, patches_ghg = plt.hist(ghg_slopes,bins=np.arange(0,1.25,0.05)-0.025,
+n_ghg, bins_ghg, patches_ghg = plt.hist(ghg_slopes,bins=np.arange(-0.4,1.02,0.05)-0.05,
                                         density=False,alpha=0.5,
-                                        label=r'\textbf{XGHG}',
+                                        label=r'\textbf{XGHG: RM-ENSmean}',
                                         weights=weights_ghg,zorder=3)
 for i in range(len(patches_ghg)):
     patches_ghg[i].set_facecolor('steelblue')
@@ -86,9 +87,9 @@ for i in range(len(patches_ghg)):
     patches_ghg[i].set_linewidth(0.5)
  
 weights_aer = np.ones_like(aer_slopes)/len(aer_slopes)
-n_aer, bins_aer, patches_aer = plt.hist(aer_slopes,bins=np.arange(-0.2,1.25,0.05)-0.025,
+n_aer, bins_aer, patches_aer = plt.hist(aer_slopes,bins=np.arange(-0.4,1.02,0.05)-0.05,
                                         density=False,alpha=0.5,
-                                        label=r'\textbf{XAER}',
+                                        label=r'\textbf{XAER: RM-ENSmean}',
                                         weights=weights_aer,zorder=4)
 for i in range(len(patches_aer)):
     patches_aer[i].set_facecolor('goldenrod')
@@ -96,9 +97,9 @@ for i in range(len(patches_aer)):
     patches_aer[i].set_linewidth(0.5)
     
 weights_lens = np.ones_like(lens_slopes)/len(lens_slopes)
-n_lens, bins_lens, patches_lens = plt.hist(lens_slopes,bins=np.arange(-0.2,1.25,0.05)-0.025,
+n_lens, bins_lens, patches_lens = plt.hist(lens_slopes,bins=np.arange(-0.4,1.02,0.05)-0.05,
                                         density=False,alpha=0.5,
-                                        label=r'\textbf{LENS}',
+                                        label=r'\textbf{LENS: RM-ENSmean}',
                                         weights=weights_lens,zorder=5)
 for i in range(len(patches_lens)):
     patches_lens[i].set_facecolor('forestgreen')
@@ -106,15 +107,15 @@ for i in range(len(patches_lens)):
     patches_lens[i].set_linewidth(0.5)
     
 leg = plt.legend(shadow=False,fontsize=7,loc='upper center',
-        bbox_to_anchor=(0.08,1),fancybox=True,ncol=1,frameon=False,
+        bbox_to_anchor=(0.15,1),fancybox=True,ncol=1,frameon=False,
         handlelength=3,handletextpad=1)
 
 plt.ylabel(r'\textbf{PROPORTION[%s]}' % SAMPLEQ,fontsize=10,color='k')
 plt.xlabel(r'\textbf{SLOPES} [ANNUAL -- T2M -- ENSEMBLES -- 1920-2080]',fontsize=10,color='k')
 plt.yticks(np.arange(0,1.1,0.1),map(str,np.round(np.arange(0,1.1,0.1),2)),size=6)
 plt.xticks(np.arange(-1,10.1,0.2),map(str,np.round(np.arange(-1,10.1,0.2),2)),size=6)
-plt.xlim([-0.2,1.2])   
-plt.ylim([0,0.4])
+plt.xlim([-0.4,1])   
+plt.ylim([0,0.6])
     
-plt.savefig(directoryfigure + 'Histogram_Slopes_1920-1979-TestENS_XGHG-XAER-LENS_T2M_%s_Norm.png' % SAMPLEQ,
+plt.savefig(directoryfigure + 'Histogram_Slopes_XGHG-XAER-LENS_T2M_%s_Norm_FORCED.png' % SAMPLEQ,
             dpi=300)

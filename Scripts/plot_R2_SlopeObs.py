@@ -36,6 +36,13 @@ ghg_r2 = slopes[:,0]
 aer_r2 = slopes[:,1]
 lens_r2 = slopes[:,2]
 
+median_ghg = np.median(ghg_r2)
+median_aer = np.median(aer_r2)
+median_lens = np.median(lens_r2)
+mediansall = np.array([median_ghg,median_aer,median_lens])
+np.savetxt(directorydata + 'R2_20CRv3-Obs_XGHG-XAER-LENS_%s_RANDOMSEED_Medians.txt' % SAMPLEQ,
+           mediansall)
+
 ###############################################################################
 ###############################################################################
 ###############################################################################
@@ -75,7 +82,7 @@ ax.yaxis.grid(zorder=1,color='dimgrey',alpha=0.35)
 weights_ghg = np.ones_like(ghg_r2)/len(ghg_r2)
 n_ghg, bins_ghg, patches_ghg = plt.hist(ghg_r2,bins=np.arange(0,1.01,0.025),
                                         density=False,alpha=0.5,
-                                        label=r'\textbf{XGHG}',
+                                        label=r'\textbf{AER+ALL}',
                                         weights=weights_ghg,zorder=3)
 for i in range(len(patches_ghg)):
     patches_ghg[i].set_facecolor('steelblue')
@@ -85,7 +92,7 @@ for i in range(len(patches_ghg)):
 weights_aer = np.ones_like(aer_r2)/len(aer_r2)
 n_aer, bins_aer, patches_aer = plt.hist(aer_r2,bins=np.arange(0,1.01,0.025),
                                         density=False,alpha=0.5,
-                                        label=r'\textbf{XAER}',
+                                        label=r'\textbf{GHG+ALL}',
                                         weights=weights_aer,zorder=4)
 for i in range(len(patches_aer)):
     patches_aer[i].set_facecolor('goldenrod')
@@ -95,7 +102,7 @@ for i in range(len(patches_aer)):
 weights_lens = np.ones_like(lens_r2)/len(lens_r2)
 n_lens, bins_lens, patches_lens = plt.hist(lens_r2,bins=np.arange(0,1.01,0.025),
                                         density=False,alpha=0.5,
-                                        label=r'\textbf{LENS}',
+                                        label=r'\textbf{ALL}',
                                         weights=weights_lens,zorder=5)
 for i in range(len(patches_lens)):
     patches_lens[i].set_facecolor('forestgreen')

@@ -31,65 +31,65 @@ variq = 'T2M'
 monthlychoice = seasons[0]
 reg_name = 'Globe'
 
-# def read_primary_dataset(variq,dataset,lat_bounds,lon_bounds,monthlychoice):
-#     data,lats,lons = df.readFiles(variq,dataset,monthlychoice)
-#     datar,lats,lons = df.getRegion(data,lats,lons,lat_bounds,lon_bounds)
-#     print('\nOur dataset: ',dataset,' is shaped',data.shape)
-#     return datar,lats,lons
+def read_primary_dataset(variq,dataset,lat_bounds,lon_bounds,monthlychoice):
+    data,lats,lons = df.readFiles(variq,dataset,monthlychoice)
+    datar,lats,lons = df.getRegion(data,lats,lons,lat_bounds,lon_bounds)
+    print('\nOur dataset: ',dataset,' is shaped',data.shape)
+    return datar,lats,lons
 
-# def read_obs_dataset(variq,dataset_obs,lat_bounds,lon_bounds,monthlychoice):
-#     data_obs,lats_obs,lons_obs = df.readFiles(variq,dataset_obs,monthlychoice)
-#     data_obs,lats_obs,lons_obs = df.getRegion(data_obs,lats_obs,lons_obs,
-#                                             lat_bounds,lon_bounds)
-#     if dataset_obs == '20CRv3':
-#         if monthlychoice == 'DJF':
-#             year20cr = np.arange(1837,2015+1)
-#         else:
-#             year20cr = np.arange(1836,2015+1)
-#         yearqq = np.where((year20cr >= yearsobs.min()) & (year20cr <= yearsobs.max()))[0]
-#         data_obs = data_obs[yearqq,:,:]
+def read_obs_dataset(variq,dataset_obs,lat_bounds,lon_bounds,monthlychoice):
+    data_obs,lats_obs,lons_obs = df.readFiles(variq,dataset_obs,monthlychoice)
+    data_obs,lats_obs,lons_obs = df.getRegion(data_obs,lats_obs,lons_obs,
+                                            lat_bounds,lon_bounds)
+    if dataset_obs == '20CRv3':
+        if monthlychoice == 'DJF':
+            year20cr = np.arange(1837,2015+1)
+        else:
+            year20cr = np.arange(1836,2015+1)
+        yearqq = np.where((year20cr >= yearsobs.min()) & (year20cr <= yearsobs.max()))[0]
+        data_obs = data_obs[yearqq,:,:]
     
-#     print('our OBS dataset: ',dataset_obs,' is shaped',data_obs.shape)
-#     return data_obs,lats_obs,lons_obs
+    print('our OBS dataset: ',dataset_obs,' is shaped',data_obs.shape)
+    return data_obs,lats_obs,lons_obs
 
-# ### Read in data
-# lat_bounds,lon_bounds = UT.regions(reg_name)
-# ghg,lat1,lon1 = read_primary_dataset(variq,datasetsingle[0],lat_bounds,lon_bounds,
-#                             monthlychoice)
-# aer,lat1,lon1 = read_primary_dataset(variq,datasetsingle[1],lat_bounds,lon_bounds,
-#                             monthlychoice)
-# lens,lat1,lon1 = read_primary_dataset(variq,datasetsingle[2],lat_bounds,lon_bounds,
-#                             monthlychoice)
-# obs,lat1,lon1 = read_obs_dataset(variq,datasetsingle[3],lat_bounds,lon_bounds,
-#                             monthlychoice)
+### Read in data
+lat_bounds,lon_bounds = UT.regions(reg_name)
+ghg,lat1,lon1 = read_primary_dataset(variq,datasetsingle[0],lat_bounds,lon_bounds,
+                            monthlychoice)
+aer,lat1,lon1 = read_primary_dataset(variq,datasetsingle[1],lat_bounds,lon_bounds,
+                            monthlychoice)
+lens,lat1,lon1 = read_primary_dataset(variq,datasetsingle[2],lat_bounds,lon_bounds,
+                            monthlychoice)
+obs,lat1,lon1 = read_obs_dataset(variq,datasetsingle[3],lat_bounds,lon_bounds,
+                            monthlychoice)
 
-# ### Calculate anomalies with 1951-1980 baseline
-# yearq = np.where((years >= 1951) & (years <= 1980))[0]
-# mean_ghg = np.nanmean(ghg[:,yearq,:,:],axis=1)
-# mean_aer = np.nanmean(aer[:,yearq,:,:],axis=1)
-# mean_lens = np.nanmean(lens[:,yearq,:,:],axis=1)
-# mean_obs = np.nanmean(obs[yearq,:,:],axis=0)
+### Calculate anomalies with 1951-1980 baseline
+yearq = np.where((years >= 1951) & (years <= 1980))[0]
+mean_ghg = np.nanmean(ghg[:,yearq,:,:],axis=1)
+mean_aer = np.nanmean(aer[:,yearq,:,:],axis=1)
+mean_lens = np.nanmean(lens[:,yearq,:,:],axis=1)
+mean_obs = np.nanmean(obs[yearq,:,:],axis=0)
 
-# anom_ghg = np.empty((ghg.shape))
-# anom_aer = np.empty((aer.shape))
-# anom_lens = np.empty((lens.shape))
-# for i in range(ghg.shape[1]):
-#     anom_ghg[:,i,:,:] = ghg[:,i,:,:] - mean_ghg
-#     anom_aer[:,i,:,:] = aer[:,i,:,:] - mean_aer
-#     anom_lens[:,i,:,:] = lens[:,i,:,:] - mean_lens
-# anom_obs = obs - mean_obs
+anom_ghg = np.empty((ghg.shape))
+anom_aer = np.empty((aer.shape))
+anom_lens = np.empty((lens.shape))
+for i in range(ghg.shape[1]):
+    anom_ghg[:,i,:,:] = ghg[:,i,:,:] - mean_ghg
+    anom_aer[:,i,:,:] = aer[:,i,:,:] - mean_aer
+    anom_lens[:,i,:,:] = lens[:,i,:,:] - mean_lens
+anom_obs = obs - mean_obs
 
-# ### Calculate global average
-# lon2,lat2 = np.meshgrid(lon1,lat1)
-# globe_ghg = UT.calc_weightedAve(anom_ghg,lat2)
-# globe_aer = UT.calc_weightedAve(anom_aer,lat2)
-# globe_lens = UT.calc_weightedAve(anom_lens,lat2)
-# globe_obs = UT.calc_weightedAve(anom_obs,lat2)
+### Calculate global average
+lon2,lat2 = np.meshgrid(lon1,lat1)
+globe_ghg = UT.calc_weightedAve(anom_ghg,lat2)
+globe_aer = UT.calc_weightedAve(anom_aer,lat2)
+globe_lens = UT.calc_weightedAve(anom_lens,lat2)
+globe_obs = UT.calc_weightedAve(anom_obs,lat2)
 
-# ### Calculate ensemble means
-# ensanom_ghg = np.nanmean(globe_ghg,axis=0)
-# ensanom_aer = np.nanmean(globe_aer,axis=0)
-# ensanom_lens = np.nanmean(globe_lens,axis=0)
+### Calculate ensemble means
+ensanom_ghg = np.nanmean(globe_ghg,axis=0)
+ensanom_aer = np.nanmean(globe_aer,axis=0)
+ensanom_lens = np.nanmean(globe_lens,axis=0)
 
 ###############################################################################
 ###############################################################################
@@ -139,19 +139,19 @@ ax.fill_between(years, min2tdghg, max2tdghg, facecolor='steelblue',
                 alpha=0.3,zorder=2,clip_on=False)
 plt.plot(years,ensanom_ghg,'-',
             color='steelblue',linewidth=2,clip_on=False,
-            label=r'\textbf{XGHG}')
+            label=r'\textbf{AER+ALL}')
 
 ax.fill_between(years, min2tdaer, max2tdaer, facecolor='goldenrod',
                 alpha=0.3,zorder=2,clip_on=False)
 plt.plot(years,ensanom_aer,'-',
             color='goldenrod',linewidth=2,clip_on=False,
-            label=r'\textbf{XAER}')
+            label=r'\textbf{GHG+ALL}')
 
 ax.fill_between(years, min2tdlens, max2tdlens, facecolor='forestgreen',
                 alpha=0.3,zorder=2,clip_on=False)
 plt.plot(years,ensanom_lens,'-',
             color='forestgreen',linewidth=2,clip_on=False,
-            label=r'\textbf{LENS}')
+            label=r'\textbf{TOTAL}')
 
 plt.plot(yearsobs,globe_obs,color='k',linewidth=1.5,
           dashes=(1,0.3),linestyle='--',label=r'\textbf{20CRv3}',zorder=11)
@@ -213,19 +213,19 @@ ax.fill_between(years, min2tdghg, max2tdghg, facecolor='steelblue',
                 alpha=0.3,zorder=2,clip_on=True)
 plt.plot(years,ensanom_ghg,'-',
             color='steelblue',linewidth=2,clip_on=True,
-            label=r'\textbf{XGHG}')
+            label=r'\textbf{AER+ALL}')
 
 ax.fill_between(years, min2tdaer, max2tdaer, facecolor='goldenrod',
                 alpha=0.3,zorder=2,clip_on=True)
 plt.plot(years,ensanom_aer,'-',
             color='goldenrod',linewidth=2,clip_on=True,
-            label=r'\textbf{XAER}')
+            label=r'\textbf{GHG+ALL}')
 
 ax.fill_between(years, min2tdlens, max2tdlens, facecolor='forestgreen',
                 alpha=0.3,zorder=2,clip_on=True)
 plt.plot(years,ensanom_lens,'-',
             color='forestgreen',linewidth=2,clip_on=True,
-            label=r'\textbf{LENS}')
+            label=r'\textbf{TOTAL}')
 
 plt.plot(yearsobs,globe_obs,color='k',linewidth=2,
           dashes=(1,0.3),linestyle='--',label=r'\textbf{20CRv3}',zorder=11)

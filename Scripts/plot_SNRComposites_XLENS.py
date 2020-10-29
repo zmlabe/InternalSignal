@@ -1,6 +1,8 @@
 """
 Plot signal-to-noise ratios for XLENS simulations
 
+Method 1 = mean trend / standard deviation of trends (ensembles)
+
 Reference  : Deser et al. [2020, JCLI]
 Author    : Zachary M. Labe
 Date      : 22 October 2020
@@ -19,14 +21,14 @@ import calc_Utilities as UT
 import calc_dataFunctions as df
 import itertools
 
-###############################################################################
-###############################################################################
-###############################################################################
-### Data preliminaries 
+##############################################################################
+##############################################################################
+##############################################################################
+## Data preliminaries 
 directorydataLLS = '/Users/zlabe/Data/LENS/SINGLE/'
 directorydataLLL = '/Users/zlabe/Data/LENS/monthly'
 directoryfigure =  '/Users/zlabe/Desktop/SINGLE_v2.0/Composites/T2M/'
-datasetsingleq = np.repeat(['XGHG','XAER','LENS'],4)
+datasetsingleq = np.repeat(['AER+ALL','GHG+ALL','TOTAL'],4)
 datasetsingle = ['XGHG','XAER','lens']
 timeq = ['1920-1959','1960-1999','2000-2039','2040-2079']
 seasons = ['annual','JFM','AMJ','JAS','OND']
@@ -140,8 +142,8 @@ plt.rc('text',usetex=True)
 plt.rc('font',**{'family':'sans-serif','sans-serif':['Avant Garde']}) 
 
 ### Set limits for contours and colorbars
-limit = np.arange(0,4.1,0.1)
-barlim = np.arange(0,4.1,0.5)
+limit = np.arange(0,3.1,0.5)
+barlim = np.arange(0,3.1,1)
 cmap = plt.cm.CMRmap
 label = r'\textbf{T2M [signal-to-noise]}'
     
@@ -169,7 +171,7 @@ for r in range(len(runs)):
     cs.set_cmap(cmap) 
     if any([r==0,r==4,r==8]):
         ax1.annotate(r'\textbf{%s}' % datasetsingleq[r],xy=(0,0),xytext=(-0.1,0.5),
-                      textcoords='axes fraction',color='k',fontsize=13,
+                      textcoords='axes fraction',color='k',fontsize=9,
                       rotation=90,ha='center',va='center')
     if any([r==0,r==1,r==2,r==3]):
         ax1.annotate(r'\textbf{%s}' % timeq[r],xy=(0,0),xytext=(0.5,1.22),

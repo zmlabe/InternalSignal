@@ -18,11 +18,12 @@ import calc_Utilities as UT
 
 ### Set parameters
 variables = [r'T2M']
-datasets = [r'XGHG',r'XAER',r'LENS']
+datasets = [r'AER+ALL',r'GHG+ALL',r'TOTAL']
 seasons = [r'annual']
 letters = ["a","b","c","d","e","f","g","h","i","j","k","l","m"]
 SAMPLEQ = 500
 SAMPLEQ2 = 100
+typer = 'SHUFFLE'
 
 ### Set directories
 directorydata = '/Users/zlabe/Documents/Research/InternalSignal/Data/'
@@ -39,12 +40,23 @@ lrpghg = lrp[0,:,:,:]
 lrpaer = lrp[1,:,:,:]
 lrplens = lrp[2,:,:,:]
 
-### Read in LRP maps for random data
-data = Dataset(directorydata + 'LRP_Maps_%s_20ens_%s_%s_RANDOM.nc' % (SAMPLEQ2,variables[0],seasons[0]))
-lat1 = data.variables['lat'][:]
-lon1 = data.variables['lon'][:]
-lrprandom = data.variables['LRP'][:].squeeze()
-data.close()
+if typer == 'RANDOM':
+    ### Read in LRP maps for random data
+    data = Dataset(directorydata + 'LRP_Maps_%s_20ens_%s_%s_RANDOM.nc' % (SAMPLEQ2,variables[0],seasons[0]))
+    lat1 = data.variables['lat'][:]
+    lon1 = data.variables['lon'][:]
+    lrprandom = data.variables['LRP'][:].squeeze()
+    data.close()
+
+elif typer == 'SHUFFLE':
+    ### Read in LRP maps for shuffle data
+    data = Dataset(directorydata + 'LRP_Maps_%s_20ens_%s_%s_SHUFFLE.nc' % (SAMPLEQ2,variables[0],seasons[0]))
+    lat1 = data.variables['lat'][:]
+    lon1 = data.variables['lon'][:]
+    lrprandom = data.variables['LRP'][:].squeeze()
+    data.close()
+else:
+    print(ValueError('WRONG TYPE OF RANDOMIZED DATA!'))
 
 ###############################################################################
 ###############################################################################
@@ -64,26 +76,30 @@ mean = [mean_ghg, mean_aer, mean_lens]
 ###############################################################################
 ### Calculate statistical differences
 ### 2-independent sample t-test
-stat_ghg,pvalue_ghg = UT.calc_indttest(lrprandom,lrpghg)
-stat_aer,pvalue_aer = UT.calc_indttest(lrprandom,lrpaer)
-stat_lens,pvalue_lens = UT.calc_indttest(lrprandom,lrplens)
+# stat_ghg,pvalue_ghg = UT.calc_indttest(lrprandom,lrpghg)
+# stat_aer,pvalue_aer = UT.calc_indttest(lrprandom,lrpaer)
+# stat_lens,pvalue_lens = UT.calc_indttest(lrprandom,lrplens)
 
 ### False discovery rate
 # pvalue_ghg = UT.calc_FDR_ttest(lrprandom,lrpghg,0.05)
 # pvalue_aer = UT.calc_FDR_ttest(lrprandom,lrpaer,0.05)
 # pvalue_lens = UT.calc_FDR_ttest(lrprandom,lrplens,0.05)
 
-### Mask significane
-pvalue_ghg[np.isnan(pvalue_ghg)] = 0.
-pvalue_aer[np.isnan(pvalue_aer)] = 0.
-pvalue_lens[np.isnan(pvalue_lens)] = 0.
-pvalues = [pvalue_ghg,pvalue_aer,pvalue_lens]
+# ### Mask significane
+# pvalue_ghg[np.isnan(pvalue_ghg)] = 0.
+# pvalue_aer[np.isnan(pvalue_aer)] = 0.
+# pvalue_lens[np.isnan(pvalue_lens)] = 0.
+# pvalues = [pvalue_ghg,pvalue_aer,pvalue_lens]
 
 # lrpmask_ghg = mean_ghg * pvalue_ghg
 # lrpmask_aer = mean_aer * pvalue_aer
 # lrpmask_lens = mean_lens * pvalue_lens
 
-thresh = np.mean(mean_random)
+###############################################################################
+###############################################################################
+###############################################################################
+### Calculate 99th percentile of all points
+thresh = np.percentile(mean_random,99)
 lrpmask_ghg = mean_ghg 
 lrpmask_ghg[lrpmask_ghg<=thresh] = np.nan
 lrpmask_aer = mean_aer 
@@ -127,7 +143,7 @@ for i in range(len(datasets)):
     
     ax1.annotate(r'\textbf{%s}' % (datasets[i]),xy=(0,0),xytext=(0.865,0.91),
                       textcoords='axes fraction',color='k',fontsize=14,
-                      rotation=335,ha='center',va='center')
+                      rotation=331,ha='center',va='center')
     ax1.annotate(r'\textbf{[%s]}' % letters[i],xy=(0,0),xytext=(0.085,0.93),
                           textcoords='axes fraction',color='dimgrey',fontsize=8,
                           rotation=0,ha='center',va='center')
@@ -144,7 +160,7 @@ cbar.outline.set_edgecolor('dimgrey')
 
 plt.tight_layout()
 plt.subplots_adjust(bottom=0.17)
-plt.savefig(directoryfigure + 'LRPmean_%s_%s_%s_MASK_Thresh.png' % (variables[0],
+plt.savefig(directoryfigure + 'LRPmean_%s_%s_%s_MASK_Thresh_%s.png' % (variables[0],
                                                         seasons[0],
-                                                        SAMPLEQ2),
+                                                        SAMPLEQ2,typer),
                                                         dpi=300)
