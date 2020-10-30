@@ -14,7 +14,6 @@ from mpl_toolkits.basemap import Basemap, addcyclic, shiftgrid
 import cmocean
 import palettable.cubehelix as cm
 import scipy.stats as sts
-import calc_Utilities as UT
 
 ### Set parameters
 variables = [r'T2M']
@@ -25,7 +24,7 @@ SAMPLEQ = 100
 
 ### Set directories
 directorydata = '/Users/zlabe/Documents/Research/InternalSignal/Data/'
-directoryfigure = '/Users/zlabe/Desktop/SINGLE_v2.0/Histograms/LRP/%s/' % variables[0]
+directoryfigure = '/Users/zlabe/Desktop/SINGLE_v2.0/SciComm/'
 
 ### Read in LRP maps
 data = Dataset(directorydata + 'LRP_Maps_%s_20ens_%s_%s_RANDOM.nc' % (SAMPLEQ,variables[0],seasons[0]))
@@ -60,6 +59,12 @@ percmean = np.nanmean(perc,axis=0)*100. # percent
 ### Plot subplot of LRP means
 plt.rc('text',usetex=True)
 plt.rc('font',**{'family':'sans-serif','sans-serif':['Avant Garde']}) 
+plt.rc('savefig',facecolor='black')
+plt.rc('axes',edgecolor='darkgrey')
+plt.rc('xtick',color='darkgrey')
+plt.rc('ytick',color='darkgrey')
+plt.rc('axes',labelcolor='darkgrey')
+plt.rc('axes',facecolor='black')
 
 ### Prepare plotting parameters
 dataq = [mean,std,percmean]
@@ -96,7 +101,7 @@ for i in range(len(dataq)):
     cs.set_cmap(cmapq[i])
     
     ax1.annotate(r'\textbf{%s}' % (datasetsq[i]),xy=(0,0),xytext=(0.865,0.91),
-                      textcoords='axes fraction',color='k',fontsize=14,
+                      textcoords='axes fraction',color='w',fontsize=14,
                       rotation=335,ha='center',va='center')
     ax1.annotate(r'\textbf{[%s]}' % letters[i],xy=(0,0),xytext=(0.085,0.93),
                           textcoords='axes fraction',color='dimgrey',fontsize=8,
@@ -104,83 +109,15 @@ for i in range(len(dataq)):
     
     cbar = m.colorbar(cs,drawedges=False,location='bottom',extendfrac=0.07,
                       extend=colorbarendq[i])                  
-    cbar.set_label(r'\textbf{%s}' % labelq[i],fontsize=11,color='dimgrey',labelpad=1.4)  
+    cbar.set_label(r'\textbf{%s}' % labelq[i],fontsize=11,color='darkgrey',labelpad=1.4)  
     cbar.set_ticks(barlim)
     cbar.set_ticklabels(list(map(str,barlim)))
     cbar.ax.tick_params(axis='x', size=.01,labelsize=6)
-    cbar.outline.set_edgecolor('dimgrey')
+    cbar.outline.set_edgecolor('darkgrey')
 
 plt.tight_layout()
 plt.subplots_adjust(bottom=0.17)
-plt.savefig(directoryfigure + 'LRPstats_RANDOMDATA_%s_%s_%s.png' % (variables[0],
+plt.savefig(directoryfigure + 'LRPstats_RANDOMDATA_%s_%s_%s_SciComm.png' % (variables[0],
                                                         seasons[0],
                                                         SAMPLEQ),
                                                         dpi=300)
-
-#######################################################################
-#######################################################################
-#######################################################################
-### Plot histogram of LRP
-
-lon2,lat2 = np.meshgrid(lon1,lat1)
-meanall = mean.ravel()
-thresh = np.percentile(meanall,99)
-
-###############################################################################
-###############################################################################
-###############################################################################
-### Create plot for histograms of slope
-def adjust_spines(ax, spines):
-    for loc, spine in ax.spines.items():
-        if loc in spines:
-            spine.set_position(('outward', 5))
-        else:
-            spine.set_color('none')  
-    if 'left' in spines:
-        ax.yaxis.set_ticks_position('left')
-    else:
-        ax.yaxis.set_ticks([])
-
-    if 'bottom' in spines:
-        ax.xaxis.set_ticks_position('bottom')
-    else:
-        ax.xaxis.set_ticks([])
-        
-fig = plt.figure()
-ax = plt.subplot(111)
-adjust_spines(ax, ['left','bottom'])            
-ax.spines['top'].set_color('none')
-ax.spines['right'].set_color('none') 
-ax.spines['bottom'].set_color('dimgrey')
-ax.spines['left'].set_color('dimgrey')
-ax.spines['bottom'].set_linewidth(2)
-ax.spines['left'].set_linewidth(2) 
-ax.tick_params('both',length=5.5,width=2,which='major',color='dimgrey')  
-ax.yaxis.grid(zorder=1,color='dimgrey',alpha=0.35)
-
-plt.axvline(x=thresh,color='r',linewidth=2,linestyle='--',dashes=(1,0.3),
-            zorder=10,label=r'\textbf{THRESHOLD TO MASK DATA}')
-
-weights_random = np.ones_like(meanall)/len(meanall)
-n_random, bins_random, patches_random = plt.hist(meanall,bins=np.arange(0.05,0.1,0.002)-0.001,
-                                        density=False,alpha=1,
-                                        weights=weights_random,zorder=3)
-
-for i in range(len(patches_random)):
-    patches_random[i].set_facecolor('deepskyblue')
-    patches_random[i].set_edgecolor('white')
-    patches_random[i].set_linewidth(0.5)
-    
-leg = plt.legend(shadow=False,fontsize=7,loc='upper center',
-    bbox_to_anchor=(0.2,1),fancybox=True,ncol=1,frameon=False,
-    handlelength=3,handletextpad=1)
-
-plt.ylabel(r'\textbf{PROPORTION[%s]}' % SAMPLEQ,fontsize=10,color='k')
-plt.xlabel(r'\textbf{DISTRIBUTION OF LRP FOR RANDOM DATA [RELEVANCE]}',fontsize=10,color='k')
-plt.yticks(np.arange(0,1.1,0.1),map(str,np.round(np.arange(0,1.1,0.1),2)),size=6)
-plt.xticks(np.arange(0,1.1,0.01),map(str,np.round(np.arange(0,1.1,0.01),2)),size=6)
-plt.xlim([0.05,0.1])   
-plt.ylim([0,0.4])
-    
-plt.savefig(directoryfigure + 'Histogram_RandomLRP_%s.png' % SAMPLEQ,
-            dpi=300)

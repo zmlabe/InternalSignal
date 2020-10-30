@@ -207,7 +207,7 @@ for ii in range(len(regions_ghg)):
     weights_ghg = np.ones_like(regions_ghg[ii])/len(regions_ghg[ii])
     n_ghg, bins_ghg, patches_ghg = plt.hist(regions_ghg[ii],bins=np.arange(0,1.05,0.02)-0.01,
                                             density=False,alpha=0.5,
-                                            label=r'\textbf{XGHG}',
+                                            label=r'\textbf{AER+ALL}',
                                             weights=weights_ghg,zorder=3)
     for i in range(len(patches_ghg)):
         patches_ghg[i].set_facecolor('steelblue')
@@ -217,7 +217,7 @@ for ii in range(len(regions_ghg)):
     weights_aer = np.ones_like(regions_aer[ii])/len(regions_aer[ii])
     n_aer, bins_aer, patches_aer = plt.hist(regions_aer[ii],bins=np.arange(0,1.05,0.02)-0.01,
                                             density=False,alpha=0.5,
-                                            label=r'\textbf{XAER}',
+                                            label=r'\textbf{GHG+ALL}',
                                             weights=weights_aer,zorder=4)
     for i in range(len(patches_aer)):
         patches_aer[i].set_facecolor('goldenrod')
@@ -227,7 +227,7 @@ for ii in range(len(regions_ghg)):
     weights_lens = np.ones_like(regions_lens[ii])/len(regions_lens[ii])
     n_lens, bins_lens, patches_lens = plt.hist(regions_lens[ii],bins=np.arange(0,1.05,0.02)-0.01,
                                             density=False,alpha=0.5,
-                                            label=r'\textbf{LENS}',
+                                            label=r'\textbf{TOTAL}',
                                             weights=weights_lens,zorder=5)
     for i in range(len(patches_lens)):
         patches_lens[i].set_facecolor('crimson')

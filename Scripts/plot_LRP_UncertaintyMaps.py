@@ -17,7 +17,7 @@ import scipy.stats as sts
 
 ### Set parameters
 variables = [r'T2M']
-datasets = [r'XGHG',r'XAER',r'LENS']
+datasets = [r'AER+ALL',r'GHG+ALL',r'TOTAL']
 seasons = [r'annual']
 letters = ["a","b","c","d","e","f","g","h","i","j","k","l","m"]
 SAMPLEQ = 500
