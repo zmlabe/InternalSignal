@@ -1,5 +1,5 @@
 """
-Train the model on shuffled LENS data
+Train the model on randomized labels (shuffle actual training/testing labels)
 
 Reference  : Barnes et al. [2020, JAMES]
 Author    : Zachary M. Labe
@@ -165,14 +165,8 @@ for sis,singlesimulation in enumerate(datasetsingle):
                 data,lats,lons = df.readFiles(variq,dataset,monthlychoice)
                 datar,lats,lons = df.getRegion(data,lats,lons,lat_bounds,lon_bounds)
                 
-                ### SHUFFLE data array 
-                shufr = datar.ravel()
-                np.random.shuffle(shufr)
-                datanew = shufr.reshape(datar.shape)
-                print('\n\n<<<<<<< SHUFFLED ARRAY FOR TESTING STATS!!! >>>>>>\n\n')
-                
                 print('\nOur dataset: ',dataset,' is shaped',data.shape)
-                return datanew,lats,lons
+                return datar,lats,lons
               
             def read_obs_dataset(variq,dataset_obs,lat_bounds=lat_bounds,lon_bounds=lon_bounds):
                 data_obs,lats_obs,lons_obs = df.readFiles(variq,dataset_obs,monthlychoice)
@@ -252,13 +246,17 @@ for sis,singlesimulation in enumerate(datasetsingle):
                         print('training data - shape', data_train.shape)
                 
                     ### Reshape into X and T
+                    ###########################################################
+                    yearsBeforeRandom = np.arange(data_train.shape[1]) + yearsall[sis].min() 
+                    np.random.shuffle(yearsBeforeRandom)
+                    ###########################################################
+                        
                     Xtrain = data_train.reshape((data_train.shape[0] * data_train.shape[1]),
                                                 (data_train.shape[2] * data_train.shape[3]))
-                    Ttrain = np.tile((np.arange(data_train.shape[1]) + yearsall[sis].min()).reshape(data_train.shape[1],1),
+                    Ttrain = np.tile((yearsBeforeRandom).reshape(data_train.shape[1],1),
                                       (data_train.shape[0],1))
                     Xtrain_shape = (data_train.shape[0],data_train.shape[1])
-                    
-                    
+                          
                     ### Testing segment----------
                     data_test = ''
                     for ensemble in testIndices:
@@ -276,7 +274,7 @@ for sis,singlesimulation in enumerate(datasetsingle):
                     ### Reshape into X and T
                     Xtest = data_test.reshape((data_test.shape[0] * data_test.shape[1]),
                                               (data_test.shape[2] * data_test.shape[3]))
-                    Ttest = np.tile((np.arange(data_test.shape[1]) + yearsall[sis].min()).reshape(data_test.shape[1],1),
+                    Ttest = np.tile((yearsBeforeRandom).reshape(data_test.shape[1],1),
                                     (data_test.shape[0], 1))   
             
                 else:
@@ -290,13 +288,14 @@ for sis,singlesimulation in enumerate(datasetsingle):
                 
                     Xtrain = data_train.reshape((data_train.shape[0] * data_train.shape[1]),
                                                 (data_train.shape[2] * data_train.shape[3]))
-                    Ttrain = np.tile((np.arange(data_train.shape[1]) + yearsall[sis].min()).reshape(data_train.shape[1],1),
+                    Ttrain = np.tile((yearsBeforeRandom).reshape(data_train.shape[1],1),
                                       (data_train.shape[0],1))
                     Xtrain_shape = (data_train.shape[0], data_train.shape[1])
             
                 Xtest = data_test.reshape((data_test.shape[0] * data_test.shape[1]),
                                           (data_test.shape[2] * data_test.shape[3]))
-                Ttest = np.tile((np.arange(data_test.shape[1]) + yearsall[sis].min()).reshape(data_test.shape[1],1),
+
+                Ttest = np.tile((yearsBeforeRandom).reshape(data_test.shape[1],1),
                                 (data_test.shape[0],1))
             
                 Xtest_shape = (data_test.shape[0], data_test.shape[1])
@@ -942,7 +941,8 @@ for sis,singlesimulation in enumerate(datasetsingle):
                             Xtrain,Ytrain,Xtest,Ytest,Xtest_shape,Xtrain_shape,data_train_shape,data_test_shape,testIndices = segment_data(data,segment_data_factor)
             
                             # Convert year into decadal class
-                            startYear = Ytrain[0] # define startYear for GLOBAL USE
+                            startYear = 1920
+                            endYear = 2080
                             YtrainClassMulti, decadeChunks = convert_fuzzyDecade(Ytrain,
                                                                                   startYear,
                                                                                   classChunk)  
@@ -1012,13 +1012,13 @@ for sis,singlesimulation in enumerate(datasetsingle):
                             yearsObs = np.arange(dataOBSERVATIONS.shape[0]) + obsyearstart
             
                             annType = 'class'
-                            if monthlychoice == 'DJF':
-                                startYear = yearsall[sis].min()+1
-                                endYear = yearsall[sis].max()
-                            else:
-                                startYear = yearsall[sis].min()
-                                endYear = yearsall[sis].max()
-                            years = np.arange(startYear,endYear+1,1)    
+                            # if monthlychoice == 'DJF':
+                            #     startYear = yearsall[sis].min()+1
+                            #     endYear = yearsall[sis].max()
+                            # else:
+                            #     startYear = yearsall[sis].min()
+                            #     endYear = yearsall[sis].max()
+                            years = np.arange(yearsall[sis].min(),yearsall[sis].max()+1,1)    
                             Xmeanobs = np.nanmean(Xobs,axis=0)
                             Xstdobs = np.nanstd(Xobs,axis=0)  
                             
@@ -1129,8 +1129,8 @@ lrpmapsallarray = np.asarray(lrpmapsall)
 
 ### Save the arrays
 directorydataoutput = '/Users/zlabe/Documents/Research/InternalSignal/Data/'
-np.savetxt(directorydataoutput + 'Slopes_20CRv3-SHUFFLE_%s_RANDOMSEED_20ens.txt' % SAMPLEQ,modelslopes)
-np.savetxt(directorydataoutput + 'R2_20CRv3-SHUFFLE__%s_RANDOMSEED_20ens.txt' % SAMPLEQ,modelr2)
+np.savetxt(directorydataoutput + 'Slopes_20CRv3-SHUFFLE-LABELS_%s_RANDOMSEED_20ens.txt' % SAMPLEQ,modelslopes)
+np.savetxt(directorydataoutput + 'R2_20CRv3-SHUFFLE-LABELS__%s_RANDOMSEED_20ens.txt' % SAMPLEQ,modelr2)
 
 ##############################################################################
 ##############################################################################
@@ -1141,7 +1141,7 @@ def netcdfLENS(lats,lons,var,directory,SAMPLEQ):
     from netCDF4 import Dataset
     import numpy as np
     
-    name = 'LRP_Maps_%s_20ens_SHUFFLE_.nc' % SAMPLEQ
+    name = 'LRP_Maps_%s_20ens_SHUFFLE-LABELS_.nc' % SAMPLEQ
     filename = directory + name
     ncfile = Dataset(filename,'w',format='NETCDF4')
     ncfile.description = 'LRP maps for random sampling' 

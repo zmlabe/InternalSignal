@@ -1,5 +1,5 @@
 """
-Train the model on shuffled LENS data
+Train the model on randomized labels (shuffle along LENS space dimension)
 
 Reference  : Barnes et al. [2020, JAMES]
 Author    : Zachary M. Labe
@@ -58,7 +58,7 @@ yearsall = [timerandom]
 directoriesall = [directorydataLLL]
 
 ### Set counter
-SAMPLEQ = 100
+SAMPLEQ = 500
  
 ### Begin model
 valslopesexperi = []
@@ -165,14 +165,18 @@ for sis,singlesimulation in enumerate(datasetsingle):
                 data,lats,lons = df.readFiles(variq,dataset,monthlychoice)
                 datar,lats,lons = df.getRegion(data,lats,lons,lat_bounds,lon_bounds)
                 
-                ### SHUFFLE data array 
-                shufr = datar.ravel()
-                np.random.shuffle(shufr)
-                datanew = shufr.reshape(datar.shape)
-                print('\n\n<<<<<<< SHUFFLED ARRAY FOR TESTING STATS!!! >>>>>>\n\n')
+                ### SHUFFLE data array along time dimensions
+                tempfinal = np.empty((datar.shape))
+                for ensem in range(datar.shape[0]):
+                    for yyy in range(datar.shape[1]):
+                        temp = datar[ensem,yyy,:,:].ravel()
+                        np.random.shuffle(temp)
+                        tempq = np.reshape(temp,(datar.shape[2],datar.shape[3]))
+                        tempfinal[ensem,yyy,:,:] = tempq
+                print('\n\n<<<<<<< SHUFFLED ARRAY FOR TESTING STATS ON SPACE DIMENSION!!! >>>>>>\n\n')
                 
                 print('\nOur dataset: ',dataset,' is shaped',data.shape)
-                return datanew,lats,lons
+                return tempfinal,lats,lons
               
             def read_obs_dataset(variq,dataset_obs,lat_bounds=lat_bounds,lon_bounds=lon_bounds):
                 data_obs,lats_obs,lons_obs = df.readFiles(variq,dataset_obs,monthlychoice)
@@ -1129,8 +1133,8 @@ lrpmapsallarray = np.asarray(lrpmapsall)
 
 ### Save the arrays
 directorydataoutput = '/Users/zlabe/Documents/Research/InternalSignal/Data/'
-np.savetxt(directorydataoutput + 'Slopes_20CRv3-SHUFFLE_%s_RANDOMSEED_20ens.txt' % SAMPLEQ,modelslopes)
-np.savetxt(directorydataoutput + 'R2_20CRv3-SHUFFLE__%s_RANDOMSEED_20ens.txt' % SAMPLEQ,modelr2)
+np.savetxt(directorydataoutput + 'Slopes_20CRv3-SHUFFLE-SPACE_%s_RANDOMSEED_20ens.txt' % SAMPLEQ,modelslopes)
+np.savetxt(directorydataoutput + 'R2_20CRv3-SHUFFLE-SPACE_%s_RANDOMSEED_20ens.txt' % SAMPLEQ,modelr2)
 
 ##############################################################################
 ##############################################################################
@@ -1141,7 +1145,7 @@ def netcdfLENS(lats,lons,var,directory,SAMPLEQ):
     from netCDF4 import Dataset
     import numpy as np
     
-    name = 'LRP_Maps_%s_20ens_SHUFFLE_.nc' % SAMPLEQ
+    name = 'LRP_Maps_%s_20ens_SHUFFLE-SPACE.nc' % SAMPLEQ
     filename = directory + name
     ncfile = Dataset(filename,'w',format='NETCDF4')
     ncfile.description = 'LRP maps for random sampling' 
