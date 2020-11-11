@@ -1,9 +1,9 @@
 """
-Plots LRP maps of uncertainty for RANDOM data
+Plos histogram and map of LRP threshold method
 
 Reference  : Barnes et al. [2020, JAMES]
 Author    : Zachary M. Labe
-Date      : 21 October 2020
+Date      : 11 November 2020
 """
 
 ### Import packages
@@ -22,11 +22,11 @@ datasets = [r'RANDOM']
 seasons = [r'annual']
 letters = ["a","b","c","d","e","f","g","h","i","j","k","l","m"]
 SAMPLEQ = 100
-SAMPLEQ2 = 500
 
 ### Set directories
 directorydata = '/Users/zlabe/Documents/Research/InternalSignal/Data/'
-directoryfigure = '/Users/zlabe/Desktop/SINGLE_v2.0/Histograms/LRP/%s/' % variables[0]
+directorydata2 = '/Users/zlabe/Documents/Research/InternalSignal/Data/FINAL/'
+directoryfigure = '/Users/zlabe/Desktop/PAPER/'
 
 ### Read in LRP maps
 data = Dataset(directorydata + 'LRP_Maps_%s_20ens_%s_%s_SHUFFLE-TIMENS.nc' % (SAMPLEQ,variables[0],seasons[0]))
@@ -45,6 +45,33 @@ mean = np.nanmean(lrp[:,:,:],axis=0)
 lon2,lat2 = np.meshgrid(lon1,lat1)
 meanall = lrp.ravel()
 thresh = np.percentile(meanall,95)
+
+###############################################################################
+###############################################################################
+###############################################################################
+### Prepare plotting parameters
+dataq = [mean]
+labelq = ['RELEVANCE']
+limitsq = [np.arange(0,0.5001,0.005)]
+barlimq = [np.round(np.arange(0,0.6,0.1),2)]
+datasetsq = [r'ALL']
+colorbarendq = ['max']
+cmapq = [cm.classic_16.mpl_colormap]
+
+### Read in LRP maps
+data = Dataset(directorydata2 + 'LRP_YearlyMaps_%s_20ens_%s_%s.nc' % (SAMPLEQ,variables[0],seasons[0]))
+lat1 = data.variables['lat'][:]
+lon1 = data.variables['lon'][:]
+lrp = data.variables['LRP'][:]
+data.close()
+
+lrpghg = np.nanmean(lrp[0,:,:,:,:],axis=1)
+lrpaer = np.nanmean(lrp[1,:,:,:,:],axis=1)
+lrplens = np.nanmean(lrp[2,:,:,:,:],axis=1)
+
+lrpmask_lens = lrplens[9,:,:] # Pick example
+lrpmask_lens[lrpmask_lens<=thresh] = np.nan
+maskdata = [lrpmask_lens]
 
 #######################################################################
 #######################################################################
@@ -83,10 +110,9 @@ ax.spines['left'].set_color('dimgrey')
 ax.spines['bottom'].set_linewidth(2)
 ax.spines['left'].set_linewidth(2) 
 ax.tick_params('both',length=5.5,width=2,which='major',color='dimgrey')  
-ax.yaxis.grid(zorder=1,color='dimgrey',alpha=0.35)
 
-plt.axvline(x=thresh,color=cm.classic_16.mpl_colormap(0.57),linewidth=2,linestyle='--',dashes=(1,0.3),
-            zorder=10,label=r'\textbf{THRESHOLD TO MASK DATA - 95th percentile}')
+plt.axvline(x=thresh,color=cm.classic_16.mpl_colormap(0.59),linewidth=2,linestyle='--',dashes=(1,0.3),
+            zorder=10,label=r'\textbf{THRESHOLD TO MASK DATA -- 95th percentile}')
 
 weights_random = np.ones_like(meanall)/len(meanall)
 n_random, bins_random, patches_random = plt.hist(meanall,bins=np.arange(0.0,0.152,0.002)-0.001,
@@ -98,52 +124,24 @@ for i in range(len(patches_random)):
     patches_random[i].set_edgecolor('white')
     patches_random[i].set_linewidth(0.5)
     
-leg = plt.legend(shadow=False,fontsize=7,loc='upper center',
-    bbox_to_anchor=(0.28,1),fancybox=True,ncol=1,frameon=False,
-    handlelength=3,handletextpad=1)
+# leg = plt.legend(shadow=False,fontsize=7,loc='upper center',
+#     bbox_to_anchor=(0.28,1),fancybox=True,ncol=1,frameon=False,
+#     handlelength=3,handletextpad=1)
 
-plt.ylabel(r'\textbf{PROPORTION[%s]}' % SAMPLEQ,fontsize=10,color='k')
+plt.ylabel(r'\textbf{PROPORTION}',fontsize=10,color='k')
 plt.xlabel(r'\textbf{DISTRIBUTION OF LRP FOR SHUFFLED DATA [RELEVANCE]}',fontsize=10,color='k')
 plt.yticks(np.arange(0,1.1,0.05),map(str,np.round(np.arange(0,1.1,0.05),2)),size=6)
 plt.xticks(np.arange(0,1.1,0.01),map(str,np.round(np.arange(0,1.1,0.01),2)),size=6)
 plt.xlim([0,0.15])   
 plt.ylim([0,0.1])
 
-plt.savefig(directoryfigure + 'LRPstats_ThresholdHistONLY_TIMENS_%s_%s_%s.png' % (variables[0],
-                                                        seasons[0],
-                                                        SAMPLEQ),
-                                                        dpi=300)
+plt.text(0.109,0.1,r'\textbf{THRESHOLD TO MASK DATA - 95th percentile}',
+         color=cm.classic_16.mpl_colormap(0.59),fontsize=5)
 
 ###############################################################################
 ###############################################################################
 ###############################################################################
-### Prepare plotting parameters
-dataq = [mean]
-labelq = ['LRP RELEVANCE']
-limitsq = [np.arange(0,0.5001,0.005)]
-barlimq = [np.round(np.arange(0,0.6,0.1),2)]
-datasetsq = [r'CESM-LENS']
-colorbarendq = ['max']
-cmapq = [cm.classic_16.mpl_colormap]
-
-### Read in LRP maps for X(LENS)
-data = Dataset(directorydata + 'LRP_Maps_%s_%s_%s.nc' % (variables[0],seasons[0],SAMPLEQ2))
-lat1 = data.variables['lat'][:]
-lon1 = data.variables['lon'][:]
-lrpc = data.variables['LRP'][:]
-data.close()
-
-lrplens = lrpc[2,:,:,:]
-# lrpmask_lens = np.nanmean(lrplens[:,:,:],axis=0) # Mean
-lrpmask_lens = lrplens[5,:,:] # Pick example
-lrpmask_lens[lrpmask_lens<=thresh] = np.nan
-maskdata = [lrpmask_lens]
-
-###############################################################################
-###############################################################################
-###############################################################################
-fig = plt.figure()
-ax1 = plt.subplot(111)
+ax1 = plt.axes([.192,.6,.4,.33])
         
 m = Basemap(projection='moll',lon_0=0,resolution='l',area_thresh=10000)
 circle = m.drawmapboundary(fill_color='dimgrey')
@@ -167,20 +165,15 @@ cs = m.contourf(x,y,var,limitsq[0],
 cs.set_cmap(cmapq[0])
 
 ax1.annotate(r'\textbf{%s}' % (datasetsq[0]),xy=(0,0),xytext=(0.865,0.91),
-                  textcoords='axes fraction',color='k',fontsize=21,
+                  textcoords='axes fraction',color='dimgrey',fontsize=9,
                   rotation=335,ha='center',va='center')
 
 cbar = m.colorbar(cs,drawedges=False,location='bottom',extendfrac=0.07,
-                  extend=colorbarendq[0],pad=0.2)                  
-cbar.set_label(r'\textbf{%s}' % labelq[0],fontsize=11,color='dimgrey',labelpad=1.4)  
+                  extend=colorbarendq[0],pad=0.1)                  
+cbar.set_label(r'\textbf{%s}' % labelq[0],fontsize=8,color='dimgrey',labelpad=1.4)  
 cbar.set_ticks(barlim)
 cbar.set_ticklabels(list(map(str,barlim)))
 cbar.ax.tick_params(axis='x', size=.01,labelsize=6,labelcolor='dimgrey')
 cbar.outline.set_edgecolor('dimgrey')
 
-plt.tight_layout()
-# plt.subplots_adjust(bottom=0.17)
-plt.savefig(directoryfigure + 'LRPstats_ThresholdHistMap_TIMENS_%s_%s_%s.png' % (variables[0],
-                                                        seasons[0],
-                                                        SAMPLEQ),
-                                                        dpi=300)
+plt.savefig(directoryfigure + 'LRP_MaskingExample_PAPER.png',dpi=300)

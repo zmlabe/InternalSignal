@@ -20,22 +20,22 @@ variables = [r'T2M']
 datasets = [r'AER+ALL',r'GHG+ALL',r'TOTAL']
 seasons = [r'annual']
 letters = ["a","b","c","d","e","f","g","h","i","j","k","l","m"]
-SAMPLEQ = 500
+SAMPLEQ = 100
 
 ### Set directories
-directorydata = '/Users/zlabe/Documents/Research/InternalSignal/Data/'
-directoryfigure = '/Users/zlabe/Desktop/SINGLE_v1.2-HISTOGRAM/LRP/%s/' % variables[0]
+directorydata = '/Users/zlabe/Documents/Research/InternalSignal/Data/FINAL/'
+directoryfigure = '/Users/zlabe/Desktop/SINGLE_v2.0/LRP/%s/' % variables[0]
 
 ### Read in LRP maps
-data = Dataset(directorydata + 'LRP_Maps_%s_%s_%s.nc' % (variables[0],seasons[0],SAMPLEQ))
+data = Dataset(directorydata + 'LRP_YearlyMaps_%s_20ens_%s_%s.nc' % (SAMPLEQ,variables[0],seasons[0]))
 lat1 = data.variables['lat'][:]
 lon1 = data.variables['lon'][:]
 lrp = data.variables['LRP'][:]
 data.close()
 
-lrpghg = lrp[0,:,:,:]
-lrpaer = lrp[1,:,:,:]
-lrplens = lrp[2,:,:,:]
+lrpghg = np.nanmean(lrp[0,:,:,:,:],axis=1)
+lrpaer = np.nanmean(lrp[1,:,:,:,:],axis=1)
+lrplens = np.nanmean(lrp[2,:,:,:,:],axis=1)
 
 ###############################################################################
 ###############################################################################
@@ -134,7 +134,7 @@ cbar.outline.set_edgecolor('dimgrey')
 
 plt.tight_layout()
 plt.subplots_adjust(bottom=0.17)
-plt.savefig(directoryfigure + 'LRPmean_%s_%s_%s.png' % (variables[0],
+plt.savefig(directoryfigure + 'LRPmean_%s_%s_%s_20ens.png' % (variables[0],
                                                         seasons[0],
                                                         SAMPLEQ),
                                                         dpi=300)
@@ -249,7 +249,7 @@ cbar.outline.set_edgecolor('dimgrey')
 
 plt.tight_layout()
 plt.subplots_adjust(bottom=0.17)
-plt.savefig(directoryfigure + 'LRPstd_%s_%s_%s.png' % (variables[0],
+plt.savefig(directoryfigure + 'LRPstd_%s_%s_%s_20ens.png' % (variables[0],
                                                         seasons[0],
                                                         SAMPLEQ),
                                                         dpi=300)
@@ -306,7 +306,7 @@ cbar.outline.set_edgecolor('dimgrey')
 
 plt.tight_layout()
 plt.subplots_adjust(bottom=0.17)
-plt.savefig(directoryfigure + 'Percmean_%s_%s_%s.png' % (variables[0],
+plt.savefig(directoryfigure + 'Percmean_%s_%s_%s_20ens.png' % (variables[0],
                                                         seasons[0],
                                                         SAMPLEQ),
                                                         dpi=300)

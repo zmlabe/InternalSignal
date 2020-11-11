@@ -1,9 +1,9 @@
 """
-Plots normalized histograms of slope of observations version 2
+Plots normalized histograms of slope of observations for the paper
 
 Reference  : Barnes et al. [2020, JAMES]
 Author    : Zachary M. Labe
-Date      : 28 October 2020
+Date      : 11 November 2020
 """
 
 ### Import packages
@@ -16,11 +16,11 @@ import scipy.stats as stats
 variables = [r'T2M']
 datasets = [r'XGHG',r'XAER',r'lens']
 seasons = [r'annual']
-SAMPLEQ = 500
+SAMPLEQ = 100
 
 ### Set directories
-directorydata = '/Users/zlabe/Documents/Research/InternalSignal/Data/'
-directoryfigure = '/Users/zlabe/Desktop/SINGLE_v2.0/Histograms/%s/' % variables[0]
+directorydata = '/Users/zlabe/Documents/Research/InternalSignal/Data/FINAL/'
+directoryfigure = '/Users/zlabe/Desktop/PAPER/'
 
 ### Read in slope data
 filename_slope = 'Slopes_20CRv3-Obs_XGHG-XAER-LENS_%s_RANDOMSEED_20ens.txt' % SAMPLEQ
@@ -75,9 +75,9 @@ plt.axvline(x=1,color='k',linewidth=2,linestyle='--',dashes=(1,0.3),
             zorder=10)
 
 weights_ghg = np.ones_like(ghg_slopes)/len(ghg_slopes)
-n_ghg, bins_ghg, patches_ghg = plt.hist(ghg_slopes,bins=np.arange(-1,2.1,0.1)-0.05,
+n_ghg, bins_ghg, patches_ghg = plt.hist(ghg_slopes,bins=np.arange(-1.2,2.1,0.1)-0.05,
                                         density=False,alpha=0.5,
-                                        label=r'\textbf{AER+ALL}',
+                                        label=r'\textbf{AER+}',
                                         weights=weights_ghg,zorder=3)
 for i in range(len(patches_ghg)):
     patches_ghg[i].set_facecolor('steelblue')
@@ -85,22 +85,22 @@ for i in range(len(patches_ghg)):
     patches_ghg[i].set_linewidth(0.5)
  
 weights_aer = np.ones_like(aer_slopes)/len(aer_slopes)
-n_aer, bins_aer, patches_aer = plt.hist(aer_slopes,bins=np.arange(-1,2.1,0.1)-0.05,
+n_aer, bins_aer, patches_aer = plt.hist(aer_slopes,bins=np.arange(-1.2,2.1,0.1)-0.05,
                                         density=False,alpha=0.5,
-                                        label=r'\textbf{GHG+ALL}',
+                                        label=r'\textbf{GHG+}',
                                         weights=weights_aer,zorder=4)
 for i in range(len(patches_aer)):
-    patches_aer[i].set_facecolor('goldenrod')
+    patches_aer[i].set_facecolor('darkgoldenrod')
     patches_aer[i].set_edgecolor('white')
     patches_aer[i].set_linewidth(0.5)
     
 weights_lens = np.ones_like(lens_slopes)/len(lens_slopes)
-n_lens, bins_lens, patches_lens = plt.hist(lens_slopes,bins=np.arange(-1,2.1,0.1)-0.05,
+n_lens, bins_lens, patches_lens = plt.hist(lens_slopes,bins=np.arange(-1.2,2.1,0.1)-0.05,
                                         density=False,alpha=0.5,
-                                        label=r'\textbf{TOTAL}',
+                                        label=r'\textbf{ALL}',
                                         weights=weights_lens,zorder=5)
 for i in range(len(patches_lens)):
-    patches_lens[i].set_facecolor('forestgreen')
+    patches_lens[i].set_facecolor('crimson')
     patches_lens[i].set_edgecolor('white')
     patches_lens[i].set_linewidth(0.5)
     
@@ -108,11 +108,11 @@ leg = plt.legend(shadow=False,fontsize=7,loc='upper center',
         bbox_to_anchor=(0.11,1),fancybox=True,ncol=1,frameon=False,
         handlelength=3,handletextpad=1)
 
-plt.ylabel(r'\textbf{PROPORTION[%s]}' % SAMPLEQ,fontsize=10,color='k')
-plt.xlabel(r'\textbf{SLOPES} [ANNUAL -- T2M -- 20CRv3 -- (1920-2015)]',fontsize=10,color='k')
+plt.ylabel(r'\textbf{PROPORTION}',fontsize=10,color='k')
+plt.xlabel(r'\textbf{SLOPE OF REANALYSIS}',fontsize=10,color='k')
 plt.yticks(np.arange(0,1.1,0.1),map(str,np.round(np.arange(0,1.1,0.1),2)),size=6)
-plt.xticks(np.arange(-1,10.1,0.2),map(str,np.round(np.arange(-1,10.1,0.2),2)),size=6)
-plt.xlim([-1,2])   
+plt.xticks(np.arange(-1.2,10.1,0.2),map(str,np.round(np.arange(-1.2,10.1,0.2),2)),size=6)
+plt.xlim([-1.2,2])   
 plt.ylim([0,0.6])
 
 ###############################################################################
@@ -165,7 +165,7 @@ time = np.arange(lineobs.shape[0])
 line_aer = np.median(aer_slopes)*time + 1920
 plt.plot(line,line,color='dimgrey',linewidth=1,clip_on=True,
          linestyle='--',dashes=(1,0.3),zorder=2)
-plt.plot(lineobs,line_aer,color='goldenrod',linewidth=2,clip_on=True,zorder=1)
+plt.plot(lineobs,line_aer,color='darkgoldenrod',linewidth=2,clip_on=True,zorder=1)
 
 plt.xlabel(r'\textbf{ACTUAL YEAR}',fontsize=4,color='dimgrey',labelpad=-6)
 plt.ylabel(r'\textbf{PREDICTED YEAR}',fontsize=4,color='dimgrey',labelpad=-11.5)
@@ -178,7 +178,7 @@ ax1.tick_params(axis='y',which='major',pad=0.4)
 
 ###############################################################################
 ### Add subplot
-ax2 = plt.axes([.74,.57,.10,.15])
+ax2 = plt.axes([.79,.57,.10,.15])
          
 ax2.spines['top'].set_color('none')
 ax2.spines['right'].set_color('none') 
@@ -193,7 +193,7 @@ time = np.arange(lineobs.shape[0])
 line_lens = np.median(lens_slopes)*time + 1920
 plt.plot(line,line,color='dimgrey',linewidth=1,clip_on=True,
          linestyle='--',dashes=(1,0.3),zorder=2)
-plt.plot(lineobs,line_lens,color='forestgreen',linewidth=2,clip_on=True,zorder=1)
+plt.plot(lineobs,line_lens,color='crimson',linewidth=2,clip_on=True,zorder=1)
 
 plt.xlabel(r'\textbf{ACTUAL YEAR}',fontsize=4,color='dimgrey',labelpad=-6)
 plt.ylabel(r'\textbf{PREDICTED YEAR}',fontsize=4,color='dimgrey',labelpad=-11.5)
@@ -204,5 +204,4 @@ plt.ylim([1920,2080])
 ax1.tick_params(axis='x',which='major',pad=1)
 ax1.tick_params(axis='y',which='major',pad=0.4)
     
-plt.savefig(directoryfigure + 'Histogram_Slopes_XGHG-XAER-LENS_T2M_%s_Norm_20ens.png' % SAMPLEQ,
-            dpi=300)
+plt.savefig(directoryfigure + 'HistogramOfObsSlopes_PAPER.png',dpi=300)

@@ -1,9 +1,9 @@
 """
-Train the model on the different LENS-SINGLE runs to get slopes of observations
+Train the model on randomized labels (shuffle along LENS ens+time dimension)
 
 Reference  : Barnes et al. [2020, JAMES]
 Author    : Zachary M. Labe
-Date      : 30 September 2020
+Date      : 5 November 2020
 """
 
 ### Import packages
@@ -48,39 +48,27 @@ plt.rc('font',**{'family':'sans-serif','sans-serif':['Avant Garde']})
 ###############################################################################
 ###############################################################################
 ### Data preliminaries 
-directorydataLLS = '/Users/zlabe/Data/LENS/SINGLE/'
 directorydataLLL = '/Users/zlabe/Data/LENS/monthly'
 directorydataBB = '/Users/zlabe/Data/BEST/'
 directorydataEE = '/Users/zlabe/Data/ERA5/'
-datasetsingle = ['XGHG','XAER','lens']
+datasetsingle = ['lens']
 seasons = ['annual']
-timexghg = np.arange(1920,2080+1,1)
-timexaer = np.arange(1920,2080+1,1)
-timelens = np.arange(1920,2080+1,1)
-yearsall = [timexghg,timexaer,timelens]
-directoriesall = [directorydataLLS,directorydataLLS,directorydataLLL]
+timerandom = np.arange(1920,2080+1,1)
+yearsall = [timerandom]
+directoriesall = [directorydataLLL]
 
 ### Set counter
 SAMPLEQ = 100
-
-# ### Test script
-# datasetsingle = ['XAER']
-# directoriesall = [directorydataLLS]
-# yearsall = [timexaer]
  
 ### Begin model
 valslopesexperi = []
 valrrexperi = []
 lrpmapsall = []
-ensembleseedall = []
-annseedall = []
 for sis,singlesimulation in enumerate(datasetsingle):
     for seas in range(len(seasons)):
         lrpmapstime = []
         valslopes = [] 
         valrr = []
-        annseed = []
-        ensembleseed = []
         for isample in range(SAMPLEQ): 
             ###############################################################################
             ###############################################################################
@@ -119,27 +107,27 @@ for sis,singlesimulation in enumerate(datasetsingle):
             ### Remove the annual mean? True to subtract it from dataset ##########
             rm_annual_mean = False #################################################
             if rm_annual_mean == True:
-                directoryfigure = '/Users/zlabe/Desktop/SINGLE_v1.2/rm_annual_mean/'
+                directoryfigure = '/Users/zlabe/Desktop/SINGLE_v2.0/rm_annual_mean/'
             
             ### Remove the meridional mean? True to subtract it from dataset ######
             rm_merid_mean = False #################################################
             if rm_merid_mean == True:
-                directoryfigure = '/Users/zlabe/Desktop/SINGLE_v1.2/rm_merid_mean/'
+                directoryfigure = '/Users/zlabe/Desktop/SINGLE_v2.0/rm_merid_mean/'
             
             ### Calculate only over land? True if land ############################
             land_only = False ######################################################
             if land_only == True:
-                directoryfigure = '/Users/zlabe/Desktop/SINGLE_v1.2/land_only/'
+                directoryfigure = '/Users/zlabe/Desktop/SINGLE_v2.0/land_only/'
             
             ### Calculate only over ocean? True if ocean ##########################
             ocean_only = False #####################################################
             if ocean_only == True:
-                directoryfigure = '/Users/zlabe/Desktop/SINGLE_v1.2/ocean_only/'
+                directoryfigure = '/Users/zlabe/Desktop/SINGLE_v2.0/ocean_only/'
             
             ### Rove the ensemble mean? True to subtract it from dataset ##########
             rm_ensemble_mean = False ##############################################
             if rm_ensemble_mean == True:
-                directoryfigure = '/Users/zlabe/Desktop/SINGLE_v1.2/rm_ensemble_mean/'
+                directoryfigure = '/Users/zlabe/Desktop/SINGLE_v2.0/rm_ensemble_mean/'
             
             ### Split the data into training and testing sets? value of 1 will use all 
             ### data as training, .8 will use 80% training, 20% testing; etc.
@@ -176,8 +164,19 @@ for sis,singlesimulation in enumerate(datasetsingle):
             def read_primary_dataset(variq,dataset,lat_bounds=lat_bounds,lon_bounds=lon_bounds):
                 data,lats,lons = df.readFiles(variq,dataset,monthlychoice)
                 datar,lats,lons = df.getRegion(data,lats,lons,lat_bounds,lon_bounds)
+                
+                ### SHUFFLE data array along time dimensions
+                tempfinal = np.empty((datar.shape))
+                for iil in range(datar.shape[2]):
+                    for jjl in range(datar.shape[3]):
+                        temp = datar[:,:,iil,jjl].ravel()
+                        np.random.shuffle(temp)
+                        tempq = np.reshape(temp,(datar.shape[0],datar.shape[1]))
+                        tempfinal[:,:,iil,jjl] = tempq
+                print('\n\n<<<<<<< SHUFFLED ARRAY FOR TESTING STATS ON SPACE DIMENSION!!! >>>>>>\n\n')
+                
                 print('\nOur dataset: ',dataset,' is shaped',data.shape)
-                return datar,lats,lons
+                return tempfinal,lats,lons
               
             def read_obs_dataset(variq,dataset_obs,lat_bounds=lat_bounds,lon_bounds=lon_bounds):
                 data_obs,lats_obs,lons_obs = df.readFiles(variq,dataset_obs,monthlychoice)
@@ -960,7 +959,7 @@ for sis,singlesimulation in enumerate(datasetsingle):
                             Xmean, Xstd = stdVals      
             
                             #---------------------------
-                            random_network_seed = 87750
+                            random_network_seed = None #87750
                             #---------------------------
             
                             # Create and train network
@@ -1118,38 +1117,24 @@ for sis,singlesimulation in enumerate(datasetsingle):
             valslopes.append(slopeobs)
             valrr.append(r_valueobs)
             
-            ### Append seeds
-            ensembleseed.append(random_segment_seed)
-            annseed.append(random_network_seed)
-            
-            ### Append lrp 
-            # lrpyearmean = np.nanmean(lrp,axis=0)
-            lrpmapstime.append(lrp)
+            ### Append lrp averaged over all years
+            lrpyearmean = np.nanmean(lrp,axis=0)
+            lrpmapstime.append(lrpyearmean)
             print('\n\n<<<<<<<<<< COMPLETED ITERATION = %s >>>>>>>>>>>\n\n' % (isample+1))
     valslopesexperi.append(valslopes)
     valrrexperi.append(valrr)
     lrpmapsall.append(lrpmapstime)
-    ensembleseedall.append(ensembleseed)
-    annseedall.append(annseed)
     
 ### See statistics for observations
 modelslopes = np.asarray(valslopesexperi)
 modelr = np.asarray(valrrexperi)
 modelr2 = modelr**2
-
-### See lrp maps
 lrpmapsallarray = np.asarray(lrpmapsall)
-
-### See seeds randomized
-ensseed = np.asarray(ensembleseedall)
-modelseed = np.asarray(annseedall)
 
 ### Save the arrays
 directorydataoutput = '/Users/zlabe/Documents/Research/InternalSignal/Data/'
-np.savetxt(directorydataoutput + 'Slopes_20CRv3-Obs_XGHG-XAER-LENS_%s_RANDOMSEED_20ens.txt' % SAMPLEQ,modelslopes)
-np.savetxt(directorydataoutput + 'R2_20CRv3-Obs_XGHG-XAER-LENS_%s_RANDOMSEED_20ens.txt' % SAMPLEQ,modelr2)
-np.savetxt(directorydataoutput + 'SegmentSeed_20CRv3-Obs_XGHG-XAER-LENS_%s_RANDOMSEED_20ens.txt' % SAMPLEQ,ensseed)
-np.savetxt(directorydataoutput + 'ModelSeed_20CRv3-Obs_XGHG-XAER-LENS_%s_RANDOMSEED_20ens.txt' % SAMPLEQ,modelseed)
+np.savetxt(directorydataoutput + 'Slopes_20CRv3-SHUFFLE-TIMENS_%s_RANDOMSEED_20ens.txt' % SAMPLEQ,modelslopes)
+np.savetxt(directorydataoutput + 'R2_20CRv3-SHUFFLE-TIMENS_%s_RANDOMSEED_20ens.txt' % SAMPLEQ,modelr2)
 
 ##############################################################################
 ##############################################################################
@@ -1160,25 +1145,23 @@ def netcdfLENS(lats,lons,var,directory,SAMPLEQ):
     from netCDF4 import Dataset
     import numpy as np
     
-    name = 'LRP_YearlyMaps_%s_20ens_T2M_annual.nc' % SAMPLEQ
+    name = 'LRP_Maps_%s_20ens_SHUFFLE-TIMENS.nc' % SAMPLEQ
     filename = directory + name
     ncfile = Dataset(filename,'w',format='NETCDF4')
-    ncfile.description = 'LRP maps for random sampling of each year' 
+    ncfile.description = 'LRP maps for random sampling' 
     
     ### Dimensions
     ncfile.createDimension('model',var.shape[0])
     ncfile.createDimension('samples',var.shape[1])
-    ncfile.createDimension('years',var.shape[2])
-    ncfile.createDimension('lat',var.shape[3])
-    ncfile.createDimension('lon',var.shape[4])
+    ncfile.createDimension('lat',var.shape[2])
+    ncfile.createDimension('lon',var.shape[3])
     
     ### Variables
     model = ncfile.createVariable('model','f4',('model'))
     samples = ncfile.createVariable('samples','f4',('samples'))
-    years = ncfile.createVariable('years','f4',('years'))
     latitude = ncfile.createVariable('lat','f4',('lat'))
     longitude = ncfile.createVariable('lon','f4',('lon'))
-    varns = ncfile.createVariable('LRP','f4',('model','samples','years','lat','lon'))
+    varns = ncfile.createVariable('LRP','f4',('model','samples','lat','lon'))
     
     ### Units
     varns.units = 'unitless relevance'
@@ -1189,7 +1172,6 @@ def netcdfLENS(lats,lons,var,directory,SAMPLEQ):
     ### Data
     model[:] = np.arange(var.shape[0])
     samples[:] = np.arange(var.shape[1])
-    years[:] = np.arange(var.shape[2])
     latitude[:] = lats
     longitude[:] = lons
     varns[:] = var

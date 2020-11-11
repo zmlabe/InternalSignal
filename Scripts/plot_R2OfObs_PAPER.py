@@ -1,9 +1,9 @@
 """
-Plots histograms of R^2 of observations
+Plots histograms of R^2 of observations for paper
 
 Reference  : Barnes et al. [2020, JAMES]
 Author    : Zachary M. Labe
-Date      : 7 October 2020
+Date      : 11 November
 """
 
 ### Import packages
@@ -16,11 +16,11 @@ import scipy.stats as stats
 variables = [r'T2M']
 datasets = [r'XGHG',r'XAER',r'lens']
 seasons = [r'annual']
-SAMPLEQ = 500
+SAMPLEQ = 100
 
 ### Set directories
-directorydata = '/Users/zlabe/Documents/Research/InternalSignal/Data/'
-directoryfigure = '/Users/zlabe/Desktop/SINGLE_v1.2-HISTOGRAM/%s/' % variables[0]
+directorydata = '/Users/zlabe/Documents/Research/InternalSignal/Data/FINAL/'
+directoryfigure = '/Users/zlabe/Desktop/PAPER/'
 
 ### Read in slope data
 filename_slope = 'Slopes_20CRv3-Obs_XGHG-XAER-LENS_%s_RANDOMSEED_20ens.txt' % SAMPLEQ
@@ -82,7 +82,7 @@ ax.yaxis.grid(zorder=1,color='dimgrey',alpha=0.35)
 weights_ghg = np.ones_like(ghg_r2)/len(ghg_r2)
 n_ghg, bins_ghg, patches_ghg = plt.hist(ghg_r2,bins=np.arange(0,1.01,0.025),
                                         density=False,alpha=0.5,
-                                        label=r'\textbf{AER+ALL}',
+                                        label=r'\textbf{AER+}',
                                         weights=weights_ghg,zorder=3)
 for i in range(len(patches_ghg)):
     patches_ghg[i].set_facecolor('steelblue')
@@ -92,10 +92,10 @@ for i in range(len(patches_ghg)):
 weights_aer = np.ones_like(aer_r2)/len(aer_r2)
 n_aer, bins_aer, patches_aer = plt.hist(aer_r2,bins=np.arange(0,1.01,0.025),
                                         density=False,alpha=0.5,
-                                        label=r'\textbf{GHG+ALL}',
+                                        label=r'\textbf{GHG+}',
                                         weights=weights_aer,zorder=4)
 for i in range(len(patches_aer)):
-    patches_aer[i].set_facecolor('goldenrod')
+    patches_aer[i].set_facecolor('darkgoldenrod')
     patches_aer[i].set_edgecolor('white')
     patches_aer[i].set_linewidth(0.5)
     
@@ -105,7 +105,7 @@ n_lens, bins_lens, patches_lens = plt.hist(lens_r2,bins=np.arange(0,1.01,0.025),
                                         label=r'\textbf{ALL}',
                                         weights=weights_lens,zorder=5)
 for i in range(len(patches_lens)):
-    patches_lens[i].set_facecolor('forestgreen')
+    patches_lens[i].set_facecolor('crimson')
     patches_lens[i].set_edgecolor('white')
     patches_lens[i].set_linewidth(0.5)
     
@@ -113,12 +113,11 @@ leg = plt.legend(shadow=False,fontsize=7,loc='upper center',
         bbox_to_anchor=(0.5,1.1),fancybox=True,ncol=3,frameon=False,
         handlelength=3,handletextpad=1)
 
-plt.ylabel(r'\textbf{PROPORTION[%s]}' % SAMPLEQ,fontsize=10,color='k')
-plt.xlabel(r'\textbf{R$^{2}$} [ANNUAL -- T2M -- 20CRv3 -- (1920-2015)]',fontsize=10,color='k')
+plt.ylabel(r'\textbf{PROPORTION}',fontsize=10,color='k')
+plt.xlabel(r'\textbf{R$^{2}$ OF REANALYSIS}',fontsize=10,color='k')
 plt.yticks(np.arange(0,1.1,0.1),map(str,np.round(np.arange(0,1.1,0.1),2)),size=6)
 plt.xticks(np.arange(0,1.1,0.1),map(str,np.round(np.arange(0,1.1,0.1),2)),size=6)
 plt.xlim([0,1])   
-plt.ylim([0,0.7])
+plt.ylim([0,0.5])
     
-plt.savefig(directoryfigure + 'Histogram_r2_XGHG-XAER-LENS_T2M_%s_20ens.png' % SAMPLEQ,
-            dpi=300)
+plt.savefig(directoryfigure + 'HistogramR2OfObs_PAPER.png',dpi=300)

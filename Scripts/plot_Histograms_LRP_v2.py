@@ -21,22 +21,22 @@ variables = [r'T2M']
 datasets = [r'XGHG',r'XAER',r'LENS']
 seasons = [r'annual']
 letters = ["a","b","c","d","e","f","g","h","i","j","k","l","m"]
-SAMPLEQ = 500
+SAMPLEQ = 100
 
 ### Set directories
-directorydata = '/Users/zlabe/Documents/Research/InternalSignal/Data/'
-directoryfigure = '/Users/zlabe/Desktop/SINGLE_v2.0/Histograms/LRP/%s/' % variables[0]
+directorydata = '/Users/zlabe/Documents/Research/InternalSignal/Data/FINAL/'
+directoryfigure = '/Users/zlabe/Desktop/PAPER/'
 
 ### Read in LRP maps
-data = Dataset(directorydata + 'LRP_Maps_%s_%s_%s.nc' % (variables[0],seasons[0],SAMPLEQ))
+data = Dataset(directorydata + 'LRP_YearlyMaps_%s_20ens_%s_%s.nc' % (SAMPLEQ,variables[0],seasons[0]))
 lats1 = data.variables['lat'][:]
 lons1 = data.variables['lon'][:]
 lrp = data.variables['LRP'][:]
 data.close()
 
-lrpghg = lrp[0,:,:,:]
-lrpaer = lrp[1,:,:,:]
-lrplens = lrp[2,:,:,:]
+lrpghg = np.nanmean(lrp[0,:,:,:,:],axis=1)
+lrpaer = np.nanmean(lrp[1,:,:,:,:],axis=1)
+lrplens = np.nanmean(lrp[2,:,:,:,:],axis=1)
 
 ###############################################################################
 ###############################################################################
@@ -92,7 +92,7 @@ def calculateRegions(time_lrp,lats1,lons1):
     ### Southeast Asia
     lataq = np.where((lats1 >= 10) & (lats1 <= 40))[0]
     lata1 = lats1[lataq]
-    lonaq = np.where((lons1 >= 90) & (lons1 <= 125))[0]
+    lonaq = np.where((lons1 >= 105) & (lons1 <= 120))[0]
     lona1 = lons1[lonaq]
     time_lrpA1 = time_lrp[:,lataq,:]
     time_lrpA = time_lrpA1[:,:,lonaq]
@@ -101,9 +101,9 @@ def calculateRegions(time_lrp,lats1,lons1):
     
     
     ### India
-    latiq = np.where((lats1 >= 10) & (lats1 <= 35))[0]
+    latiq = np.where((lats1 >= 15) & (lats1 <= 40))[0]
     lati1 = lats1[latiq]
-    loniq = np.where((lons1 >= 60) & (lons1 <= 90))[0]
+    loniq = np.where((lons1 >= 70) & (lons1 <= 105))[0]
     loni1 = lons1[loniq]
     time_lrpI1 = time_lrp[:,latiq,:]
     time_lrpI = time_lrpI1[:,:,loniq]
@@ -121,9 +121,11 @@ def calculateRegions(time_lrp,lats1,lons1):
     mean_lrpW = UT.calc_weightedAve(time_lrpW,latw2)
     
     ### Sahara
-    latdq = np.where((lats1 >= -5) & (lats1 <= 15))[0]
+    latdq = np.where((lats1 >= 0) & (lats1 <= 15))[0]
     latd1 = lats1[latdq]
-    londq = np.where((lons1 >= 0) & (lons1 <= 50))[0]
+    londq1 = np.where((lons1 >= 0) & (lons1 <= 45))[0]
+    londq2 = np.where((lons1 >= 350) & (lons1 <= 360))[0]
+    londq = np.append(londq1 ,londq2)
     lond1 = lons1[londq]
     time_lrpD1 = time_lrp[:,latdq,:]
     time_lrpD = time_lrpD1[:,:,londq]
@@ -131,11 +133,11 @@ def calculateRegions(time_lrp,lats1,lons1):
     mean_lrpD = UT.calc_weightedAve(time_lrpD,latd2)
     
     ### Southern Ocean Section
-    latsoq = np.where((lats1 >= -65) & (lats1 <= -35))[0]
+    latsoq = np.where((lats1 >= -66) & (lats1 <= -40))[0]
     latso1 = lats1[latsoq]
-    lonsoq1 = np.where((lons1 >= 0) & (lons1 <= 90))[0]
-    lonsoq2 = np.where((lons1 >= 300) & (lons1 <= 360))[0]
-    lonsoq = np.append(lonsoq1 ,lonsoq2)
+    lonsoq = np.where((lons1 >= 5) & (lons1 <= 70))[0]
+    # lonsoq2 = np.where((lons1 >= 330) & (lons1 <= 360))[0]
+    # lonsoq = np.append(lonsoq1 ,lonsoq2)
     lonso1 = lons1[lonsoq]
     time_lrpSO1 = time_lrp[:,latsoq,:]
     time_lrpSO = time_lrpSO1[:,:,lonsoq]
@@ -151,7 +153,7 @@ regions_ghg = calculateRegions(lrpghg,lats1,lons1)
 regions_aer = calculateRegions(lrpaer,lats1,lons1)
 regions_lens = calculateRegions(lrplens,lats1,lons1)
 regionnames = ['Southeast Asia','India','North Atlantic Warming Hole',
-               'Sahara','Southern Ocean']
+               'Central Africa','Southern Ocean']
 
 ###############################################################################
 ###############################################################################
@@ -207,7 +209,7 @@ for ii in range(len(regions_ghg)):
     weights_ghg = np.ones_like(regions_ghg[ii])/len(regions_ghg[ii])
     n_ghg, bins_ghg, patches_ghg = plt.hist(regions_ghg[ii],bins=np.arange(0,1.05,0.02)-0.01,
                                             density=False,alpha=0.5,
-                                            label=r'\textbf{AER+ALL}',
+                                            label=r'\textbf{AER+}',
                                             weights=weights_ghg,zorder=3)
     for i in range(len(patches_ghg)):
         patches_ghg[i].set_facecolor('steelblue')
@@ -217,17 +219,17 @@ for ii in range(len(regions_ghg)):
     weights_aer = np.ones_like(regions_aer[ii])/len(regions_aer[ii])
     n_aer, bins_aer, patches_aer = plt.hist(regions_aer[ii],bins=np.arange(0,1.05,0.02)-0.01,
                                             density=False,alpha=0.5,
-                                            label=r'\textbf{GHG+ALL}',
+                                            label=r'\textbf{GHG+}',
                                             weights=weights_aer,zorder=4)
     for i in range(len(patches_aer)):
-        patches_aer[i].set_facecolor('goldenrod')
+        patches_aer[i].set_facecolor('darkgoldenrod')
         patches_aer[i].set_edgecolor('white')
         patches_aer[i].set_linewidth(0.5)
         
     weights_lens = np.ones_like(regions_lens[ii])/len(regions_lens[ii])
     n_lens, bins_lens, patches_lens = plt.hist(regions_lens[ii],bins=np.arange(0,1.05,0.02)-0.01,
                                             density=False,alpha=0.5,
-                                            label=r'\textbf{TOTAL}',
+                                            label=r'\textbf{ALL}',
                                             weights=weights_lens,zorder=5)
     for i in range(len(patches_lens)):
         patches_lens[i].set_facecolor('crimson')
@@ -240,7 +242,7 @@ for ii in range(len(regions_ghg)):
                 handlelength=4,handletextpad=1)
     
     if ii == 0:
-        plt.ylabel(r'\textbf{PROPORTION[%s]}' % SAMPLEQ,fontsize=10,color='k')
+        plt.ylabel(r'\textbf{PROPORTION}',fontsize=10,color='k')
     plt.xlabel(r'\textbf{%s} [LRP-Relevance]' % regionnames[ii],fontsize=5,color='k')
     plt.yticks(np.arange(0,1.1,0.1),map(str,np.round(np.arange(0,1.1,0.1),2)),size=5)
     plt.xticks(np.arange(0,1.1,0.1),map(str,np.round(np.arange(0,1.1,0.1),2)),size=5)
@@ -253,5 +255,4 @@ for ii in range(len(regions_ghg)):
     
 plt.tight_layout()
 plt.subplots_adjust(wspace=0.3)
-plt.savefig(directoryfigure + 'LRP_Regions_Histograms_XGHG-XAER-LENS_T2M_%s_Norm_v2.png' % SAMPLEQ,
-            dpi=300)
+plt.savefig(directoryfigure + 'HistogramsOfLRPRegions_PAPER.png',dpi=300)

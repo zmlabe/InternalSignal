@@ -1,9 +1,9 @@
 """
-Train the model on the different LENS-SINGLE runs for annual data for paper
+Train the model on the different LENS-SINGLE runs for annual data
 
 Reference  : Deser et al. [2020, JCLI]
 Author    : Zachary M. Labe
-Date      : 11 November 2020
+Date      : 19 October 2020
 """
 
 ### Import packages
@@ -25,7 +25,7 @@ import itertools
 ### Data preliminaries 
 directorydataLLS = '/Users/zlabe/Data/LENS/SINGLE/'
 directorydataLLL = '/Users/zlabe/Data/LENS/monthly'
-directoryfigure =  '/Users/zlabe/Desktop/SINGLE_v2.0/Composites/T2M/'
+directoryfigure =  '/Users/zlabe/Desktop/PAPER/'
 datasetsingleq = np.repeat(['AER+','GHG+','ALL'],4)
 datasetsingle = ['XGHG','XAER','lens']
 timeq = ['1920-1959','1960-1999','2000-2039','2040-2079']
@@ -125,8 +125,8 @@ plt.rc('text',usetex=True)
 plt.rc('font',**{'family':'sans-serif','sans-serif':['Avant Garde']}) 
 
 ### Set limits for contours and colorbars
-limit = np.arange(-1.0,1.01,0.05)
-barlim = np.arange(-1,1.1,0.5)
+limit = np.arange(-0.75,0.751,0.025)
+barlim = np.arange(-0.75,0.76,0.25)
 cmap = cmocean.cm.balance
 label = r'\textbf{$^{\circ}$C decade$^{-1}$}'
     
@@ -183,5 +183,5 @@ cbar.outline.set_edgecolor('dimgrey')
 plt.tight_layout()
 plt.subplots_adjust(top=0.85,wspace=0.01,hspace=0,bottom=0.14)
 
-plt.savefig(directoryfigure + 'TrendPeriods_T2M_XGHG-XAER-LENS.png',dpi=300)
+plt.savefig(directoryfigure + 'TrendPeriods_T2M_PAPER.png',dpi=300)
 
