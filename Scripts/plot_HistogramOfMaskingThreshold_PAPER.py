@@ -59,17 +59,16 @@ colorbarendq = ['max']
 cmapq = [cm.classic_16.mpl_colormap]
 
 ### Read in LRP maps
-data = Dataset(directorydata2 + 'LRP_YearlyMaps_%s_20ens_%s_%s.nc' % (SAMPLEQ,variables[0],seasons[0]))
+data = Dataset(directorydata2 + 'LRP_Maps_lens_AllSeasons_PAPER.nc')
 lat1 = data.variables['lat'][:]
 lon1 = data.variables['lon'][:]
 lrp = data.variables['LRP'][:]
 data.close()
 
-lrpghg = np.nanmean(lrp[0,:,:,:,:],axis=1)
-lrpaer = np.nanmean(lrp[1,:,:,:,:],axis=1)
-lrplens = np.nanmean(lrp[2,:,:,:,:],axis=1)
+### Select annual
+lrplens = lrp[0,:,:,:]
 
-lrpmask_lens = lrplens[9,:,:] # Pick example
+lrpmask_lens = np.nanmean(lrplens,axis=0) # average across all years
 lrpmask_lens[lrpmask_lens<=thresh] = np.nan
 maskdata = [lrpmask_lens]
 

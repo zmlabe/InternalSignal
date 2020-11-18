@@ -6,6 +6,10 @@ Author    : Zachary M. Labe
 Date      : 5 November 2020
 """
 
+###############################################################################
+### TURNED OFF SAVING FILES FOR NPZ AND H5!!!!!!
+###############################################################################
+
 ### Import packages
 import math
 import time
@@ -58,7 +62,7 @@ yearsall = [timerandom]
 directoriesall = [directorydataLLL]
 
 ### Set counter
-SAMPLEQ = 100
+SAMPLEQ = 500
  
 ### Begin model
 valslopesexperi = []
@@ -165,7 +169,7 @@ for sis,singlesimulation in enumerate(datasetsingle):
                 data,lats,lons = df.readFiles(variq,dataset,monthlychoice)
                 datar,lats,lons = df.getRegion(data,lats,lons,lat_bounds,lon_bounds)
                 
-                ### SHUFFLE data array along time dimensions
+                ### SHUFFLE data array along time and ensemble dimensions
                 tempfinal = np.empty((datar.shape))
                 for iil in range(datar.shape[2]):
                     for jjl in range(datar.shape[3]):
@@ -173,7 +177,7 @@ for sis,singlesimulation in enumerate(datasetsingle):
                         np.random.shuffle(temp)
                         tempq = np.reshape(temp,(datar.shape[0],datar.shape[1]))
                         tempfinal[:,:,iil,jjl] = tempq
-                print('\n\n<<<<<<< SHUFFLED ARRAY FOR TESTING STATS ON SPACE DIMENSION!!! >>>>>>\n\n')
+                print('\n\n<<<<<<< SHUFFLED ARRAY FOR TESTING STATS ON TIMExENS DIMENSION!!! >>>>>>\n\n')
                 
                 print('\nOur dataset: ',dataset,' is shaped',data.shape)
                 return tempfinal,lats,lons
@@ -995,8 +999,8 @@ for sis,singlesimulation in enumerate(datasetsingle):
                                 savenameModelTestTrain = savenameModelTestTrain + '_avgHalfChunk' + str(avgHalfChunk)
             
                             savename = savename + regSave    
-                            model.save(dirname + savename + '.h5')
-                            np.savez(dirname + savenameModelTestTrain + '.npz',trainModels=trainIndices,testModels=testIndices,Xtrain=Xtrain,Ytrain=Ytrain,Xtest=Xtest,Ytest=Ytest,Xmean=Xmean,Xstd=Xstd,lats=lats,lons=lons)
+                            # model.save(dirname + savename + '.h5')
+                            # np.savez(dirname + savenameModelTestTrain + '.npz',trainModels=trainIndices,testModels=testIndices,Xtrain=Xtrain,Ytrain=Ytrain,Xtest=Xtest,Ytest=Ytest,Xmean=Xmean,Xstd=Xstd,lats=lats,lons=lons)
             
                             print('saving ' + savename)
                             
