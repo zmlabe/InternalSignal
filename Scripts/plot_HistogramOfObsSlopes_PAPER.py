@@ -109,7 +109,7 @@ leg = plt.legend(shadow=False,fontsize=7,loc='upper center',
         handlelength=3,handletextpad=1)
 
 plt.ylabel(r'\textbf{PROPORTION}',fontsize=10,color='k')
-plt.xlabel(r'\textbf{SLOPE OF REANALYSIS}',fontsize=10,color='k')
+plt.xlabel(r'\textbf{SLOPE OF OBSERVATIONS}',fontsize=10,color='k')
 plt.yticks(np.arange(0,1.1,0.1),map(str,np.round(np.arange(0,1.1,0.1),2)),size=6)
 plt.xticks(np.arange(-1.2,10.1,0.2),map(str,np.round(np.arange(-1.2,10.1,0.2),2)),size=6)
 plt.xlim([-1.2,2])   

@@ -10,27 +10,31 @@ Date      : 11 November 2020
 ### Import packages
 import numpy as np
 import matplotlib.pyplot as plt
+from netCDF4 import Dataset
+from mpl_toolkits.basemap import Basemap, addcyclic, shiftgrid
+import cmocean
+import palettable.cubehelix as cm
 
 ### Set parameters
 variables = [r'T2M']
 seasons = [r'annual']
-SAMPLEQ = 100
+SAMPLEQ = 500
+SAMPLEQ2 = 100
 
 ### Set directories
-directorydata = '/Users/zlabe/Documents/Research/InternalSignal/Data/'
 directorydata2 = '/Users/zlabe/Documents/Research/InternalSignal/Data/FINAL/'
 directoryfigure = '/Users/zlabe/Desktop/PAPER/'
 
 ### Read in slope data
 filename_slope = 'Slopes_20CRv3-SHUFFLE-TIMENS_%s_RANDOMSEED_20ens.txt' % SAMPLEQ
-slopes = np.genfromtxt(directorydata + filename_slope,unpack=True)
+slopes = np.genfromtxt(directorydata2 + filename_slope,unpack=True)
 
 ### Read in R2 data
 filename_R2 = 'R2_20CRv3-SHUFFLE-TIMENS_%s_RANDOMSEED_20ens.txt' % SAMPLEQ
-r2 = np.genfromtxt(directorydata + filename_R2,unpack=True)
+r2 = np.genfromtxt(directorydata2 + filename_R2,unpack=True)
 
 ### Read in other R2 data
-filename_R2all = 'R2_20CRv3-Obs_XGHG-XAER-LENS_%s_RANDOMSEED_Medians_20ens.txt' % SAMPLEQ
+filename_R2all = 'R2_20CRv3-Obs_XGHG-XAER-LENS_%s_RANDOMSEED_Medians_20ens.txt' % SAMPLEQ2
 r2_allmodel = np.genfromtxt(directorydata2 + filename_R2all,unpack=True)
 ghg_r2 = r2_allmodel[0]
 aer_r2 = r2_allmodel[1]
@@ -99,5 +103,58 @@ plt.yticks(np.arange(0,1.1,0.1),map(str,np.round(np.arange(0,1.1,0.1),2)),size=6
 plt.xticks(np.arange(0,1.1,0.1),map(str,np.round(np.arange(0,1.1,0.1),2)),size=6)
 plt.xlim([0,1])   
 plt.ylim([0,0.3])
+
+###############################################################################
+###############################################################################
+###############################################################################
+### Read in LRP maps for shuffle data
+data = Dataset(directorydata2 + 'LRP_Maps_%s_20ens_SHUFFLE-TIMENS.nc' % (SAMPLEQ))
+lat1 = data.variables['lat'][:]
+lon1 = data.variables['lon'][:]
+lrprandom = data.variables['LRP'][:].squeeze()
+data.close()
+
+### Average across all 500
+# mean = np.nanmean(lrprandom,axis=0)
+mean = lrprandom[0] # example
+
+labelq = ['LRP-RELEVANCE']
+limitsq = [np.arange(0,0.5001,0.005)]
+barlimq = [np.round(np.arange(0,0.6,0.1),2)]
+datasetsq = [r'SHUFFLE']
+colorbarendq = ['max']
+cmapq = [cm.classic_16.mpl_colormap]
+
+ax1 = plt.axes([.24,.54,.4,.25])
+        
+m = Basemap(projection='moll',lon_0=0,resolution='l',area_thresh=10000)
+circle = m.drawmapboundary(fill_color='dimgrey')
+circle.set_clip_on(False) 
+m.drawcoastlines(color='darkgrey',linewidth=0.35)
+
+### Colorbar limits
+barlim = barlimq[0]
+
+var, lons_cyclic = addcyclic(mean, lon1)
+var, lons_cyclic = shiftgrid(180., var, lons_cyclic, start=False)
+lon2d, lat2d = np.meshgrid(lons_cyclic, lat1)
+x, y = m(lon2d, lat2d)
+
+### Make the plot continuous
+cs = m.contourf(x,y,var,limitsq[0],
+                extend=colorbarendq[0])                        
+cs.set_cmap(cmapq[0])
+
+ax1.annotate(r'\textbf{%s}' % (datasetsq[0]),xy=(0,0),xytext=(0.865,0.91),
+                  textcoords='axes fraction',color='dimgrey',fontsize=9,
+                  rotation=332,ha='center',va='center')
+
+cbar = m.colorbar(cs,drawedges=False,location='bottom',extendfrac=0.07,
+                  extend=colorbarendq[0],pad=0.1)                  
+cbar.set_label(r'\textbf{%s}' % labelq[0],fontsize=8,color='dimgrey',labelpad=1.4)  
+cbar.set_ticks(barlim)
+cbar.set_ticklabels(list(map(str,barlim)))
+cbar.ax.tick_params(axis='x', size=.01,labelsize=6,labelcolor='dimgrey')
+cbar.outline.set_edgecolor('dimgrey')
     
 plt.savefig(directoryfigure + 'HistogramR2OfShuffledEns_PAPER.png',dpi=300)

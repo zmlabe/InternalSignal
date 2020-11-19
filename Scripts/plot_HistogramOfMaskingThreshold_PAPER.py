@@ -21,15 +21,14 @@ variables = [r'T2M']
 datasets = [r'RANDOM']
 seasons = [r'annual']
 letters = ["a","b","c","d","e","f","g","h","i","j","k","l","m"]
-SAMPLEQ = 100
+SAMPLEQ = 500
 
 ### Set directories
-directorydata = '/Users/zlabe/Documents/Research/InternalSignal/Data/'
-directorydata2 = '/Users/zlabe/Documents/Research/InternalSignal/Data/FINAL/'
+directorydata = '/Users/zlabe/Documents/Research/InternalSignal/Data/FINAL/'
 directoryfigure = '/Users/zlabe/Desktop/PAPER/'
 
 ### Read in LRP maps
-data = Dataset(directorydata + 'LRP_Maps_%s_20ens_%s_%s_SHUFFLE-TIMENS.nc' % (SAMPLEQ,variables[0],seasons[0]))
+data = Dataset(directorydata + 'LRP_Maps_%s_20ens_SHUFFLE-TIMENS.nc' % (SAMPLEQ))
 lat1 = data.variables['lat'][:]
 lon1 = data.variables['lon'][:]
 lrp = data.variables['LRP'][:].squeeze()
@@ -59,7 +58,7 @@ colorbarendq = ['max']
 cmapq = [cm.classic_16.mpl_colormap]
 
 ### Read in LRP maps
-data = Dataset(directorydata2 + 'LRP_Maps_lens_AllSeasons_PAPER.nc')
+data = Dataset(directorydata + 'LRP_Maps_lens_AllSeasons_PAPER.nc')
 lat1 = data.variables['lat'][:]
 lon1 = data.variables['lon'][:]
 lrp = data.variables['LRP'][:]
@@ -175,4 +174,4 @@ cbar.set_ticklabels(list(map(str,barlim)))
 cbar.ax.tick_params(axis='x', size=.01,labelsize=6,labelcolor='dimgrey')
 cbar.outline.set_edgecolor('dimgrey')
 
-plt.savefig(directoryfigure + 'LRP_MaskingExample_PAPER.png',dpi=300)
+plt.savefig(directoryfigure + 'LRP_MaskingExample_PAPER.png',dpi=600)
