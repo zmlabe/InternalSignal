@@ -36,18 +36,31 @@ monthlychoice = seasons[0]
 reg_name = 'Globe'
 SAMPLEQ = 100
 
-### Read in LRP maps
-data = Dataset(directorydata + 'LRP_YearlyMaps_%s_20ens_%s_%s.nc' % (SAMPLEQ,variables[0],seasons[0]))
+### Read in LRP maps (XGHG)
+data = Dataset(directorydata + 'LRP_Maps_XGHG_AllSeasons_PAPER.nc')
 lat1 = data.variables['lat'][:]
 lon1 = data.variables['lon'][:]
-lrp = data.variables['LRP'][:]
+lrp_ghg = data.variables['LRP'][:]
 data.close()
+lrpghg = lrp_ghg[0]
 
-lrpghg = np.nanmean(lrp[0,:,:-1,:,:],axis=0)
-lrpaer = np.nanmean(lrp[1,:,:-1,:,:],axis=0)
-lrplens = np.nanmean(lrp[2,:,:-1,:,:],axis=0)
+### Read in LRP maps (XAER)
+data = Dataset(directorydata + 'LRP_Maps_XAER_AllSeasons_PAPER.nc')
+lat1 = data.variables['lat'][:]
+lon1 = data.variables['lon'][:]
+lrp_aer = data.variables['LRP'][:]
+data.close()
+lrpaer = lrp_aer[0]
 
-### Procress trends
+### Read in LRP maps (LENS)
+data = Dataset(directorydata + 'LRP_Maps_lens_AllSeasons_PAPER.nc')
+lat1 = data.variables['lat'][:]
+lon1 = data.variables['lon'][:]
+lrp_lens = data.variables['LRP'][:]
+data.close()
+lrplens = lrp_lens[0]
+
+### Procress time
 comp_ghg = np.empty((len(years)//40,lrpghg.shape[1],lrpghg.shape[2]))
 comp_aer = np.empty((len(years)//40,lrpaer.shape[1],lrpaer.shape[2]))
 comp_lens = np.empty((len(years)//40,lrplens.shape[1],lrplens.shape[2]))
@@ -55,7 +68,13 @@ for count,i in enumerate(range(0,len(years),40)):
     comp_ghg[count,:,:,] = np.nanmean(lrpghg[i:i+40,:,:],axis=0)
     comp_aer[count,:,:,] = np.nanmean(lrpaer[i:i+40,:,:],axis=0)
     comp_lens[count,:,:,] = np.nanmean(lrplens[i:i+40,:,:],axis=0)
-    
+
+thresh = np.genfromtxt(directorydata + 'Threshold_MaskingLRP_95.txt',
+                       unpack=True)
+comp_ghg[comp_ghg<=thresh] = np.nan
+comp_aer[comp_aer<=thresh] = np.nan
+comp_lens[comp_lens<=thresh] = np.nan
+
 runs = list(itertools.chain.from_iterable([comp_ghg,comp_aer,comp_lens]))
     
 ###########################################################################
@@ -77,7 +96,7 @@ for r in range(len(runs)):
     
     ax1 = plt.subplot(3,4,r+1)
     m = Basemap(projection='moll',lon_0=0,resolution='l',area_thresh=10000)
-    circle = m.drawmapboundary(fill_color='k')
+    circle = m.drawmapboundary(fill_color='dimgrey')
     circle.set_clip_on(False) 
     m.drawcoastlines(color='darkgrey',linewidth=0.27)
     
@@ -86,7 +105,7 @@ for r in range(len(runs)):
     lon2d, lat2d = np.meshgrid(lons_cyclic, lat1)
     x, y = m(lon2d, lat2d)
        
-    circle = m.drawmapboundary(fill_color='white',color='dimgray',
+    circle = m.drawmapboundary(fill_color='dimgrey',color='dimgray',
                       linewidth=0.7)
     circle.set_clip_on(False)
     

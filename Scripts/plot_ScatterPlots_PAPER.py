@@ -235,7 +235,7 @@ plt.text(2082,1921,r'\textbf{R$^{2}$=%s}' % np.round(r2_annual[2],2),fontsize=7,
 
 plt.subplots_adjust(bottom=0.17)
 plt.savefig(directoryfigure + 'ScatterPrediction_Annual_T2M_PAPER.png',
-            dpi=300)
+            dpi=600)
 
 ###############################################################################
 ###############################################################################
@@ -301,4 +301,4 @@ for i in range(len(seasons_model)):
 
 plt.tight_layout()
 plt.savefig(directoryfigure + 'ScatterPrediction_Seasons_Subplot_T2M_PAPER.png',
-            dpi=300)
+            dpi=600)

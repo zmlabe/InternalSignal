@@ -183,5 +183,5 @@ cbar.outline.set_edgecolor('dimgrey')
 plt.tight_layout()
 plt.subplots_adjust(top=0.85,wspace=0.01,hspace=0,bottom=0.14)
 
-plt.savefig(directoryfigure + 'TrendPeriods_T2M_PAPER.png',dpi=300)
+plt.savefig(directoryfigure + 'TrendPeriods_T2M_PAPER.png',dpi=600)
 

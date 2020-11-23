@@ -106,8 +106,8 @@ pvals3[np.where(pvals3 == 1.)] = 0.
 pvals3[np.where(np.isnan(pvals3))] = 1.
 pvals3[np.where(pvals3 == 0.)] = np.nan
     
-runs = [trends1,trends2,trends3]
-pvals = [pvals1,pvals2,pvals3]
+runs = [trends1,trends2]
+pvals = [pvals1,pvals2]
     
 ###########################################################################
 ###########################################################################
@@ -127,11 +127,11 @@ for r in range(len(runs)):
     var = runs[r]
     pvar = pvals[r]
     
-    ax1 = plt.subplot(1,3,r+1)
+    ax1 = plt.subplot(1,2,r+1)
     m = Basemap(projection='moll',lon_0=0,resolution='l',area_thresh=10000)
     circle = m.drawmapboundary(fill_color='k')
     circle.set_clip_on(False) 
-    m.drawcoastlines(color='dimgrey',linewidth=0.35)
+    m.drawcoastlines(color='k',linewidth=0.35)
     
     var, lons_cyclic = addcyclic(var, lon1)
     var, lons_cyclic = shiftgrid(180., var, lons_cyclic, start=False)
@@ -149,19 +149,19 @@ for r in range(len(runs)):
             
     cs.set_cmap(cmap) 
     if any([r==0]):
-        ax1.annotate(r'\textbf{%s}' % datasetsingleq[r],xy=(0,0),xytext=(-0.1,0.5),
+        ax1.annotate(r'\textbf{%s}' % datasetsingleq[r],xy=(0,0),xytext=(-0.07,0.5),
                       textcoords='axes fraction',color='k',fontsize=15,
                       rotation=90,ha='center',va='center')
     if any([r==0,r==1,r==2]):
-        ax1.annotate(r'\textbf{%s}' % timeq[r],xy=(0,0),xytext=(0.5,1.1),
-                      textcoords='axes fraction',color='dimgrey',fontsize=9,
+        ax1.annotate(r'\textbf{%s}' % timeq[r],xy=(0,0),xytext=(0.5,1.08),
+                      textcoords='axes fraction',color='dimgrey',fontsize=11,
                       rotation=0,ha='center',va='center')
-    ax1.annotate(r'\textbf{[%s]}' % letters[r],xy=(0,0),xytext=(0.87,0.97),
+    ax1.annotate(r'\textbf{[%s]}' % letters[r],xy=(0,0),xytext=(0.86,0.97),
                   textcoords='axes fraction',color='k',fontsize=6,
                   rotation=330,ha='center',va='center')
 
 ###########################################################################
-cbar_ax = fig.add_axes([0.32,0.15,0.4,0.03])                
+cbar_ax = fig.add_axes([0.32,0.09,0.4,0.03])                
 cbar = fig.colorbar(cs,cax=cbar_ax,orientation='horizontal',
                     extend='both',extendfrac=0.07,drawedges=False)
 
@@ -175,5 +175,5 @@ cbar.outline.set_edgecolor('dimgrey')
 plt.tight_layout()
 plt.subplots_adjust(top=0.85,wspace=0.01,hspace=0,bottom=0.14)
 
-plt.savefig(directoryfigure + 'OBSTrendPeriods_T2M_PAPER.png',dpi=300)
+plt.savefig(directoryfigure + 'OBSTrendPeriods_T2M_PAPER.png',dpi=600)
 

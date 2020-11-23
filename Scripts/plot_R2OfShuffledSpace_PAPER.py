@@ -98,7 +98,7 @@ leg = plt.legend(shadow=False,fontsize=7,loc='upper center',
     handlelength=3,handletextpad=1)
 
 plt.ylabel(r'\textbf{PROPORTION}',fontsize=10,color='k')
-plt.xlabel(r'\textbf{R$^{2}$}',fontsize=10,color='k')
+plt.xlabel(r'\textbf{R$^{2}$ OF OBSERVATIONS}',fontsize=10,color='k')
 plt.yticks(np.arange(0,1.1,0.1),map(str,np.round(np.arange(0,1.1,0.1),2)),size=6)
 plt.xticks(np.arange(0,1.1,0.1),map(str,np.round(np.arange(0,1.1,0.1),2)),size=6)
 plt.xlim([0,1])   
@@ -157,4 +157,4 @@ cbar.set_ticklabels(list(map(str,barlim)))
 cbar.ax.tick_params(axis='x', size=.01,labelsize=6,labelcolor='dimgrey')
 cbar.outline.set_edgecolor('dimgrey')
     
-plt.savefig(directoryfigure + 'HistogramR2OfShuffledEns_PAPER.png',dpi=300)
+plt.savefig(directoryfigure + 'HistogramR2OfShuffledEns_PAPER.png',dpi=600)

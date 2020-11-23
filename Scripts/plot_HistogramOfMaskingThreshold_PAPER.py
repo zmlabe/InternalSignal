@@ -44,6 +44,7 @@ mean = np.nanmean(lrp[:,:,:],axis=0)
 lon2,lat2 = np.meshgrid(lon1,lat1)
 meanall = lrp.ravel()
 thresh = np.percentile(meanall,95)
+np.savetxt(directorydata + 'Threshold_MaskingLRP_95.txt',np.asarray([thresh]))
 
 ###############################################################################
 ###############################################################################
