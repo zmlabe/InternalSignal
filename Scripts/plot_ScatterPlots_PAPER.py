@@ -18,6 +18,7 @@ import scipy.stats as stats
 variables = [r'T2M']
 datasets = [r'XGHG',r'XAER',r'lens']
 seasons = [r'annual',r'JFM',r'AMJ',r'JAS',r'OND']
+letters = [r'a',r'b',r'c',r'd']
 years = np.arange(1920,2080+1,1)
 yearobs = np.arange(1920,2015+1,1)
 ens = 20
@@ -161,6 +162,7 @@ plt.yticks(np.arange(years.min(),2101,20),map(str,np.arange(years.min(),2101,20)
 plt.xlim([years.min(),years.max()])   
 plt.ylim([years.min(),years.max()])
 
+plt.text(2082,2083,r'\textbf{[a]}',fontsize=5,color='k',ha='right',va='center')
 plt.text(1920,2074,r'\textbf{AER+}',fontsize=20,color='k',ha='left',va='center')
 plt.text(2082,1921,r'\textbf{R$^{2}$=%s}' % np.round(r2_annual[0],2),fontsize=7,color='darkred',
           ha='right',va='center')
@@ -198,6 +200,7 @@ le = plt.legend(shadow=False,fontsize=7,loc='upper center',
 for text in le.get_texts():
     text.set_color('dimgrey') 
 
+plt.text(2082,2083,r'\textbf{[b]}',fontsize=5,color='k',ha='right',va='center')
 plt.text(1920,2074,r'\textbf{GHG+}',fontsize=20,color='k',ha='left',va='center')
 plt.text(2082,1921,r'\textbf{R$^{2}$=%s}' % np.round(r2_annual[1],2),fontsize=7,color='darkred',
           ha='right',va='center')
@@ -229,6 +232,7 @@ plt.yticks(np.arange(years.min(),2101,20),map(str,np.arange(years.min(),2101,20)
 plt.xlim([years.min(),years.max()])   
 plt.ylim([years.min(),years.max()])
 
+plt.text(2082,2083,r'\textbf{[c]}',fontsize=5,color='k',ha='right',va='center')
 plt.text(1920,2074,r'\textbf{ALL}',fontsize=20,color='k',ha='left',va='center')
 plt.text(2082,1921,r'\textbf{R$^{2}$=%s}' % np.round(r2_annual[2],2),fontsize=7,color='darkred',
           ha='right',va='center')
@@ -295,6 +299,7 @@ for i in range(len(seasons_model)):
     plt.xlim([years.min(),years.max()])   
     plt.ylim([years.min(),years.max()])
     
+    plt.text(2082,2085,r'\textbf{[%s]}' % letters[i],fontsize=5,color='k',ha='right',va='center')
     plt.text(1920,2074,r'\textbf{%s}' % time[i],fontsize=15,color='k',ha='left',va='center')
     plt.text(2082,1921,r'\textbf{R$^{2}$=%s}' % np.round(r2all,2),fontsize=7,color='darkred',
              ha='right',va='center')
