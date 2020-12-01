@@ -184,7 +184,7 @@ for r in range(len(runs)):
 ###########################################################################
 cbar_ax = fig.add_axes([0.32,0.095,0.4,0.03])                
 cbar = fig.colorbar(cs,cax=cbar_ax,orientation='horizontal',
-                    extend='max',extendfrac=0.07,drawedges=False)
+                    extend='max',extendfrac=0.07,drawedges=True)
 
 cbar.set_label(label,fontsize=9,color='dimgrey',labelpad=1.4)  
 
@@ -192,8 +192,11 @@ cbar.set_ticks(barlim)
 cbar.set_ticklabels(list(map(str,barlim)))
 cbar.ax.tick_params(axis='x', size=.01,labelsize=5)
 cbar.outline.set_edgecolor('dimgrey')
+cbar.outline.set_linewidth(1)
+cbar.dividers.set_color('dimgrey')
+cbar.dividers.set_linewidth(1)
 
 plt.tight_layout()
 plt.subplots_adjust(top=0.85,wspace=0.01,hspace=0,bottom=0.14)
 
-plt.savefig(directoryfigure + 'SNRPeriods_T2M_PAPER.png',dpi=300)
+plt.savefig(directoryfigure + 'SNRPeriods_T2M_PAPER.png',dpi=600)
