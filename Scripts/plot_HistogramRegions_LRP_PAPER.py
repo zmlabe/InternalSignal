@@ -161,7 +161,7 @@ def calculateRegions(time_lrp,lats1,lons1):
 regions_ghg = calculateRegions(lrpghg,lats1,lons1)
 regions_aer = calculateRegions(lrpaer,lats1,lons1)
 regions_lens = calculateRegions(lrplens,lats1,lons1)
-regionnames = ['Southeast Asia','India','North Atlantic Warming Hole',
+regionnames = ['Southeast Asia','India','North Atlantic',
                 'Central Africa','Southern Ocean']
 
 ###############################################################################
@@ -252,9 +252,9 @@ for ii in range(len(regions_ghg)):
     
     if ii == 0:
         plt.ylabel(r'\textbf{PROPORTION}',fontsize=10,color='k')
-    plt.xlabel(r'\textbf{%s} [LRP-Relevance]' % regionnames[ii],fontsize=5,color='k')
-    plt.yticks(np.arange(0,1.1,0.1),map(str,np.round(np.arange(0,1.1,0.1),2)),size=5)
-    plt.xticks(np.arange(0,1.1,0.1),map(str,np.round(np.arange(0,1.1,0.1),2)),size=5)
+    plt.xlabel(r'\textbf{%s} [Relevance]' % regionnames[ii],fontsize=8.2,color='k')
+    plt.yticks(np.arange(0,1.1,0.1),map(str,np.round(np.arange(0,1.1,0.1),2)),size=6)
+    plt.xticks(np.arange(0,1.1,0.1),map(str,np.round(np.arange(0,1.1,0.1),2)),size=6)
     plt.xlim([0,0.6])   
     plt.ylim([0,0.9])
     

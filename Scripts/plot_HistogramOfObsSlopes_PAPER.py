@@ -104,9 +104,9 @@ for i in range(len(patches_lens)):
     patches_lens[i].set_edgecolor('white')
     patches_lens[i].set_linewidth(0.5)
     
-leg = plt.legend(shadow=False,fontsize=7,loc='upper center',
-        bbox_to_anchor=(0.11,1),fancybox=True,ncol=1,frameon=False,
-        handlelength=3,handletextpad=1)
+# leg = plt.legend(shadow=False,fontsize=7,loc='upper center',
+#         bbox_to_anchor=(0.11,1),fancybox=True,ncol=1,frameon=False,
+#         handlelength=3,handletextpad=1)
 
 plt.ylabel(r'\textbf{PROPORTION}',fontsize=10,color='k')
 plt.xlabel(r'\textbf{SLOPE OF OBSERVATIONS}',fontsize=10,color='k')
@@ -137,7 +137,14 @@ time = np.arange(lineobs.shape[0])
 line_ghg = np.median(ghg_slopes)*time + ((1920+2080)/2)
 plt.plot(line,line,color='dimgrey',linewidth=1,clip_on=True,
          linestyle='--',dashes=(1,0.3),zorder=2)
-plt.plot(lineobs,line_ghg,color='steelblue',linewidth=2,clip_on=True,zorder=1)
+plt.plot(lineobs,line_ghg,color='steelblue',linewidth=2,clip_on=True,zorder=1,
+         label=r'\textbf{AER+}')
+
+leg = plt.legend(shadow=False,fontsize=10,loc='upper center',
+        bbox_to_anchor=(0.5,1.45),fancybox=True,ncol=1,frameon=False,
+        handlelength=1,handletextpad=0.5)
+for line,text in zip(leg.get_lines(), leg.get_texts()):
+    text.set_color(line.get_color())
 
 plt.xlabel(r'\textbf{ACTUAL YEAR}',fontsize=4,color='dimgrey',labelpad=-6)
 plt.ylabel(r'\textbf{PREDICTED YEAR}',fontsize=4,color='dimgrey',labelpad=-11.5)
@@ -165,7 +172,14 @@ time = np.arange(lineobs.shape[0])
 line_aer = np.median(aer_slopes)*time + 1920
 plt.plot(line,line,color='dimgrey',linewidth=1,clip_on=True,
          linestyle='--',dashes=(1,0.3),zorder=2)
-plt.plot(lineobs,line_aer,color='darkgoldenrod',linewidth=2,clip_on=True,zorder=1)
+plt.plot(lineobs,line_aer,color='darkgoldenrod',linewidth=2,clip_on=True,zorder=1,
+         label=r'\textbf{GHG+}')
+
+leg = plt.legend(shadow=False,fontsize=10,loc='upper center',
+        bbox_to_anchor=(0.5,1.45),fancybox=True,ncol=1,frameon=False,
+        handlelength=1,handletextpad=0.5)
+for line,text in zip(leg.get_lines(), leg.get_texts()):
+    text.set_color(line.get_color())
 
 plt.xlabel(r'\textbf{ACTUAL YEAR}',fontsize=4,color='dimgrey',labelpad=-6)
 plt.ylabel(r'\textbf{PREDICTED YEAR}',fontsize=4,color='dimgrey',labelpad=-11.5)
@@ -193,7 +207,14 @@ time = np.arange(lineobs.shape[0])
 line_lens = np.median(lens_slopes)*time + 1920
 plt.plot(line,line,color='dimgrey',linewidth=1,clip_on=True,
          linestyle='--',dashes=(1,0.3),zorder=2)
-plt.plot(lineobs,line_lens,color='crimson',linewidth=2,clip_on=True,zorder=1)
+plt.plot(lineobs,line_lens,color='crimson',linewidth=2,clip_on=True,zorder=1,
+         label=r'\textbf{ALL}')
+
+leg = plt.legend(shadow=False,fontsize=10,loc='upper center',
+        bbox_to_anchor=(0.5,1.45),fancybox=True,ncol=1,frameon=False,
+        handlelength=1,handletextpad=0.5)
+for line,text in zip(leg.get_lines(), leg.get_texts()):
+    text.set_color(line.get_color())
 
 plt.xlabel(r'\textbf{ACTUAL YEAR}',fontsize=4,color='dimgrey',labelpad=-6)
 plt.ylabel(r'\textbf{PREDICTED YEAR}',fontsize=4,color='dimgrey',labelpad=-11.5)

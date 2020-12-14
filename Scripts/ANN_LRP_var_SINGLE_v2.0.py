@@ -545,7 +545,12 @@ for sis,singlesimulation in enumerate(datasetsingle):
             # np.savetxt('/Users/zlabe/Documents/Research/InternalSignal/Data/FINAL/' + 'testing_%s_%s.txt' % (singlesimulation,monthlychoice),test_output_rs)
             # np.savetxt('/Users/zlabe/Documents/Research/InternalSignal/Data/FINAL/' + 'obs_%s_%s.txt' % (singlesimulation,monthlychoice),YpredObs)
             # np.savetxt('/Users/zlabe/Documents/Research/InternalSignal/Data/FINAL/' + 'years_%s_%s.txt' % (singlesimulation,monthlychoice),yearsObs)
-          
+            
+            ### Saveing training and testing data and observations for removing the mean of the data
+            # np.savetxt('/Users/zlabe/Documents/Research/InternalSignal/Data/FINAL/' + 'training_%s_%s_rmmean.txt' % (singlesimulation,monthlychoice),train_output_rs)
+            # np.savetxt('/Users/zlabe/Documents/Research/InternalSignal/Data/FINAL/' + 'testing_%s_%s_rmmean.txt' % (singlesimulation,monthlychoice),test_output_rs)
+            # np.savetxt('/Users/zlabe/Documents/Research/InternalSignal/Data/FINAL/' + 'obs_%s_%s_rmmean.txt' % (singlesimulation,monthlychoice),YpredObs)
+            # np.savetxt('/Users/zlabe/Documents/Research/InternalSignal/Data/FINAL/' + 'years_%s_%s_rmmean.txt' % (singlesimulation,monthlychoice),yearsObs)
             
             plt.xlabel(r'\textbf{ACTUAL YEAR}',fontsize=10,color='dimgrey')
             plt.ylabel(r'\textbf{PREDICTED YEAR}',fontsize=10,color='dimgrey')
@@ -1677,7 +1682,7 @@ for sis,singlesimulation in enumerate(datasetsingle):
                 
                 ncfile.close()
                 print('*Completed: Created netCDF4 File!')
-            netcdfLENS(lats,lons,lrpobservations,'/Users/zlabe/Documents/Research/InternalSignal/Data/FINAL/',singlesimulation,monthlychoice)
+            # netcdfLENS(lats,lons,lrpobservations,'/Users/zlabe/Documents/Research/InternalSignal/Data/FINAL/',singlesimulation,monthlychoice)
         
         
     lrpsns = np.asarray(lrpsns)

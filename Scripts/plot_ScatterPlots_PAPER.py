@@ -157,14 +157,14 @@ plt.plot(yearobs,lines_annual[0],linewidth=1.5,linestyle='--',dashes=(1,0.3),
 
 plt.xlabel(r'\textbf{ACTUAL YEAR}',fontsize=10,color='dimgrey')
 plt.ylabel(r'\textbf{PREDICTED YEAR}',fontsize=10,color='dimgrey')
-plt.xticks(np.arange(years.min(),2101,20),map(str,np.arange(years.min(),2101,20)),size=4)
-plt.yticks(np.arange(years.min(),2101,20),map(str,np.arange(years.min(),2101,20)),size=4)
+plt.xticks(np.arange(years.min(),2101,20),map(str,np.arange(years.min(),2101,20)),size=6)
+plt.yticks(np.arange(years.min(),2101,20),map(str,np.arange(years.min(),2101,20)),size=6)
 plt.xlim([years.min(),years.max()])   
 plt.ylim([years.min(),years.max()])
 
-plt.text(2082,2083,r'\textbf{[a]}',fontsize=5,color='k',ha='right',va='center')
+plt.text(2082,2084,r'\textbf{[a]}',fontsize=8,color='k',ha='right',va='center')
 plt.text(1920,2074,r'\textbf{AER+}',fontsize=20,color='k',ha='left',va='center')
-plt.text(2082,1921,r'\textbf{R$^{2}$=%s}' % np.round(r2_annual[0],2),fontsize=7,color='darkred',
+plt.text(2082,1921,r'\textbf{R$^{2}$=%s}' % np.round(r2_annual[0],2),fontsize=8,color='darkred',
           ha='right',va='center')
 
 ###############################################################################
@@ -189,8 +189,8 @@ plt.plot(yearobs,lines_annual[1],linewidth=1.5,linestyle='--',dashes=(1,0.3),
 
 plt.xlabel(r'\textbf{ACTUAL YEAR}',fontsize=10,color='dimgrey')
 # plt.ylabel(r'\textbf{PREDICTED YEAR}',fontsize=10,color='dimgrey')
-plt.xticks(np.arange(years.min(),2101,20),map(str,np.arange(years.min(),2101,20)),size=4)
-plt.yticks(np.arange(years.min(),2101,20),map(str,np.arange(years.min(),2101,20)),size=4)
+plt.xticks(np.arange(years.min(),2101,20),map(str,np.arange(years.min(),2101,20)),size=6)
+plt.yticks(np.arange(years.min(),2101,20),map(str,np.arange(years.min(),2101,20)),size=6)
 plt.xlim([years.min(),years.max()])   
 plt.ylim([years.min(),years.max()])
 
@@ -200,9 +200,9 @@ le = plt.legend(shadow=False,fontsize=7,loc='upper center',
 for text in le.get_texts():
     text.set_color('dimgrey') 
 
-plt.text(2082,2083,r'\textbf{[b]}',fontsize=5,color='k',ha='right',va='center')
+plt.text(2082,2084,r'\textbf{[b]}',fontsize=8,color='k',ha='right',va='center')
 plt.text(1920,2074,r'\textbf{GHG+}',fontsize=20,color='k',ha='left',va='center')
-plt.text(2082,1921,r'\textbf{R$^{2}$=%s}' % np.round(r2_annual[1],2),fontsize=7,color='darkred',
+plt.text(2082,1921,r'\textbf{R$^{2}$=%s}' % np.round(r2_annual[1],2),fontsize=8,color='darkred',
           ha='right',va='center')
 
 ###############################################################################
@@ -227,14 +227,14 @@ plt.plot(yearobs,lines_annual[2],linewidth=1.5,linestyle='--',dashes=(1,0.3),
 
 plt.xlabel(r'\textbf{ACTUAL YEAR}',fontsize=10,color='dimgrey')
 # plt.ylabel(r'\textbf{PREDICTED YEAR}',fontsize=10,color='dimgrey')
-plt.xticks(np.arange(years.min(),2101,20),map(str,np.arange(years.min(),2101,20)),size=4)
-plt.yticks(np.arange(years.min(),2101,20),map(str,np.arange(years.min(),2101,20)),size=4)
+plt.xticks(np.arange(years.min(),2101,20),map(str,np.arange(years.min(),2101,20)),size=6)
+plt.yticks(np.arange(years.min(),2101,20),map(str,np.arange(years.min(),2101,20)),size=6)
 plt.xlim([years.min(),years.max()])   
 plt.ylim([years.min(),years.max()])
 
-plt.text(2082,2083,r'\textbf{[c]}',fontsize=5,color='k',ha='right',va='center')
+plt.text(2082,2084,r'\textbf{[c]}',fontsize=8,color='k',ha='right',va='center')
 plt.text(1920,2074,r'\textbf{ALL}',fontsize=20,color='k',ha='left',va='center')
-plt.text(2082,1921,r'\textbf{R$^{2}$=%s}' % np.round(r2_annual[2],2),fontsize=7,color='darkred',
+plt.text(2082,1921,r'\textbf{R$^{2}$=%s}' % np.round(r2_annual[2],2),fontsize=8,color='darkred',
           ha='right',va='center')
 
 plt.subplots_adjust(bottom=0.17)
@@ -294,14 +294,14 @@ for i in range(len(seasons_model)):
         plt.ylabel(r'\textbf{PREDICTED YEAR}',fontsize=10,color='dimgrey')
     if i < 2:
         plt.title(r'\textbf{%s}' % title[i],color='dimgrey',fontsize=15)
-    plt.xticks(np.arange(years.min(),2101,20),map(str,np.arange(years.min(),2101,20)),size=4)
-    plt.yticks(np.arange(years.min(),2101,20),map(str,np.arange(years.min(),2101,20)),size=4)
+    plt.xticks(np.arange(years.min(),2101,20),map(str,np.arange(years.min(),2101,20)),size=6)
+    plt.yticks(np.arange(years.min(),2101,20),map(str,np.arange(years.min(),2101,20)),size=6)
     plt.xlim([years.min(),years.max()])   
     plt.ylim([years.min(),years.max()])
     
-    plt.text(2082,2085,r'\textbf{[%s]}' % letters[i],fontsize=5,color='k',ha='right',va='center')
+    plt.text(2082,2087,r'\textbf{[%s]}' % letters[i],fontsize=8,color='k',ha='right',va='center')
     plt.text(1920,2074,r'\textbf{%s}' % time[i],fontsize=15,color='k',ha='left',va='center')
-    plt.text(2082,1921,r'\textbf{R$^{2}$=%s}' % np.round(r2all,2),fontsize=7,color='darkred',
+    plt.text(2082,1921,r'\textbf{R$^{2}$=%s}' % np.round(r2all,2),fontsize=8,color='darkred',
              ha='right',va='center')
 
 plt.tight_layout()
