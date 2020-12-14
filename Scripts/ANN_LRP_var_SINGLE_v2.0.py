@@ -541,10 +541,10 @@ for sis,singlesimulation in enumerate(datasetsingle):
                           label=r'\textbf{Reanalysis}',clip_on=False)
                 
             #### Saving training and testing data and observations
-            np.savetxt('/Users/zlabe/Documents/Research/InternalSignal/Data/FINAL/' + 'training_%s_%s.txt' % (singlesimulation,monthlychoice),train_output_rs)
-            np.savetxt('/Users/zlabe/Documents/Research/InternalSignal/Data/FINAL/' + 'testing_%s_%s.txt' % (singlesimulation,monthlychoice),test_output_rs)
-            np.savetxt('/Users/zlabe/Documents/Research/InternalSignal/Data/FINAL/' + 'obs_%s_%s.txt' % (singlesimulation,monthlychoice),YpredObs)
-            np.savetxt('/Users/zlabe/Documents/Research/InternalSignal/Data/FINAL/' + 'years_%s_%s.txt' % (singlesimulation,monthlychoice),yearsObs)
+            # np.savetxt('/Users/zlabe/Documents/Research/InternalSignal/Data/FINAL/' + 'training_%s_%s.txt' % (singlesimulation,monthlychoice),train_output_rs)
+            # np.savetxt('/Users/zlabe/Documents/Research/InternalSignal/Data/FINAL/' + 'testing_%s_%s.txt' % (singlesimulation,monthlychoice),test_output_rs)
+            # np.savetxt('/Users/zlabe/Documents/Research/InternalSignal/Data/FINAL/' + 'obs_%s_%s.txt' % (singlesimulation,monthlychoice),YpredObs)
+            # np.savetxt('/Users/zlabe/Documents/Research/InternalSignal/Data/FINAL/' + 'years_%s_%s.txt' % (singlesimulation,monthlychoice),yearsObs)
           
             
             plt.xlabel(r'\textbf{ACTUAL YEAR}',fontsize=10,color='dimgrey')
@@ -1082,7 +1082,8 @@ for sis,singlesimulation in enumerate(datasetsingle):
                                                                                             alpha=1,beta=0,bias=biasBool)
                                                                                            
         analyzer_output=analyzer10.analyze(XobsS)
-        analyzer_output=analyzer_output/np.nansum(analyzer_output,axis=1)[:,np.newaxis]   
+        analyzer_output=analyzer_output/np.nansum(analyzer_output,axis=1)[:,np.newaxis]  
+        lrpobservations = np.reshape(analyzer_output,(96,96,144))
         
         ### Scale LRP
         for scale in (0,):#(0,1):
@@ -1635,6 +1636,50 @@ for sis,singlesimulation in enumerate(datasetsingle):
         
         ### Append maps of lrp
         lrpsns.append(lrp)
+        
+        #######################################################################
+        #######################################################################
+        #######################################################################
+        if monthlychoice == 'annual':
+            def netcdfLENS(lats,lons,var,directory,singlesimulation,monthlychoice):
+                print('\n>>> Using netcdf4LENS function!')
+                
+                from netCDF4 import Dataset
+                import numpy as np
+                
+                name = 'LRP_ObservationMaps_%s_%s_PAPER.nc' % (singlesimulation,monthlychoice)
+                filename = directory + name
+                ncfile = Dataset(filename,'w',format='NETCDF4')
+                ncfile.description = 'LRP maps for observations for each model (annual, selected seed)' 
+                
+                ### Dimensions
+                ncfile.createDimension('years',var.shape[0])
+                ncfile.createDimension('lat',var.shape[1])
+                ncfile.createDimension('lon',var.shape[2])
+                
+                ### Variables
+                years = ncfile.createVariable('years','f4',('years'))
+                latitude = ncfile.createVariable('lat','f4',('lat'))
+                longitude = ncfile.createVariable('lon','f4',('lon'))
+                varns = ncfile.createVariable('LRP','f4',('years','lat','lon'))
+                
+                ### Units
+                varns.units = 'unitless relevance'
+                ncfile.title = 'LRP relevance'
+                ncfile.instituion = 'Colorado State University'
+                ncfile.references = 'Barnes et al. [2020]'
+                
+                ### Data
+                years[:] = np.arange(var.shape[0])
+                latitude[:] = lats
+                longitude[:] = lons
+                varns[:] = var
+                
+                ncfile.close()
+                print('*Completed: Created netCDF4 File!')
+            netcdfLENS(lats,lons,lrpobservations,'/Users/zlabe/Documents/Research/InternalSignal/Data/FINAL/',singlesimulation,monthlychoice)
+        
+        
     lrpsns = np.asarray(lrpsns)
     #######################################################################
     #######################################################################
@@ -1726,7 +1771,7 @@ for sis,singlesimulation in enumerate(datasetsingle):
         ncfile.close()
         print('*Completed: Created netCDF4 File!')
         
-    netcdfLENS(lats,lons,np.asarray(lrpsns),'/Users/zlabe/Documents/Research/InternalSignal/Data/FINAL/',singlesimulation)
+    # netcdfLENS(lats,lons,np.asarray(lrpsns),'/Users/zlabe/Documents/Research/InternalSignal/Data/FINAL/',singlesimulation)
       
     # ### Delete memory!!!
     # if sis < len(datasetsingle):
