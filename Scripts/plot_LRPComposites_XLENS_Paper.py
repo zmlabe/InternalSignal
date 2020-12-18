@@ -71,11 +71,15 @@ for count,i in enumerate(range(0,len(years),40)):
 
 thresh = np.genfromtxt(directorydata + 'Threshold_MaskingLRP_95.txt',
                        unpack=True)
+comp_ghgm = comp_ghg.copy()
+comp_aerm = comp_aer.copy()
+comp_lensm = comp_lens.copy()
 comp_ghg[comp_ghg<=thresh] = np.nan
 comp_aer[comp_aer<=thresh] = np.nan
 comp_lens[comp_lens<=thresh] = np.nan
 
 runs = list(itertools.chain.from_iterable([comp_ghg,comp_aer,comp_lens]))
+runsm = list(itertools.chain.from_iterable([comp_ghgm,comp_aerm,comp_lensm]))
     
 ###########################################################################
 ###########################################################################
@@ -140,4 +144,59 @@ plt.tight_layout()
 plt.subplots_adjust(top=0.85,wspace=0.01,hspace=0,bottom=0.14)
 
 plt.savefig(directoryfigure + 'LRPPeriods_T2M_PAPER.png',dpi=600)
+
+###########################################################################
+###########################################################################
+###########################################################################
+
+fig = plt.figure(figsize=(5,3))
+for r in range(len(runs)):
+    var = runsm[r]
+    
+    ax1 = plt.subplot(3,4,r+1)
+    m = Basemap(projection='moll',lon_0=0,resolution='l',area_thresh=10000)
+    circle = m.drawmapboundary(fill_color='dimgrey')
+    circle.set_clip_on(False) 
+    m.drawcoastlines(color='darkgrey',linewidth=0.27)
+    
+    var, lons_cyclic = addcyclic(var, lon1)
+    var, lons_cyclic = shiftgrid(180., var, lons_cyclic, start=False)
+    lon2d, lat2d = np.meshgrid(lons_cyclic, lat1)
+    x, y = m(lon2d, lat2d)
+       
+    circle = m.drawmapboundary(fill_color='dimgrey',color='dimgray',
+                      linewidth=0.7)
+    circle.set_clip_on(False)
+    
+    cs = m.contourf(x,y,var,limit,extend='max')
+            
+    cs.set_cmap(cmap) 
+    if any([r==0,r==4,r==8]):
+        ax1.annotate(r'\textbf{%s}' % datasetsingleq[r],xy=(0,0),xytext=(-0.1,0.5),
+                      textcoords='axes fraction',color='k',fontsize=9,
+                      rotation=90,ha='center',va='center')
+    if any([r==0,r==1,r==2,r==3]):
+        ax1.annotate(r'\textbf{%s}' % timeq[r],xy=(0,0),xytext=(0.5,1.22),
+                      textcoords='axes fraction',color='dimgrey',fontsize=9,
+                      rotation=0,ha='center',va='center')
+    ax1.annotate(r'\textbf{[%s]}' % letters[r],xy=(0,0),xytext=(0.87,0.97),
+                  textcoords='axes fraction',color='k',fontsize=6,
+                  rotation=330,ha='center',va='center')
+
+###########################################################################
+cbar_ax = fig.add_axes([0.32,0.095,0.4,0.03])                
+cbar = fig.colorbar(cs,cax=cbar_ax,orientation='horizontal',
+                    extend='max',extendfrac=0.07,drawedges=False)
+
+cbar.set_label(label,fontsize=9,color='dimgrey',labelpad=1.4)  
+
+cbar.set_ticks(barlim)
+cbar.set_ticklabels(list(map(str,barlim)))
+cbar.ax.tick_params(axis='x', size=.01,labelsize=5)
+cbar.outline.set_edgecolor('dimgrey')
+
+plt.tight_layout()
+plt.subplots_adjust(top=0.85,wspace=0.01,hspace=0,bottom=0.14)
+
+plt.savefig(directoryfigure + 'LRPPeriods_T2M_NOMASK.png',dpi=600)
 

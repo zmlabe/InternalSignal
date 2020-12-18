@@ -17,6 +17,7 @@ import palettable.cubehelix as cm
 variables = [r'T2M']
 datasets = [r'[OBS]AER+',r'[OBS]AER+',r'[OBS]GHG+',r'[OBS]GHG+',
             r'[OBS]ALL',r'[OBS]ALL']
+datasetsm = [r'[OBS]AER+',r'[OBS]GHG+',r'[OBS]ALL']
 seasons = [r'annual']
 timeq = ['1920-1959','1960-1999']
 letters = ["a","b","c","d","e","f","g","h","i","j","k","l","m"]
@@ -176,7 +177,7 @@ for i in range(len(totalmean)):
     cmap = cm.classic_16.mpl_colormap          
     cs.set_cmap(cmap)
     
-    ax1.annotate(r'\textbf{%s}' % (datasets[i]),xy=(0,0),xytext=(0.865,0.91),
+    ax1.annotate(r'\textbf{%s}' % (datasetsm[i]),xy=(0,0),xytext=(0.865,0.91),
                       textcoords='axes fraction',color='k',fontsize=11,
                       rotation=332.5,ha='center',va='center')
     ax1.annotate(r'\textbf{[%s]}' % letters[i],xy=(0,0),xytext=(0.085,0.93),

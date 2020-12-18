@@ -69,7 +69,8 @@ data.close()
 lrplens = lrp[0,:,:,:]
 
 lrpmask_lens = np.nanmean(lrplens,axis=0) # average across all years
-lrpmask_lens[lrpmask_lens<=thresh] = np.nan
+allmask = lrpmask_lens.copy()
+lrpmask_lens[lrpmask_lens>thresh] = np.nan
 maskdata = [lrpmask_lens]
 
 #######################################################################
@@ -78,6 +79,8 @@ maskdata = [lrpmask_lens]
 ### Plot subplot of LRP means
 plt.rc('text',usetex=True)
 plt.rc('font',**{'family':'sans-serif','sans-serif':['Avant Garde']}) 
+plt.rcParams.update({'hatch.color':'w'})
+plt.rcParams.update({'hatch.linewidth':0.2})
 
 ###############################################################################
 ###############################################################################
@@ -151,16 +154,21 @@ m.drawcoastlines(color='darkgrey',linewidth=0.35)
 barlim = barlimq[0]
 
 ### Take lrp mean over all years
-lrpstats = maskdata[0]
+pvar = maskdata[0]
+lrpstats = allmask 
+
 
 var, lons_cyclic = addcyclic(lrpstats, lon1)
 var, lons_cyclic = shiftgrid(180., var, lons_cyclic, start=False)
+pvar,lons_cyclic = addcyclic(pvar, lon1)
+pvar,lons_cyclic = shiftgrid(180.,pvar,lons_cyclic,start=False)
 lon2d, lat2d = np.meshgrid(lons_cyclic, lat1)
 x, y = m(lon2d, lat2d)
 
 ### Make the plot continuous
 cs = m.contourf(x,y,var,limitsq[0],
-                extend=colorbarendq[0])                        
+                extend=colorbarendq[0])     
+cs1 = m.contourf(x,y,pvar,colors='None',hatches=['////////'],zorder=25)                   
 cs.set_cmap(cmapq[0])
 
 ax1.annotate(r'\textbf{%s}' % (datasetsq[0]),xy=(0,0),xytext=(0.865,0.91),
