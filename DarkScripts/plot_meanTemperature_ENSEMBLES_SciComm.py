@@ -18,7 +18,7 @@ import calc_dataFunctions as df
 # ### Data preliminaries 
 # directorydataLLS = '/Users/zlabe/Data/LENS/SINGLE/'
 # directorydataLLL = '/Users/zlabe/Data/LENS/monthly'
-# directoryfigure =  '/Users/zlabe/Desktop/IntSignal/SINGLE_v2.0/SciComm/'
+# directoryfigure =  '/Users/zlabe/Desktop/SINGLE_v2.0/SciComm/'
 # datasetsingleq = ['XGHG','XAER','LENS','20CRv3']
 # datasetsingle = ['XGHG','XAER','lens','20CRv3']
 # seasons = ['annual','JFM','AMJ','JAS','OND']
@@ -119,10 +119,10 @@ ax.spines['bottom'].set_linewidth(2)
 ax.tick_params('both',length=4,width=2,which='major',color='darkgrey')
 
 for i in range(globe_lens.shape[0]):
-    plt.plot(years,globe_lens[i,:]-ensanom_lens,'-',
+    plt.plot(years,globe_lens[i,:],'-',
                 color='deepskyblue',linewidth=0.3,clip_on=False,alpha=0.4)
 
-plt.plot(years,np.nanmean(globe_lens-ensanom_lens,axis=0),'-',
+plt.plot(years,ensanom_lens,'-',
                 color='crimson',linewidth=0.8,clip_on=False,alpha=1)
 plt.plot(yearsobs,globe_obs,color='w',linewidth=2,
           dashes=(1,0.3),linestyle='--',label=r'\textbf{20CRv3}',zorder=11)
@@ -133,5 +133,5 @@ plt.xticks(np.arange(1920,2080+1,20),map(str,np.arange(1920,2080+1,20)),size=6)
 plt.xlim([1920,2080])   
 plt.ylim([-0.5,4])
 
-plt.savefig(directoryfigure + 'TimeSeries_LENS_T2M_Data_7.png',
+plt.savefig(directoryfigure + 'TimeSeries_LENS_T2M_Data_5.png',
             dpi=300)
