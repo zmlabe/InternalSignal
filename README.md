@@ -21,7 +21,7 @@ Zachary Labe - [Research Website](http://sites.uci.edu/zlabe/) - [@ZLabe](https:
     + Deser, C., Phillips, A. S., Simpson, I. R., Rosenbloom, N., Coleman, D., Lehner, F., ... & Stevenson, S. (2020). Isolating the evolving contributions of anthropogenic aerosols and greenhouse gases: A new CESM1 large ensemble community resource. Journal of Climate. doi:10.1175/JCLI-D-20-0123.1 [[PUBLICATION]](https://journals.ametsoc.org/jcli/article/doi/10.1175/JCLI-D-20-0123.1/353234)
     
 ## Publications
-
++ [1] **Labe, Z.M.** and E.A. Barnes (2021), Detecting climate signals using explainable AI with single-forcing large ensembles. Journal of Advances in Modeling Earth Systems (*submitted*) [[Preprint]](https://www.essoar.org/doi/10.1002/essoar.10505762.1)
 
 ## Conferences
 + [1] **Labe, Z.M.** and E.A. Barnes. Disentangling Climate Forcing in Multi-Model Large Ensembles Using Neural Networks, *20th Conference on Artificial Intelligence for Environmental Science*, Virtual Conference (Jan 2021). [[Abstract]](https://ams.confex.com/ams/101ANNUAL/meetingapp.cgi/Paper/379553)
