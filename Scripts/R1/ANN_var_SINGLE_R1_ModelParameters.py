@@ -54,6 +54,7 @@ directorydataBB = '/Users/zlabe/Data/BEST/'
 directorydataEE = '/Users/zlabe/Data/ERA5/'
 directorydataoutput = '/Users/zlabe/Documents/Research/InternalSignal/Data/FINAL/R1/Parameters/'
 datasetsingle = ['XGHG','XAER','lens']
+datasetsingle = ['XAER']
 seasons = ['annual']
 timexghg = np.arange(1920,2080+1,1)
 timexaer = np.arange(1920,2080+1,1)
@@ -61,25 +62,25 @@ timelens = np.arange(1920,2080+1,1)
 yearsall = [timexghg,timexaer,timelens]
 directoriesall = [directorydataLLS,directorydataLLS,directorydataLLL]
 
-### Test script
-datasetsingle = ['XAER']
-directoriesall = [directorydataLLS]
-yearsall = [timexaer]
-l2_try = [0.01]
-epochs_try = [500]
-nodes_try = [20]
-layers_try20 = [[20,20]]
-layers_tryall = layers_try20
-SAMPLEQ = 1
+# ### Test script
+# datasetsingle = ['XAER']
+# directoriesall = [directorydataLLS]
+# yearsall = [timexaer]
+# l2_try = [0.01]
+# epochs_try = [500]
+# nodes_try = [20]
+# layers_try20 = [[20,20]]
+# layers_tryall = layers_try20
+# SAMPLEQ = 1
 
-# ### Parameters (setting random seeds everwhere for 5 iterations (counter))
-# l2_try = [0.0001,0.001,0.01,0.1,1,5]
-# epochs_try = [100,500,1500]
-# nodes_try = [8,20]
-# layers_try8 = [[8,8]],[[8,8,8]]
-# layers_try20 = [[20,20]],[[20,20,20]],[[20,20,20,20]]
-# layers_tryall = np.append(layers_try8,layers_try20)
-# SAMPLEQ = 10
+### Parameters (setting random seeds everwhere for 5 iterations (counter))
+l2_try = [0.0001,0.001,0.01,0.1,1,5]
+epochs_try = [100,500,1500]
+nodes_try = [8,20]
+layers_try8 = [[8,8]],[[8,8,8]]
+layers_try20 = [[20,20]],[[20,20,20]],[[20,20,20,20]]
+layers_tryall = np.append(layers_try8,layers_try20)
+SAMPLEQ = 10
  
 ### Begin model
 slopetrain_tryModel = []
@@ -1251,24 +1252,24 @@ for sis,singlesimulation in enumerate(datasetsingle):
 # np.savetxt(directorydataoutput + 'EnsembleSegmentSeed_annual_R1.txt',ensembleseed_trysaveModel)
 # np.savetxt(directorydataoutput + 'annSegmentSeed_annual_R1.txt',annseed_trysaveModel)
 
-np.save(directorydataoutput + 'slopeTrain_annual_R1.npy',slopetrain_tryModel)
-np.save(directorydataoutput + 'slopeTest_annual_R1.npy',slopetest_tryModel)
-np.save(directorydataoutput + 'r2Train_annual_R1.npy',meanr_train_tryModel)
-np.save(directorydataoutput + 'r2Test_annual_R1.npy',meanr_test_tryModel)
+np.save(directorydataoutput + 'XAER_slopeTrain_annual_R1.npy',slopetrain_tryModel)
+np.save(directorydataoutput + 'XAER_slopeTest_annual_R1.npy',slopetest_tryModel)
+np.save(directorydataoutput + 'XAER_r2Train_annual_R1.npy',meanr_train_tryModel)
+np.save(directorydataoutput + 'XAER_r2Test_annual_R1.npy',meanr_test_tryModel)
 
-np.save(directorydataoutput + 'rmsePRE_annual_R1.npy',rma_test_tryModel)
-np.save(directorydataoutput + 'rmsePOST_annual_R1.npy',rmb_test_tryModel)
-np.save(directorydataoutput + 'rmseYEARS_annual_R1.npy',rmall_test_tryModel)
+np.save(directorydataoutput + 'XAER_rmsePRE_annual_R1.npy',rma_test_tryModel)
+np.save(directorydataoutput + 'XAER_rmsePOST_annual_R1.npy',rmb_test_tryModel)
+np.save(directorydataoutput + 'XAER_rmseYEARS_annual_R1.npy',rmall_test_tryModel)
 
-np.save(directorydataoutput + 'maePRE_annual_R1.npy',mae_testa_tryModel)
-np.save(directorydataoutput + 'maePOST_annual_R1.npy',mae_testb_tryModel)
-np.save(directorydataoutput + 'maeYEARS_annual_R1.npy',mae_testall_tryModel)
+np.save(directorydataoutput + 'XAER_maePRE_annual_R1.npy',mae_testa_tryModel)
+np.save(directorydataoutput + 'XAER_maePOST_annual_R1.npy',mae_testb_tryModel)
+np.save(directorydataoutput + 'XAER_maeYEARS_annual_R1.npy',mae_testall_tryModel)
 
-np.save(directorydataoutput + 'numOfLayers_annual_R1.npy',layers_trysaveModel)
-np.save(directorydataoutput + 'numofEpochs_annual_R1.npy',epochs_trysaveModel)
-np.save(directorydataoutput + 'L2_annual_R1.npy',l2_trysaveModel)
+np.save(directorydataoutput + 'XAER_numOfLayers_annual_R1.npy',layers_trysaveModel)
+np.save(directorydataoutput + 'XAER_numofEpochs_annual_R1.npy',epochs_trysaveModel)
+np.save(directorydataoutput + 'XAER_L2_annual_R1.npy',l2_trysaveModel)
 
-np.save(directorydataoutput + 'numOfSeedSamples_annual_R1.npy',samples_trysaveModel)
-np.save(directorydataoutput + 'lensType_annual_R1.npy',models_trysaveModel)
-np.save(directorydataoutput + 'EnsembleSegmentSeed_annual_R1.npy',ensembleseed_trysaveModel)
-np.save(directorydataoutput + 'annSegmentSeed_annual_R1.npy',annseed_trysaveModel)
+np.save(directorydataoutput + 'XAER_numOfSeedSamples_annual_R1.npy',samples_trysaveModel)
+np.save(directorydataoutput + 'XAER_lensType_annual_R1.npy',models_trysaveModel)
+np.save(directorydataoutput + 'XAER_EnsembleSegmentSeed_annual_R1.npy',ensembleseed_trysaveModel)
+np.save(directorydataoutput + 'XAER_annSegmentSeed_annual_R1.npy',annseed_trysaveModel)
