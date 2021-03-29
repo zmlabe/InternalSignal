@@ -63,7 +63,7 @@ yearsall = [timexghg,timexaer,timelens]
 directoriesall = [directorydataLLS,directorydataLLS,directorydataLLL]
 
 ### Set counter
-SAMPLEQ = 100
+SAMPLEQ = 1
 
 # ### Test script
 # datasetsingle = ['lens']
@@ -865,7 +865,7 @@ for sis,singlesimulation in enumerate(datasetsingle):
             
             if NNType == 'ANN':
                 hiddensList = [[20,20]]
-                ridge_penalty = [0.1]
+                ridge_penalty = [0.0001]
                 actFun = 'relu'
             elif NNType == 'linear':
                 hiddensList = [[0]]
@@ -995,8 +995,8 @@ for sis,singlesimulation in enumerate(datasetsingle):
                                 savenameModelTestTrain = savenameModelTestTrain + '_avgHalfChunk' + str(avgHalfChunk)
             
                             savename = savename + regSave    
-                            model.save(dirname + savename + '.h5')
-                            np.savez(dirname + savenameModelTestTrain + '.npz',trainModels=trainIndices,testModels=testIndices,Xtrain=Xtrain,Ytrain=Ytrain,Xtest=Xtest,Ytest=Ytest,Xmean=Xmean,Xstd=Xstd,lats=lats,lons=lons)
+                            # model.save(dirname + savename + '.h5')
+                            # np.savez(dirname + savenameModelTestTrain + '.npz',trainModels=trainIndices,testModels=testIndices,Xtrain=Xtrain,Ytrain=Ytrain,Xtest=Xtest,Ytest=Ytest,Xmean=Xmean,Xstd=Xstd,lats=lats,lons=lons)
             
                             print('saving ' + savename)
                             
@@ -1150,6 +1150,7 @@ modelseed = np.asarray(annseedall)
 directorydataoutput = '/Users/zlabe/Documents/Research/InternalSignal/Data/FINAL/R1/Prediction/Trials/'
 np.savetxt(directorydataoutput + 'Slopes_20CRv3-Obs_XGHG-XAER-LENS_%s_RANDOMSEED_20ens_R1-Trials_L2-%s_epochs-%s.txt' % (SAMPLEQ,ridge_penalty[0],iterations[0]),modelslopes)
 np.savetxt(directorydataoutput + 'R2_20CRv3-Obs_XGHG-XAER-LENS_%s_RANDOMSEED_20ens_R1-Trials_L2-%s_epochs-%s.txt' % (SAMPLEQ,ridge_penalty[0],iterations[0]),modelr2)
+np.savetxt(directorydataoutput + 'Rval_20CRv3-Obs_XGHG-XAER-LENS_%s_RANDOMSEED_20ens_R1-Trials_L2-%s_epochs-%s.txt' % (SAMPLEQ,ridge_penalty[0],iterations[0]),modelr)
 np.savetxt(directorydataoutput + 'SegmentSeed_20CRv3-Obs_XGHG-XAER-LENS_%s_RANDOMSEED_20ens_R1-Trials_L2-%s_epochs-%s.txt' % (SAMPLEQ,ridge_penalty[0],iterations[0]),ensseed)
 np.savetxt(directorydataoutput + 'ModelSeed_20CRv3-Obs_XGHG-XAER-LENS_%s_RANDOMSEED_20ens_R1-Trials_L2-%s_epochs-%s.txt' % (SAMPLEQ,ridge_penalty[0],iterations[0]),modelseed)
 
