@@ -63,7 +63,7 @@ yearsall = [timexghg,timexaer,timelens]
 directoriesall = [directorydataLLS,directorydataLLS,directorydataLLL]
 
 ### Set counter
-SAMPLEQ = 1
+SAMPLEQ = 100
 
 # ### Test script
 # datasetsingle = ['lens']
@@ -858,28 +858,28 @@ for sis,singlesimulation in enumerate(datasetsingle):
             NNType = 'ANN'
             classChunkHalf = 5
             classChunk = 10
-            iSeed = 8#10#8
+            iSeed = 8
             avgHalfChunk = 0
             option4 = True
             biasBool = False
             
             if NNType == 'ANN':
                 hiddensList = [[20,20]]
-                ridge_penalty = [0.0001]
+                ridge_penalty = [0.001]
                 actFun = 'relu'
             elif NNType == 'linear':
                 hiddensList = [[0]]
                 ridge_penalty = [0.]
                 actFun = 'linear'
             
-            expList = [(0)] # (0,1)
+            expList = [(0)] 
             expN = np.size(expList)
             
-            iterations = [500] # [500]#[1500]
+            iterations = [500] 
             random_segment = True
             foldsN = 1
             
-            for avgHalfChunk in (0,): # ([1,5,10]):#([1,2,5,10]):
+            for avgHalfChunk in (0,):
                 session_conf = tf.ConfigProto(intra_op_parallelism_threads=1,
                                               inter_op_parallelism_threads=1)
                 sess = tf.Session(graph=tf.get_default_graph(), config=session_conf)
@@ -887,7 +887,7 @@ for sis,singlesimulation in enumerate(datasetsingle):
                 # K.get_session()
                 K.clear_session()
                 
-                for loop in ([0]): # (0,1,2,3,4,5):
+                for loop in ([0]):
                     # get info about the region
                     lat_bounds,lon_bounds = UT.regions(reg_name)
                     data_all,lats,lons = read_primary_dataset(variq,dataset,

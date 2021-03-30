@@ -27,33 +27,33 @@ SAMPLEQ = 100
 directorydata = '/Users/zlabe/Documents/Research/InternalSignal/Data/FINAL/R1/Prediction/Trials/'
 directoryfigure = '/Users/zlabe/Desktop/PAPER/R1/'
 
-# ### Read in LRP maps for X(LENS) for L2=0.01 at 500 epochs
-# data = Dataset(directorydata + 'LRP_YearlyMaps_%s_20ens_%s_%s_R1-Trials_L2-%s_epochs-%s.nc' % (SAMPLEQ,variables[0],seasons[0],0.01,500))
-# lat1 = data.variables['lat'][:]
-# lon1 = data.variables['lon'][:]
-# lrp = data.variables['LRP'][:,:,:,:]
-# data.close()
-# lrpghg = np.nanmean(lrp[0,:,:,:],axis=1)
-# lrpaer = np.nanmean(lrp[1,:,:,:],axis=1)
-# lrplens = np.nanmean(lrp[2,:,:,:],axis=1)
+### Read in LRP maps for X(LENS) for L2=0.01 at 500 epochs
+data = Dataset(directorydata + 'LRP_YearlyMaps_%s_20ens_%s_%s_R1-Trials_L2-%s_epochs-%s.nc' % (SAMPLEQ,variables[0],seasons[0],0.01,500))
+lat1 = data.variables['lat'][:]
+lon1 = data.variables['lon'][:]
+lrp = data.variables['LRP'][:,:,:,:]
+data.close()
+lrpghg = np.nanmean(lrp[0,:,:,:],axis=1)
+lrpaer = np.nanmean(lrp[1,:,:,:],axis=1)
+lrplens = np.nanmean(lrp[2,:,:,:],axis=1)
 
-# ### Read in LRP maps for X(LENS) for L2=0.001 at 1500 epochs
-# dataother = Dataset(directorydata + 'LRP_YearlyMaps_%s_20ens_%s_%s_R1-Trials_L2-%s_epochs-%s.nc' % (SAMPLEQ,variables[0],seasons[0],0.001,1500))
-# lat1other = dataother.variables['lat'][:]
-# lon1other = dataother.variables['lon'][:]
-# lrpother = dataother.variables['LRP'][:,:,:,:]
-# dataother.close()
+### Read in LRP maps for X(LENS) for L2=0.001 at 1500 epochs
+dataother = Dataset(directorydata + 'LRP_YearlyMaps_%s_20ens_%s_%s_R1-Trials_L2-%s_epochs-%s.nc' % (SAMPLEQ,variables[0],seasons[0],0.001,1500))
+lat1other = dataother.variables['lat'][:]
+lon1other = dataother.variables['lon'][:]
+lrpother = dataother.variables['LRP'][:,:,:,:]
+dataother.close()
 
-# lrpghgother = np.nanmean(lrpother[0,:,:,:],axis=1)
-# lrpaerother = np.nanmean(lrpother[1,:,:,:],axis=1)
-# lrplensother = np.nanmean(lrpother[2,:,:,:],axis=1)
+lrpghgother = np.nanmean(lrpother[0,:,:,:],axis=1)
+lrpaerother = np.nanmean(lrpother[1,:,:,:],axis=1)
+lrplensother = np.nanmean(lrpother[2,:,:,:],axis=1)
 
-# ##############################################################################
-# ##############################################################################
-# ##############################################################################
-# ## Assess data
-# data = [lrpghg,lrpaer,lrplens,
-#         lrpghgother,lrpaerother,lrplensother]
+##############################################################################
+##############################################################################
+##############################################################################
+## Assess data
+data = [lrpghg,lrpaer,lrplens,
+        lrpghgother,lrpaerother,lrplensother]
 
 #######################################################################
 #######################################################################
