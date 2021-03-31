@@ -40,7 +40,7 @@ def readData(directorydata,SAMPLEQ,l2,epochs):
     median_aer = np.median(aer_r2q)
     median_lens = np.median(lens_r2q)
     mediansall = np.array([median_ghg,median_aer,median_lens])
-    np.savetxt(directorydata + 'R2_20CRv3-Obs_XGHG-XAER-LENS_%s_RANDOMSEED_Medians_20ens_R1-Trials_L2-%s_epochs-%stxt' % (SAMPLEQ,l2,epochs),
+    np.savetxt(directorydata + 'R2_20CRv3-Obs_XGHG-XAER-LENS_%s_RANDOMSEED_Medians_20ens_R1-Trials_L2-%s_epochs-%s.txt' % (SAMPLEQ,l2,epochs),
                mediansall)
 
     return ghg_r2q,aer_r2q,lens_r2q,mediansall
@@ -173,4 +173,4 @@ for s in range(len(l2)):
     plt.xlim([0,1])   
     plt.ylim([0,0.6])
     
-plt.savefig(directoryfigure + 'HistogramR2OfObs-AllANNs_PAPER.png',dpi=300)
+plt.savefig(directoryfigure + 'HistogramR2OfObs-AllANNs_PAPER.png',dpi=600)

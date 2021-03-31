@@ -137,7 +137,7 @@ plt.subplots_adjust(bottom=0.17)
 plt.savefig(directoryfigure + 'LRPmean_%s_%s_%s_20ens.png' % (variables[0],
                                                         seasons[0],
                                                         SAMPLEQ),
-                                                        dpi=300)
+                                                        dpi=600)
 
 # #######################################################################
 # #######################################################################

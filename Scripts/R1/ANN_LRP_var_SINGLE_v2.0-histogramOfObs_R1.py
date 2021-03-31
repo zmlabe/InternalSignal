@@ -875,7 +875,7 @@ for sis,singlesimulation in enumerate(datasetsingle):
             expList = [(0)] 
             expN = np.size(expList)
             
-            iterations = [500] 
+            iterations = [1500] 
             random_segment = True
             foldsN = 1
             

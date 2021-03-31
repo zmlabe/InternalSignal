@@ -210,4 +210,4 @@ for mm in range(len(simu)):
     elif any([mm==4,mm==5]):
         ax.axes.yaxis.set_ticklabels([])
     
-plt.savefig(directoryfigure + 'timeMAE_ForHyperparameters_Epochs_PAPER.png',dpi=300)
+plt.savefig(directoryfigure + 'timeMAE_ForHyperparameters_Epochs_PAPER.png',dpi=600)

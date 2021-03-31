@@ -223,4 +223,4 @@ for mm in range(len(simu)):
                     fancybox=True,frameon=False,ncol=2,bbox_to_anchor=(0.5,-0.20),
                     labelspacing=1,columnspacing=1,handletextpad=0.4)
     
-plt.savefig(directoryfigure + 'MAEForHyperparameters_layer-%s_PAPER.png' % (20),dpi=300)
+plt.savefig(directoryfigure + 'MAEForHyperparameters_layer-%s_PAPER.png' % (20),dpi=600)

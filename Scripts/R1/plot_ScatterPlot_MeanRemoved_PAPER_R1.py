@@ -35,7 +35,7 @@ directoryfigure = '/Users/zlabe/Desktop/PAPER/R1/'
 ### Read in data
 def readSeason(variableq,seasonq,datasets):
     """ 
-    Read in observations and training/testing data
+    Read in observations and testing data
     """
 
     training = np.empty((len(datasets),len(years),training_ens))
@@ -175,7 +175,7 @@ ax.spines['bottom'].set_linewidth(2)
 ax.tick_params('both',length=4,width=2,which='major',color='dimgrey',pad=1.1)
 
 ax.fill_between(years,annual_minperc[1],annual_maxperc[1],color='deepskyblue',
-                alpha=0.3,linewidth=0,clip_on=False,label=r'\textbf{Models [Training+Testing]}')
+                alpha=0.3,linewidth=0,clip_on=False,label=r'\textbf{Climate Models [Testing]}')
 plt.scatter(yearobs,obs_annual[1],s=12,color='crimson',clip_on=False,
             alpha=0.35,linewidths=0.5,label=r'\textbf{Observations}')
 plt.plot(years,years,'-',color='black',linewidth=1,clip_on=False)
