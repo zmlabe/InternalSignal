@@ -23,6 +23,8 @@ datasets = [r'AER+ minus ALL',r'GHG+ minus ALL']
 seasons = [r'annual']
 letters = ["a","b","c","d","e","f","g","h","i","j","k","l","m"]
 SAMPLEQ = 100
+years = np.arange(1920,2080+1,1)
+yearq = np.where((years >= 1960) & (years <= 2039))[0]
 
 ### Set directories
 directorydata = '/Users/zlabe/Documents/Research/InternalSignal/Data/FINAL/R1/Prediction/Trials/'
@@ -36,13 +38,18 @@ lrp = data.variables['LRP'][:,:,:,:]
 data.close()
 
 ### Calculate ensemble means
-lrpghg = np.nanmean(lrp[0,:,:,:],axis=1)
-lrpaer = np.nanmean(lrp[1,:,:,:],axis=1)
-lrplens = np.nanmean(lrp[2,:,:,:],axis=1)
+lrpghg = np.nanmean(lrp[0,:,:,:],axis=0)
+lrpaer = np.nanmean(lrp[1,:,:,:],axis=0)
+lrplens = np.nanmean(lrp[2,:,:,:],axis=0)
+
+### Calculate time period mean
+lrpghgm = np.nanmean(lrpghg[yearq,:,:],axis=0)
+lrpaerm = np.nanmean(lrpaer[yearq,:,:],axis=0)
+lrplensm = np.nanmean(lrplens[yearq,:,:],axis=0)
 
 ### Calculate differences
-ghganom = np.nanmean(lrpghg - lrplens,axis=0)
-aeranom = np.nanmean(lrpaer - lrplens,axis=0)
+ghganom = lrpghgm - lrplensm
+aeranom = lrpaerm - lrplensm
 
 ### Assess data
 data = [ghganom,aeranom]

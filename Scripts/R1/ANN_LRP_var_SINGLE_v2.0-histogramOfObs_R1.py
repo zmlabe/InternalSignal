@@ -63,7 +63,7 @@ yearsall = [timexghg,timexaer,timelens]
 directoriesall = [directorydataLLS,directorydataLLS,directorydataLLL]
 
 ### Set counter
-SAMPLEQ = 100
+SAMPLEQ = 1
 
 # ### Test script
 # datasetsingle = ['lens']
@@ -865,7 +865,7 @@ for sis,singlesimulation in enumerate(datasetsingle):
             
             if NNType == 'ANN':
                 hiddensList = [[20,20]]
-                ridge_penalty = [0.001]
+                ridge_penalty = [0.01]
                 actFun = 'relu'
             elif NNType == 'linear':
                 hiddensList = [[0]]
@@ -875,7 +875,7 @@ for sis,singlesimulation in enumerate(datasetsingle):
             expList = [(0)] 
             expN = np.size(expList)
             
-            iterations = [1500] 
+            iterations = [500] 
             random_segment = True
             foldsN = 1
             

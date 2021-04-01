@@ -1,10 +1,10 @@
 """
-Plots histograms of R^2 of observations for paper showing possible ANNs with
-different combinations of epochs and L2
+Plots correlation (Rval) of slope of observations for paper showing possible 
+ANNs with different combinations of epochs and L2
 
 Reference  : Barnes et al. [2020, JAMES]
 Author    : Zachary M. Labe
-Date      : 29 March 2021
+Date      : 1 April 2021
 """
 
 ### Import packages
@@ -30,7 +30,7 @@ letters = ["a","b","c","d","e","f","g","h","i","j","k","l","m"]
 
 def readData(directorydata,SAMPLEQ,l2,epochs):
     ### Read in R2 data
-    filename_R2 = 'R2_20CRv3-Obs_XGHG-XAER-LENS_%s_RANDOMSEED_20ens_R1-Trials_L2-%s_epochs-%s.txt' % (SAMPLEQ,l2,epochs)
+    filename_R2 = 'Rval_20CRv3-Obs_XGHG-XAER-LENS_%s_RANDOMSEED_20ens_R1-Trials_L2-%s_epochs-%s.txt' % (SAMPLEQ,l2,epochs)
     slopes = np.genfromtxt(directorydata + filename_R2,unpack=True)
     ghg_r2q = slopes[:,0]
     aer_r2q = slopes[:,1]
@@ -40,7 +40,7 @@ def readData(directorydata,SAMPLEQ,l2,epochs):
     median_aer = np.median(aer_r2q)
     median_lens = np.median(lens_r2q)
     mediansall = np.array([median_ghg,median_aer,median_lens])
-    np.savetxt(directorydata + 'R2_20CRv3-Obs_XGHG-XAER-LENS_%s_RANDOMSEED_Medians_20ens_R1-Trials_L2-%s_epochs-%s.txt' % (SAMPLEQ,l2,epochs),
+    np.savetxt(directorydata + 'Rval_20CRv3-Obs_XGHG-XAER-LENS_%s_RANDOMSEED_Medians_20ens_R1-Trials_L2-%s_epochs-%s.txt' % (SAMPLEQ,l2,epochs),
                mediansall)
 
     return ghg_r2q,aer_r2q,lens_r2q,mediansall
@@ -101,7 +101,7 @@ for s in range(len(l2)):
     
     ### Plot histograms
     weights_ghg = np.ones_like(ghg_r2)/len(ghg_r2)
-    n_ghg, bins_ghg, patches_ghg = plt.hist(ghg_r2,bins=np.arange(0,1.01,0.025),
+    n_ghg, bins_ghg, patches_ghg = plt.hist(ghg_r2,bins=np.arange(-1.2,2.1,0.1)-0.05,
                                             density=False,alpha=0.5,
                                             label=r'\textbf{AER+}',
                                             weights=weights_ghg,zorder=3,clip_on=False)
@@ -111,7 +111,7 @@ for s in range(len(l2)):
         patches_ghg[i].set_linewidth(0.17)
      
     weights_aer = np.ones_like(aer_r2)/len(aer_r2)
-    n_aer, bins_aer, patches_aer = plt.hist(aer_r2,bins=np.arange(0,1.01,0.025),
+    n_aer, bins_aer, patches_aer = plt.hist(aer_r2,bins=np.arange(-1.2,2.1,0.1)-0.05,
                                             density=False,alpha=0.5,
                                             label=r'\textbf{GHG+}',
                                             weights=weights_aer,zorder=4,clip_on=False)
@@ -121,21 +121,14 @@ for s in range(len(l2)):
         patches_aer[i].set_linewidth(0.17)
         
     weights_lens = np.ones_like(lens_r2)/len(lens_r2)
-    n_lens, bins_lens, patches_lens = plt.hist(lens_r2,bins=np.arange(0,1.01,0.025),
+    n_lens, bins_lens, patches_lens = plt.hist(lens_r2,bins=np.arange(-1.2,2.1,0.1)-0.05,
                                             density=False,alpha=0.5,
                                             label=r'\textbf{ALL}',
                                             weights=weights_lens,zorder=5,clip_on=False)
     for i in range(len(patches_lens)):
         patches_lens[i].set_facecolor('crimson')
         patches_lens[i].set_edgecolor('white')
-        patches_lens[i].set_linewidth(0.17)
-        
-    ### Plot medians for all LENS    
-    plt.vlines(lenmed,ymin=0,ymax=0.4,linestyle='--',zorder=20,
-               linewidth=0.43,color='k')
-    plt.vlines(lenmed[s],ymin=0,ymax=0.4,linestyle='-',zorder=21,
-               linewidth=0.63,color='k')
-     
+        patches_lens[i].set_linewidth(0.17)     
     
     ### Create legend
     if s == 1:
@@ -145,15 +138,15 @@ for s in range(len(l2)):
         
     ### Create x/y labels
     if any([s==0]):
-        plt.text(-0.36,-0.2,r'\textbf{PROPORTION}',fontsize=10,color='k',
+        plt.text(-2.2,-0.3,r'\textbf{PROPORTION}',fontsize=10,color='k',
                  rotation=90) 
     if s ==4:
-        plt.xlabel(r'\textbf{R$^{2}$ OF OBSERVATIONS}',fontsize=10,color='k')
+        plt.xlabel(r'\textbf{R OF OBSERVATIONS}',fontsize=10,color='k')
     if s == 0:
-        plt.text(1.02,0.525,r'\textbf{[ANN-Paper]}',color='k',fontsize=6,
-                 ha='right')
+        plt.text(-1.2,0.63,r'\textbf{[ANN-Paper]}',color='k',fontsize=6,
+                 ha='left')
     
-    plt.xticks(np.arange(0,1.1,0.2),map(str,np.round(np.arange(0,1.1,0.2),2)),size=6)
+    plt.xticks(np.arange(-5,5,0.5),map(str,np.round(np.arange(-5,5,0.5),2)),size=6)
     plt.yticks(np.arange(0,1.1,0.2),map(str,np.round(np.arange(0,1.1,0.2),2)),size=6)
     
     if s == 0:
@@ -165,12 +158,12 @@ for s in range(len(l2)):
         ax.axes.yaxis.set_ticklabels([])
     
     ### Add information    
-    plt.text(0,0.55,r'\textbf{L$_{\bf{2}}$ = %s}' % l2[s],color='dimgrey',fontsize=8)
-    plt.text(0,0.5,r'\textbf{Epochs = %s}' % epochs[s],color='dimgrey',fontsize=8)
-    plt.text(1.02,0.6,r'\textbf{[%s]}' % letters[s],color='dimgrey',fontsize=8,
-                          rotation=0,ha='right',va='center')
+    plt.text(-1.2,0.69,r'\textbf{L$_{\bf{2}}$ = %s}' % l2[s],color='dimgrey',fontsize=8)
+    plt.text(-1.2,0.75,r'\textbf{Epochs = %s}' % epochs[s],color='dimgrey',fontsize=8)
+    plt.text(1,0.8,r'\textbf{[%s]}' % letters[s],color='dimgrey',fontsize=8,
+                          rotation=0,ha='center',va='center')
         
-    plt.xlim([0,1])   
-    plt.ylim([0,0.6])
+    plt.xlim([-1.2,1.])   
+    plt.ylim([0,0.8])
     
-plt.savefig(directoryfigure + 'HistogramR2OfObs-AllANNs_PAPER.png',dpi=600)
+plt.savefig(directoryfigure + 'HistogramRvalOfObs-AllANNs_PAPER.png',dpi=600)
