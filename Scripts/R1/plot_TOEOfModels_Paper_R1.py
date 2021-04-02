@@ -181,6 +181,9 @@ for i in range(len(alltoe)):
     
     ### Colorbar limits
     barlim = np.round(np.arange(1920,2040+1,10),2)
+    barlim2 = np.round(np.arange(1925,2060+1,10),2)
+    barlim3 = [r'1920s',r'1930s',r'1940s',r'1950s',r'1960s',r'1970s',r'1980s',r'1990s',
+               r'2000s',r'2010s',r'2020s',r'2030s',r'2040s']
     
     ### Take toe mean over all years
     toemodel = alltoe[i]
@@ -209,8 +212,8 @@ cbar = fig.colorbar(cs,cax=cbar_ax,orientation='horizontal',
                     extend='max',extendfrac=0.07,drawedges=True)
 
 cbar.set_label(r'\textbf{TIMING OF EMERGENCE [Years]}',fontsize=11,color='dimgrey',labelpad=1.4)  
-cbar.set_ticks(barlim)
-cbar.set_ticklabels(list(map(str,barlim)))
+cbar.set_ticks(barlim2)
+cbar.set_ticklabels(barlim3)
 cbar.ax.tick_params(axis='x', size=.01,labelsize=5)
 cbar.outline.set_edgecolor('dimgrey')
 cbar.outline.set_linewidth(1)
@@ -219,4 +222,4 @@ cbar.dividers.set_linewidth(1)
 
 plt.tight_layout()
 plt.subplots_adjust(bottom=0.17)
-plt.savefig(directoryfigure + 'TOEPeriods_T2M_PAPER.png',dpi=600)
+plt.savefig(directoryfigure + 'TOEPeriods_T2M_PAPER_R1.png',dpi=600)

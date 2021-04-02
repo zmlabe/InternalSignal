@@ -29,7 +29,7 @@ epochs = [500,100,500,100,500,1500]
 letters = ["a","b","c","d","e","f","g","h","i","j","k","l","m"]
 
 def readData(directorydata,SAMPLEQ,l2,epochs):
-    ### Read in R2 data
+    ### Read in R data
     filename_R2 = 'Rval_20CRv3-Obs_XGHG-XAER-LENS_%s_RANDOMSEED_20ens_R1-Trials_L2-%s_epochs-%s.txt' % (SAMPLEQ,l2,epochs)
     slopes = np.genfromtxt(directorydata + filename_R2,unpack=True)
     ghg_r2q = slopes[:,0]
@@ -101,7 +101,7 @@ for s in range(len(l2)):
     
     ### Plot histograms
     weights_ghg = np.ones_like(ghg_r2)/len(ghg_r2)
-    n_ghg, bins_ghg, patches_ghg = plt.hist(ghg_r2,bins=np.arange(-1.2,2.1,0.1)-0.05,
+    n_ghg, bins_ghg, patches_ghg = plt.hist(ghg_r2,bins=np.arange(-0.75,1.1,0.05)-0.025,
                                             density=False,alpha=0.5,
                                             label=r'\textbf{AER+}',
                                             weights=weights_ghg,zorder=3,clip_on=False)
@@ -111,7 +111,7 @@ for s in range(len(l2)):
         patches_ghg[i].set_linewidth(0.17)
      
     weights_aer = np.ones_like(aer_r2)/len(aer_r2)
-    n_aer, bins_aer, patches_aer = plt.hist(aer_r2,bins=np.arange(-1.2,2.1,0.1)-0.05,
+    n_aer, bins_aer, patches_aer = plt.hist(aer_r2,bins=np.arange(-0.75,1.1,0.05)-0.025,
                                             density=False,alpha=0.5,
                                             label=r'\textbf{GHG+}',
                                             weights=weights_aer,zorder=4,clip_on=False)
@@ -121,7 +121,7 @@ for s in range(len(l2)):
         patches_aer[i].set_linewidth(0.17)
         
     weights_lens = np.ones_like(lens_r2)/len(lens_r2)
-    n_lens, bins_lens, patches_lens = plt.hist(lens_r2,bins=np.arange(-1.2,2.1,0.1)-0.05,
+    n_lens, bins_lens, patches_lens = plt.hist(lens_r2,bins=np.arange(-0.75,1.1,0.05)-0.025,
                                             density=False,alpha=0.5,
                                             label=r'\textbf{ALL}',
                                             weights=weights_lens,zorder=5,clip_on=False)
@@ -133,21 +133,21 @@ for s in range(len(l2)):
     ### Create legend
     if s == 1:
         leg = plt.legend(shadow=False,fontsize=11,loc='upper center',
-                bbox_to_anchor=(0.5,1.305),fancybox=True,ncol=3,frameon=False,
+                bbox_to_anchor=(0.5,1.35),fancybox=True,ncol=3,frameon=False,
                 handlelength=3,handletextpad=1,handleheight=0.08)
         
     ### Create x/y labels
     if any([s==0]):
-        plt.text(-2.2,-0.3,r'\textbf{PROPORTION}',fontsize=10,color='k',
+        plt.text(-1.28,-0.3,r'\textbf{PROPORTION}',fontsize=10,color='k',
                  rotation=90) 
     if s ==4:
-        plt.xlabel(r'\textbf{R OF OBSERVATIONS}',fontsize=10,color='k')
+        plt.xlabel(r'\textbf{CORRELATION OF OBSERVATIONS}',fontsize=10,color='k')
     if s == 0:
-        plt.text(-1.2,0.63,r'\textbf{[ANN-Paper]}',color='k',fontsize=6,
+        plt.text(-0.75,0.77,r'\textbf{[ANN-Paper]}',color='k',fontsize=6,
                  ha='left')
     
-    plt.xticks(np.arange(-5,5,0.5),map(str,np.round(np.arange(-5,5,0.5),2)),size=6)
-    plt.yticks(np.arange(0,1.1,0.2),map(str,np.round(np.arange(0,1.1,0.2),2)),size=6)
+    plt.xticks(np.arange(-5,5,0.25),map(str,np.round(np.arange(-5,5,0.25),2)),size=5)
+    plt.yticks(np.arange(0,1.1,0.2),map(str,np.round(np.arange(0,1.1,0.2),2)),size=5)
     
     if s == 0:
         ax.axes.xaxis.set_ticklabels([])
@@ -158,12 +158,12 @@ for s in range(len(l2)):
         ax.axes.yaxis.set_ticklabels([])
     
     ### Add information    
-    plt.text(-1.2,0.69,r'\textbf{L$_{\bf{2}}$ = %s}' % l2[s],color='dimgrey',fontsize=8)
-    plt.text(-1.2,0.75,r'\textbf{Epochs = %s}' % epochs[s],color='dimgrey',fontsize=8)
-    plt.text(1,0.8,r'\textbf{[%s]}' % letters[s],color='dimgrey',fontsize=8,
+    plt.text(-0.75,0.86,r'\textbf{L$_{\bf{2}}$ = %s}' % l2[s],color='dimgrey',fontsize=8)
+    plt.text(-0.75,0.94,r'\textbf{Epochs = %s}' % epochs[s],color='dimgrey',fontsize=8)
+    plt.text(1.03,1.03,r'\textbf{[%s]}' % letters[s],color='dimgrey',fontsize=8,
                           rotation=0,ha='center',va='center')
         
-    plt.xlim([-1.2,1.])   
-    plt.ylim([0,0.8])
+    plt.xlim([-0.75,1.])   
+    plt.ylim([0,1])
     
 plt.savefig(directoryfigure + 'HistogramRvalOfObs-AllANNs_PAPER.png',dpi=600)

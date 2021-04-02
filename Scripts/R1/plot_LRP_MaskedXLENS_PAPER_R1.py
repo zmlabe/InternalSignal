@@ -28,7 +28,7 @@ years = np.arange(1920,2080+1,1)
 yearq = np.where((years >= 1960) & (years <= 2039))[0]
 
 ### Set directories
-directorydata = '/Users/zlabe/Documents/Research/InternalSignal/Data/FINAL/'
+directorydata = '/Users/zlabe/Documents/Research/InternalSignal/Data/FINAL/R1/'
 directoryfigure = '/Users/zlabe/Desktop/PAPER/'
 
 ### Read in LRP maps for X(LENS)

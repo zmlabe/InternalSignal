@@ -72,6 +72,7 @@ def calcRegressionObs(yearobs,obs):
         slope,intercept,r_value,p_value,std_err = stats.linregress(yearobs,obs[i,:])
         lines[i,:] = slope*yearobs + intercept
         r_2[i] = r_value**2
+
     return lines,r_2
 ###############################################################################
 def adjust_spines(ax, spines):

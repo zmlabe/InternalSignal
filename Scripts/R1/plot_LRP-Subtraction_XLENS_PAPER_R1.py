@@ -71,7 +71,7 @@ for i in range(len(data)):
     m.drawcoastlines(color='w',linewidth=0.35)
     
     ### Colorbar limits
-    barlim = np.round(np.arange(-0.2,0.3,0.1),2)
+    barlim = np.round(np.arange(-0.3,0.4,0.1),2)
     
     ### Take lrp mean over all years
     lrpmean = data[i]
@@ -82,7 +82,7 @@ for i in range(len(data)):
     x, y = m(lon2d, lat2d)
     
     ### Make the plot continuous
-    cs = m.contourf(x,y,var,np.arange(-0.2,0.201,0.001),
+    cs = m.contourf(x,y,var,np.arange(-0.3,0.301,0.001),
                     extend='both')                
     cmap = dddd.Berlin_20.mpl_colormap         
     cs.set_cmap(cmap)

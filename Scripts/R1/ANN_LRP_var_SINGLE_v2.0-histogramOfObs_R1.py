@@ -63,7 +63,7 @@ yearsall = [timexghg,timexaer,timelens]
 directoriesall = [directorydataLLS,directorydataLLS,directorydataLLL]
 
 ### Set counter
-SAMPLEQ = 1
+SAMPLEQ = 100
 
 # ### Test script
 # datasetsingle = ['lens']

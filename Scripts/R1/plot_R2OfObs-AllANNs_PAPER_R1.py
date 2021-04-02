@@ -130,11 +130,11 @@ for s in range(len(l2)):
         patches_lens[i].set_edgecolor('white')
         patches_lens[i].set_linewidth(0.17)
         
-    ### Plot medians for all LENS    
-    plt.vlines(lenmed,ymin=0,ymax=0.4,linestyle='--',zorder=20,
-               linewidth=0.43,color='k')
-    plt.vlines(lenmed[s],ymin=0,ymax=0.4,linestyle='-',zorder=21,
-               linewidth=0.63,color='k')
+    # ### Plot medians for all LENS    
+    # plt.vlines(lenmed,ymin=0,ymax=0.4,linestyle='--',zorder=20,
+    #            linewidth=0.43,color='k')
+    # plt.vlines(lenmed[s],ymin=0,ymax=0.4,linestyle='-',zorder=21,
+    #            linewidth=0.63,color='k')
      
     
     ### Create legend
@@ -150,8 +150,8 @@ for s in range(len(l2)):
     if s ==4:
         plt.xlabel(r'\textbf{R$^{2}$ OF OBSERVATIONS}',fontsize=10,color='k')
     if s == 0:
-        plt.text(1.02,0.525,r'\textbf{[ANN-Paper]}',color='k',fontsize=6,
-                 ha='right')
+        plt.text(0,0.45,r'\textbf{[ANN-Paper]}',color='k',fontsize=6,
+                 ha='left')
     
     plt.xticks(np.arange(0,1.1,0.2),map(str,np.round(np.arange(0,1.1,0.2),2)),size=6)
     plt.yticks(np.arange(0,1.1,0.2),map(str,np.round(np.arange(0,1.1,0.2),2)),size=6)
