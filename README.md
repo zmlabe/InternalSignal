@@ -1,4 +1,4 @@
-# InternalSignal
+# InternalSignal [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4665793.svg)](https://doi.org/10.5281/zenodo.4665793)
 ANN detecting signal from internal variability 
 
 ###### Under construction... ```[Python 3.7]```
