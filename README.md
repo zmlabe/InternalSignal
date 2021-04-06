@@ -25,5 +25,6 @@ Zachary Labe - [Research Website](http://sites.uci.edu/zlabe/) - [@ZLabe](https:
 ## Publications
 + [1] **Labe, Z.M.** and E.A. Barnes (2021), Detecting climate signals using explainable AI with single-forcing large ensembles. Journal of Advances in Modeling Earth Systems (*submitted*) [[Preprint]](https://www.essoar.org/doi/10.1002/essoar.10505762.1)
 
-## Conferences
-+ [1] **Labe, Z.M.** and E.A. Barnes. Disentangling Climate Forcing in Multi-Model Large Ensembles Using Neural Networks, *20th Conference on Artificial Intelligence for Environmental Science*, Virtual Conference (Jan 2021). [[Abstract]](https://ams.confex.com/ams/101ANNUAL/meetingapp.cgi/Paper/379553)
+## Conferences/Presentations
++ [2] **Labe, Z.M.** Revealing climate change signals with explainable AI, *2021 Spring Postdoctoral Research Symposium*, Remote Presentation at Colorado State University (Mar 2021). [[Slides]](https://www.slideshare.net/ZacharyLabe/revealing-climate-change-signals-with-explainable-ai)
++ [1] **Labe, Z.M.** and E.A. Barnes. Disentangling Climate Forcing in Multi-Model Large Ensembles Using Neural Networks, *20th Conference on Artificial Intelligence for Environmental Science*, Virtual Conference (Jan 2021). [[Abstract]](https://ams.confex.com/ams/101ANNUAL/meetingapp.cgi/Paper/379553) [[Slides]](https://www2.slideshare.net/ZacharyLabe/disentangling-climate-forcing-in-multimodel-large-ensembles-using-neural-networks)
