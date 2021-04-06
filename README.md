@@ -19,6 +19,8 @@ Zachary Labe - [Research Website](http://sites.uci.edu/zlabe/) - [@ZLabe](https:
     + Kay, J. E and Coauthors, 2015: The Community Earth System Model (CESM) large ensemble project: A community resource for studying climate change in the presence of internal climate variability. Bull. Amer. Meteor. Soc., 96, 1333–1349, doi:10.1175/BAMS-D-13-00255.1 [[PUBLICATION]](http://journals.ametsoc.org/doi/full/10.1175/BAMS-D-13-00255.1)
 + CESM Large Ensemble Single Forcing (LENS-X) : [[Data]](http://www.cesm.ucar.edu/experiments/cesm1.1/LE/#single-forcing)
     + Deser, C., Phillips, A. S., Simpson, I. R., Rosenbloom, N., Coleman, D., Lehner, F., ... & Stevenson, S. (2020). Isolating the evolving contributions of anthropogenic aerosols and greenhouse gases: A new CESM1 large ensemble community resource. Journal of Climate. doi:10.1175/JCLI-D-20-0123.1 [[PUBLICATION]](https://journals.ametsoc.org/jcli/article/doi/10.1175/JCLI-D-20-0123.1/353234)
++ NOAA-CIRES-DOE Twentieth Century Reanalysis (20CRv3) : [[DATA]](https://psl.noaa.gov/data/gridded/data.20thC_ReanV3.html)
+    + Slivinski, L. C., Compo, G. P., Whitaker, J. S., Sardeshmukh, P. D., Giese, B. S., McColl, C., ... & Wyszyński, P. (2019). Towards a more reliable historical reanalysis: Improvements for version 3 of the Twentieth Century Reanalysis system. Quarterly Journal of the Royal Meteorological Society, 145(724), 2876-2908. doi:10.1002/qj.3598 [[PUBLICATION]](https://rmets.onlinelibrary.wiley.com/doi/10.1002/qj.3598)
     
 ## Publications
 + [1] **Labe, Z.M.** and E.A. Barnes (2021), Detecting climate signals using explainable AI with single-forcing large ensembles. Journal of Advances in Modeling Earth Systems (*submitted*) [[Preprint]](https://www.essoar.org/doi/10.1002/essoar.10505762.1)
