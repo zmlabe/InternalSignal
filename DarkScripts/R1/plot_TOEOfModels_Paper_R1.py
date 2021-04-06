@@ -96,7 +96,7 @@ def rollingMean(data,w,mp):
 
 ### 10-year running mean
 window = 10 
-min_periods = 1
+min_periods = 10
 smooth_ghg = np.empty((ghg.shape[0],ghg.shape[1]-1,ghg.shape[2],ghg.shape[3]))
 smooth_aer = np.empty((aer.shape[0],aer.shape[1]-1,aer.shape[2],aer.shape[3]))
 smooth_lens = np.empty((lens.shape[0],lens.shape[1]-1,lens.shape[2],lens.shape[3]))
