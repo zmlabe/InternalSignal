@@ -23,7 +23,7 @@ Zachary Labe - [Research Website](http://sites.uci.edu/zlabe/) - [@ZLabe](https:
     + Slivinski, L. C., Compo, G. P., Whitaker, J. S., Sardeshmukh, P. D., Giese, B. S., McColl, C., ... & Wyszyński, P. (2019). Towards a more reliable historical reanalysis: Improvements for version 3 of the Twentieth Century Reanalysis system. Quarterly Journal of the Royal Meteorological Society, 145(724), 2876-2908. doi:10.1002/qj.3598 [[PUBLICATION]](https://rmets.onlinelibrary.wiley.com/doi/10.1002/qj.3598)
     
 ## Publications
-+ [1] **Labe, Z.M.** and E.A. Barnes (2021), Detecting climate signals using explainable AI with single-forcing large ensembles. Journal of Advances in Modeling Earth Systems (*accepted*) [[Preprint]](https://www.essoar.org/doi/10.1002/essoar.10505762.2)
++ [1] **Labe, Z.M.** and E.A. Barnes (2021), Detecting climate signals using explainable AI with single-forcing large ensembles. *Journal of Advances in Modeling Earth Systems*, DOI:10.1029/2021MS002464 [[HTML]](https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2021MS002464)[[SUMMARY]](https://sites.uci.edu/zlabe/climate-signals-and-explainable-ai/)
 
 ## Conferences/Presentations
 + [2] **Labe, Z.M.** Revealing climate change signals with explainable AI, *2021 Spring Postdoctoral Research Symposium*, Remote Presentation at Colorado State University (Mar 2021). [[Slides]](https://www.slideshare.net/ZacharyLabe/revealing-climate-change-signals-with-explainable-ai)
